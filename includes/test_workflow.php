@@ -93,6 +93,7 @@ function challenge_step1_completed($challenge_id, $job_info)
 	$sql = "SELECT
 			p.solution_file AS solution_file,
 			p.solution_name AS solution_name,
+			p.runtime_limit AS runtime_limit,
 			c.input_file AS input_file
 		FROM challenge c
 		JOIN submission s
@@ -119,12 +120,13 @@ function challenge_step1_completed($challenge_id, $job_info)
 		//
 
 		$sql = "INSERT INTO test_job
-			(type,source_file,source_name,input_file,created,callback_data)
+			(type,source_file,source_name,input_file,created,runtime_limit,callback_data)
 			VALUES ('C',
 			".db_quote($challenge_info['solution_file']).",
 			".db_quote($challenge_info['solution_name']).",
 			".db_quote($challenge_info['input_file']).",
 			NOW(),
+			".db_quote($challenge_info['runtime_limit']).",
 			".db_quote("challenge $challenge_id").")";
 		mysql_query($sql)
 			or die("SQL error: ".mysql_error());
@@ -145,6 +147,7 @@ function challenge_step2_completed($challenge_id, $job_info)
 	$sql = "SELECT
 			s.file AS source_file,
 			s.given_name AS source_name,
+			p.runtime_limit AS runtime_limit,
 			c.input_file AS input_file
 		FROM challenge c
 		JOIN submission s
@@ -173,12 +176,13 @@ function challenge_step2_completed($challenge_id, $job_info)
 		//
 
 		$sql = "INSERT INTO test_job
-			(type,source_file,source_name,input_file,created,callback_data)
+			(type,source_file,source_name,input_file,created,runtime_limit,callback_data)
 			VALUES ('D',
 			".db_quote($challenge_info['source_file']).",
 			".db_quote($challenge_info['source_name']).",
 			".db_quote($challenge_info['input_file']).",
 			NOW(),
+			".db_quote($challenge_info['runtime_limit']).",
 			".db_quote("challenge $challenge_id").")";
 		mysql_query($sql)
 			or die("SQL error: ".mysql_error());
