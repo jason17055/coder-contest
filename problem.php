@@ -358,7 +358,8 @@ Allow contestants to submit solutions</label></div>
 if (isset($_REQUEST['id'])) {
 $sql = "SELECT contest,problem_number,test_number,
 		st.input_file AS input_file,st.input_name AS input_name,
-		expected_file,expected_file_job,
+		st.expected_file AS expected_file,
+		expected_file_job,
 		j.result_status AS expected_job_result,
 		example_input,autojudge
 	FROM system_test st

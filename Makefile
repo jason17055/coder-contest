@@ -10,8 +10,8 @@ script_files = \
 	includes/test_workflow.php \
 	worker/feed.php \
 	worker/script/worker.pl \
-	open_problem.php
-	
+	open_problem.php \
+	problem.php
 
 all:
 
