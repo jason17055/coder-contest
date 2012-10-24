@@ -147,6 +147,8 @@ for (;;)
 	}
 	else
 	{
+	print $resp->status_line . "\n";
+
 		my $elapsed = time - $start_time;
 		if ($elapsed < 10)
 		{
@@ -181,6 +183,15 @@ sub do_job
 
 	my $source_file = download_file($props->{source_file});
 	download_file($props->{input_file}, "input.txt");
+
+	if ($props->{expected_file})
+	{
+		download_file($props->{expected_file}, "expected.txt");
+	}
+	if ($props->{actual_file})
+	{
+		download_file($props->{actual_file}, "actual.txt");
+	}
 
 	if (-e "output.txt")
 	{
@@ -294,6 +305,8 @@ sub download_file
 		$local_filename = $1;
 	}
 	$local_filename =~ s/(\.(?:java|c|c++|cpp|cxx))$/lc$1/ies;
+
+	print "  downloading $local_filename\n";
 
 	my $req = HTTP::Request->new(GET => $url);
 	my $resp = $ua->request($req);

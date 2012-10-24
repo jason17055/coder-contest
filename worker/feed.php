@@ -113,6 +113,12 @@ function check_for_a_job($remote_user, $accepted_languages)
 		echo "hash $job_info[source_file]\n";
 		echo "source_file ../file.php/$job_info[source_file]/$job_info[source_name]\n";
 		echo "input_file ../file.php/$job_info[input_file]/input.txt\n";
+		if ($job_info['expected_file']) {
+			echo "expected_file ../file.php/$job_info[expected_file]/expected.txt\n";
+		}
+		if ($job_info['actual_file']) {
+			echo "actual_file ../file.php/$job_info[actual_file]/actual.txt\n";
+		}
 		echo "timeout $job_info[runtime_limit]\n";
 		exit();
 	}
