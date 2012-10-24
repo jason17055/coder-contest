@@ -8,7 +8,8 @@ script_files = \
 	includes/js_quote.php \
 	includes/notify.php \
 	includes/test_workflow.php \
-	worker/feed.php
+	worker/feed.php \
+	open_problem.php
 	
 
 all:

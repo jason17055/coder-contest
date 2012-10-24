@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 $show_mode = $_REQUEST['show'];
 if (!$show_mode)
 {
-	$show_mode = $problem_info['spec_file'] ? 'problem' : 'write';
+	$show_mode = $problem_info['spec_file'] && !$problem_info['source_file'] ? 'problem' : 'write';
 }
 
 begin_page($problem_info['problem_name'],
