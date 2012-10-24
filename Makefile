@@ -9,6 +9,7 @@ script_files = \
 	includes/notify.php \
 	includes/test_workflow.php \
 	worker/feed.php \
+	worker/script/worker.pl \
 	open_problem.php
 	
 

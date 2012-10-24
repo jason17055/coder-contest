@@ -26,6 +26,7 @@ if ($^O eq "MSWin32")
 else
 {
 	$operating_system = `uname -s -p`;
+	chomp $operating_system;
 }
 print "Detected operating system: $operating_system\n";
 
