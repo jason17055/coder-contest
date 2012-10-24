@@ -7,6 +7,7 @@ syslog(LOG_NOTICE, 'in feed.php');
 require_once('../config.php');
 require_once('../includes/functions.php');
 require_once('../includes/notify.php');
+require_once('../includes/test_workflow.php');
 
 $remote_user = $_SERVER['REMOTE_ADDR'] . " "
 		. $_SERVER['HTTP_USER_AGENT'];
