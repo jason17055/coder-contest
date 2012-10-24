@@ -130,7 +130,9 @@ CREATE TABLE challenge (
 	creator    INTEGER NOT NULL,
 	submission INTEGER NOT NULL,
 	input_file VARCHAR(200) NOT NULL,
-	status     VARCHAR(200) NOT NULL
+	status     VARCHAR(200) NOT NULL,
+	expected_file VARCHAR(200),
+	output_file VARCHAR(200)
 	);
 
 CREATE TABLE worker (
@@ -147,7 +149,8 @@ CREATE TABLE worker (
 --  'E' - generate expected output of a system test
 --  'U' - user test
 --  'V' - validate an input file
---  'C' - challenge
+--  'C' - generate expected output of a challenge
+--  'D' - generate actual output of a challenge
 --if type='S' then
 --   there should be a test_result record with job=id
 --if type='U' then

@@ -64,7 +64,7 @@ function test_completed($job_id)
 			challenge_step1_completed($challenge_id, $job_info);
 		}
 	}
-	else if ($Job_info['type']=='U')   // run a user-submitted input file
+	else if ($job_info['type']=='C')   // run a user-submitted input file
 									// against the official problem solution
 	{
 		if (preg_match('/^challenge (.*)$/', $job_info['callback_data'], $m))
@@ -73,7 +73,7 @@ function test_completed($job_id)
 			challenge_step2_completed($challenge_id, $job_info);
 		}
 	}
-	else if ($job_info['type']=='C')   // run a user-submitted input file
+	else if ($job_info['type']=='D')   // run a user-submitted input file
 									// against a submitted solution
 	{
 		if (preg_match('/^challenge (.*)$/', $job_info['callback_data'], $m))
@@ -120,7 +120,7 @@ function challenge_step1_completed($challenge_id, $job_info)
 
 		$sql = "INSERT INTO test_job
 			(type,source_file,source_name,input_file,created,callback_data)
-			VALUES ('U',
+			VALUES ('C',
 			".db_quote($challenge_info['solution_file']).",
 			".db_quote($challenge_info['solution_name']).",
 			".db_quote($challenge_info['input_file']).",
@@ -174,7 +174,7 @@ function challenge_step2_completed($challenge_id, $job_info)
 
 		$sql = "INSERT INTO test_job
 			(type,source_file,source_name,input_file,created,callback_data)
-			VALUES ('C',
+			VALUES ('D',
 			".db_quote($challenge_info['source_file']).",
 			".db_quote($challenge_info['source_name']).",
 			".db_quote($challenge_info['input_file']).",
