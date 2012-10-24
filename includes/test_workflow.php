@@ -82,6 +82,14 @@ function test_completed($job_id)
 			challenge_step3_completed($challenge_id, $job_info);
 		}
 	}
+	else if ($job_info['type']=='G')   // run a output validator
+	{
+		if (preg_match('/^challenge (.*)$/', $job_info['callback_data'], $m))
+		{
+			$challenge_id = $m[1];
+			challenge_step4_completed($challenge_id, $job_info);
+		}
+	}
 	else
 	{
 		wakeup_listeners();
@@ -219,10 +227,15 @@ function challenge_step3_completed($challenge_id, $job_info)
 	$challenge_info = mysql_fetch_assoc($query)
 		or die("invalid challenge $challenge_id");
 
+	// this is the result of running the user's program
+	$sql = "UPDATE challenge
+			SET output_file=".db_quote($job_info['output_file'])."
+			WHERE id=".db_quote($challenge_id);
+	mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+
 	if ($job_info['result_status'] == 'No Error')
 	{
-		// this is the result of running the user's program
-
 		//
 		// evaluate the result
 		//
@@ -255,19 +268,12 @@ function challenge_step3_completed($challenge_id, $job_info)
 		{
 			if ($job_info['output_file'] == $challenge_info['expected_file'])
 			{
-				$new_status = "Challenge failed";
+				resolve_challenge($challenge_id, "Challenge failed");
 			}
 			else
 			{
-				$new_status = "Challenge successful";
+				resolve_challenge($challenge_id, "Challenge successful");
 			}
-
-			$sql = "UPDATE challenge
-				SET output_file=".db_quote($job_info['output_file']).",
-				status=".db_quote($new_status)."
-				WHERE id=".db_quote($challenge_id);
-			mysql_query($sql)
-				or die("SQL error: ".mysql_error());
 		}
 	}
 	else
@@ -275,10 +281,46 @@ function challenge_step3_completed($challenge_id, $job_info)
 		// target user's program generated an error;
 		// that means the challenge was successful
 
-		$sql = "UPDATE challenge SET status='Challenge successful'
-			WHERE id=".db_quote($challenge_id);
-		mysql_query($sql)
-			or die("SQL error: ".mysql_error());
+		resolve_challenge($challenge_id, "Challenge successful");
 	}
+}
+
+function challenge_step4_completed($challenge_id, $job_info)
+{
+	$sql = "SELECT 1
+		FROM challenge c
+		JOIN submission s
+			ON s.id = c.submission
+		JOIN team t
+			ON t.team_number=s.team
+		JOIN problem p
+			ON p.problem_number=s.problem
+			AND p.contest=t.contest
+		WHERE c.id=".db_quote($challenge_id);
+	$query = mysql_query($sql);
+	$challenge_info = mysql_fetch_assoc($query)
+		or die("invalid challenge $challenge_id");
+
+	if ($job_info['result_status'] == 'No Error')
+	{
+		// the output validator accepted the challenged program's
+		// output, thus the challenge failed
+
+		resolve_challenge($challenge_id, "Challenge failed");
+	}
+	else
+	{
+		// output validator errored
+		resolve_challenge($challenge_id, "Challenge successful");
+	}
+}
+
+function resolve_challenge($challenge_id, $status)
+{
+	$sql = "UPDATE challenge
+			SET status=".db_quote($status)."
+			WHERE id=".db_quote($challenge_id);
+	mysql_query($sql)
+		or die("SQL error: ".mysql_error());
 }
 
