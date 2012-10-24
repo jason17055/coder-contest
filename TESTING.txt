@@ -1,0 +1,9 @@
+Needs tested
+* judge notification: when a new clarification or submission is
+  created and assigned, that the recipient judge's page automatically
+  updates and plays a sound
+
+Already tested (and no reason to believe it needs retested)
+* load test: login to contest system on 28 computers, bring up at least
+  the team/judge home page and the scoreboard page on each computer,
+  verify that the server is not overwhelmed with http processes

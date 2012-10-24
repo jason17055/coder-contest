@@ -1,0 +1,251 @@
+a.selected {
+	text-decoration: none;
+	color: black;
+	font-weight: bold;
+	}
+
+body.adminpage {
+	padding: 0;
+	margin: 0;
+}
+
+body.adminpage div#contentarea {
+	padding-left: 6pt;
+	padding-right: 6pt;
+	padding-bottom: 12pt;
+}
+
+#top_banner {
+	padding-left: 6pt;
+	padding-right: 6pt;
+	padding-top: 6pt;
+	padding-bottom: 6pt;
+	background-color: #000066;
+	color: white;
+}
+
+#top_banner h1 {
+	margin-top: 0;
+	padding-top: 0;
+	margin-bottom: 0;
+	padding-bottom: 0;
+	float: left;
+	font-family: sans-serif;
+}
+
+#top_banner #sessionctl {
+	float: right;
+	text-align: center;
+}
+
+#sessionctl a {
+	color: inherit;
+}
+
+.error {
+	color: red;
+	font-weight: bold;
+}
+
+#announcementPopup {
+	border: 2px solid black;
+	position: fixed;
+	width: 250px;
+	background-color: white;
+	color: black;
+	z-index: 1;
+	left: 1em;
+	top: 1em;
+	display: none;
+	font-size: 16pt;
+}
+
+#announcementTitleBar {
+	text-align: center;
+	color: #000066;
+	background-color: #ffeeaa;
+}
+
+#announcementContent {
+	padding-top: 8pt;
+	padding-bottom: 16pt;
+	padding-left: 4pt;
+	padding-right: 4pt;
+}
+
+#announcementButtons {
+	text-align: center;
+	padding-bottom: 8pt;
+}
+
+#controller_teams_table {
+	float: left;
+	margin-right: 2em;
+}
+
+#controller_judges_table {
+	float: left;
+	margin-right: 2em;
+}
+
+.test_result_properties {
+	float: left;
+}
+.test_result_actions {
+	text-align: right;
+}
+
+.test_result_properties a {
+	padding-left: 12pt;
+	padding-right: 12pt;
+	padding-bottom: 2pt;
+	padding-top: 1pt;
+	background-color: #ccc;
+	font-weight: bold;
+	border: 1px solid #888;
+}
+
+.submission_h3 {
+	margin-top: 2pt;
+	margin-bottom: 0;
+	}
+
+#source_code_iframe {
+	/*width: 95%;*/
+	}
+
+.aTemplate {
+	display: none;
+	}
+
+.results_cell {
+	min-width: 20pt;
+	text-align: center;
+	}
+
+h3 {
+	margin-bottom: 0;
+	}
+
+#contest_clock {
+	border: 2px solid black;
+	background-color: #ffcccc;
+	color: black;
+	font-weight: bold;
+	font-size: 12pt;
+	font-family: sans-serif;
+	text-align: center;
+	}
+
+.contest_clock {
+	border: 1px solid white;
+	text-align: center;
+	padding-left: 6pt;
+	padding-right: 6pt;
+	float: right;
+	margin-right: 1em;
+	}
+
+.none_at_this_time {
+	height: 3em;
+	font-style: italic;
+	}
+
+#source_box {
+	background-color: yellow;
+	border: 1px solid blue;
+	}
+
+.CodeMirror {
+	border: 1px solid blue;
+	}
+
+#problem_action_buttons_bar {
+	float: right;
+	}
+
+#main_content_container {
+	width: 100%;
+	margin-bottom: -12pt;
+	}
+
+.tabnav {
+	list-style-type: none;
+	display: inline-block;
+	border-bottom: 1px solid black;
+	margin-right: 24pt;
+	padding-bottom: 0;
+	margin-bottom: 0;
+	}
+.tabnav li {
+	display: inline;
+	padding-left: 6pt;
+	padding-right: 6pt;
+	padding-top: 4pt;
+	padding-bottom: 0;
+	margin-bottom: 0;
+	border: 1px solid #666;
+	border-bottom: 0;
+	background-color: #ddd;
+	color: black;
+	}
+.tabnav li a {
+	text-decoration: none;
+	}
+.tabnav li.selected a {
+	font-weight: bold;
+	color: black;
+	}
+
+.CodeMirror {
+	border: 1px solid black;
+}
+
+#all_solutions_table_container {
+	max-height: 10em;
+	overflow: auto;
+	border: 1px solid black;
+	}
+
+#all_solutions_table {
+	width: 100%;
+}
+
+tr.solution_row.selected {
+	background-color: #6ed;
+	color: black;
+}
+
+#display_label {
+	height: 14pt;
+	background-color: #ccc;
+	color: black;
+	padding-top: 2pt;
+	overflow: hidden;
+	}
+
+#display_challenge_link {
+	display: none;
+}
+
+.problem_per_phase_options th.phase_header {
+	min-width: 44pt;
+	}
+.problem_per_phase_options .phase_name {
+	font-size: 8pt;
+	}
+.problem_per_phase_options th.attr {
+	text-align: left;
+	font-weight: normal;
+	}
+.problem_per_phase_options td {
+	text-align: center;
+	}
+
+.current_phase {
+	background-color: #3bf;
+}
+
+.next_phase {
+	background-color: #099;
+}

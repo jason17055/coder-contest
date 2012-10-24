@@ -1,0 +1,30 @@
+<?php
+$schema = 'jlong_scoreboard';
+
+$mysqlhost = 'localhost';
+$mysqluser = 'mysql_user';
+$mysqlpass = 'mysql_password';
+
+$app_url = "http://$_SERVER[HTTP_HOST]/contest";
+$uploaddir = './uploaded_files';
+
+$link = mysql_connect($mysqlhost, $mysqluser, $mysqlpass);
+if (!$link) {
+   die('Could not connect: ' . mysql_error());
+}
+mysql_select_db($schema, $link);
+
+function db_quote($str)
+{
+	if (is_null($str))
+		return "NULL";
+	else
+		return "'" . mysql_real_escape_string($str) . "'";
+}
+
+if (!$static_files_url)
+{
+	$static_files_url = '.';
+}
+
+?>

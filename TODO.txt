@@ -1,0 +1,25 @@
+* message acknowledgement:
+   - when user clicked 'Dismiss' or 'Open' on a message,
+     make sure the message is never displayed again, even if user
+     logs into a different computer
+* judges interface:
+   - assign judges to problems or to teams
+   - allow judge to change password
+* allow group submissions (so that individuals can be tracked over
+  a several-week contest where the teams change from week to week)
+* problem-specific options:
+   - start time, end time
+   - unique icon for scoreboard
+   - unique image for congratulations popup
+   - specify runtime limit
+* worker:
+   - implement memory limit
+   - implement output file size limit
+* user interface:
+   - allow contest to specify color scheme of all pages
+      (e.g. Red for Dickinson)
+* director dashboard:
+   - show online/offline status of job runners (a.k.a. workers)
+   - show current activity levels
+* general notification architecture:
+   - notify completion of a run

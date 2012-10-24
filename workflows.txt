@@ -1,0 +1,22 @@
+User-submitted Test Run
+
+ * [any user] input source file, input file
+ * [worker] compile/execute
+ * [any user] display results
+
+Clarification request
+
+ * [contestant] input problem number, question text
+ * [judge] answer clarification
+ * one of:
+     * [contestant] display answer
+     * [all teams] display answer
+
+Submission
+
+ * [contestant] input problem number, source file
+ * [worker] compile/execute for each system test
+ * [judge] judge the submission
+ * one of:
+     * [contestant] report result
+     * [all users] report result
