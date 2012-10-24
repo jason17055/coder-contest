@@ -151,11 +151,12 @@ CREATE TABLE worker (
 --  'V' - validate an input file
 --  'C' - generate expected output of a challenge
 --  'D' - generate actual output of a challenge
+--  'G' - compare actual output to expected output of challenge
 --if type='S' then
 --   there should be a test_result record with job=id
 --if type='U' then
 --   user_uid must not be null
---if type='V' or type='C' then
+--if type in ('V', 'C', 'D', 'G') then
 --   callback_data should be "challenge %d" where %d is the challenge id
 --
 --result_status is one of:
@@ -173,6 +174,8 @@ CREATE TABLE test_job (
 	source_file      VARCHAR(200) NOT NULL,
 	source_name      VARCHAR(200) NOT NULL,
 	input_file       VARCHAR(200) NOT NULL,
+	expected_file    VARCHAR(200),        -- only used by output validator
+	actual_file      VARCHAR(200),        -- only used by output validator
 	result_status    VARCHAR(200),
 	result_detail    TEXT,
 	output_file      VARCHAR(200),

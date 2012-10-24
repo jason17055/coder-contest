@@ -202,9 +202,10 @@ function challenge_step2_completed($challenge_id, $job_info)
 function challenge_step3_completed($challenge_id, $job_info)
 {
 	$sql = "SELECT
-			s.file AS source_file,
-			s.given_name AS source_name,
-			c.input_file AS input_file
+			p.output_validator_file AS output_validator_file,
+			p.output_validator_name AS output_validator_name,
+			c.input_file AS input_file,
+			c.expected_file AS expected_file
 		FROM challenge c
 		JOIN submission s
 			ON s.id = c.submission
@@ -222,15 +223,52 @@ function challenge_step3_completed($challenge_id, $job_info)
 	{
 		// this is the result of running the user's program
 
-		$sql = "UPDATE challenge
-			SET output_file=".db_quote($job_info['output_file']).",
-			status='Evaluating the result'
-			WHERE id=".db_quote($challenge_id);
-		mysql_query($sql)
-			or die("SQL error: ".mysql_error());
+		//
+		// evaluate the result
+		//
 
-		// TODO - evaluate the result
+		if ($challenge_info['output_validator_file'])
+		{
+			$sql = "UPDATE challenge
+				SET output_file=".db_quote($job_info['output_file']).",
+				status='Evaluating the result'
+				WHERE id=".db_quote($challenge_id);
+			mysql_query($sql)
+				or die("SQL error: ".mysql_error());
 
+			$sql = "INSERT INTO test_job
+				(type,source_file,source_name,input_file,expected_file,actual_file,created,callback_data)
+				VALUES ('G',
+				".db_quote($challenge_info['output_validator_file']).",
+				".db_quote($challenge_info['output_validator_name']).",
+				".db_quote($challenge_info['input_file']).",
+				".db_quote($challenge_info['expected_file']).",
+				".db_quote($job_info['output_file']).",
+				NOW(),
+				".db_quote("challenge $challenge_id").")";
+			mysql_query($sql)
+				or die("SQL error: ".mysql_error());
+
+			notify_worker();
+		}
+		else
+		{
+			if ($job_info['output_file'] == $challenge_info['expected_file'])
+			{
+				$new_status = "Challenge failed";
+			}
+			else
+			{
+				$new_status = "Challenge successful";
+			}
+
+			$sql = "UPDATE challenge
+				SET output_file=".db_quote($job_info['output_file']).",
+				status=".db_quote($new_status)."
+				WHERE id=".db_quote($challenge_id);
+			mysql_query($sql)
+				or die("SQL error: ".mysql_error());
+		}
 	}
 	else
 	{
