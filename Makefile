@@ -11,7 +11,8 @@ script_files = \
 	worker/feed.php \
 	worker/script/worker.pl \
 	open_problem.php \
-	problem.php
+	problem.php \
+	submit_test.php
 
 all:
 

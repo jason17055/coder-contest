@@ -84,7 +84,7 @@ function problem_actions_tabnav($show_mode)
 <li<?php if ($show_mode=='problem') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("$purl&show=problem")?>">Problem</a></li>
 <li<?php if ($show_mode=='clarifications') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=clarifications')?>">Clarifications</a></li>
 <li<?php if ($show_mode=='write') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=write')?>">Write Code</a></li>
-<li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=test')?>">Test</a></li>
+<li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>
 <?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y')) { ?>
 <li<?php if ($show_mode=='solutions') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=solutions')?>">Solutions</a></li>

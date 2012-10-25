@@ -7,10 +7,16 @@ require_once('includes/functions.php');
 require_once('includes/notify.php');
 
 require_auth();
+$team_info = get_team_identity();
+$contest_id = $team_info['contest'];
+$contest_info = get_basic_contest_info($contest_id);
+
+$problem_number = $_REQUEST['problem'];
+$problem_info = get_problem_info($problem_number);
 
 $test_info = array(
-	'source_file' => $_REQUEST['source_file'],
-	'source_name' => $_REQUEST['source_name'],
+	'source_file' => ($_REQUEST['source_file'] ?: $problem_info['source_file']),
+	'source_name' => ($_REQUEST['source_name'] ?: $problem_info['source_name']),
 	);
 if ($_REQUEST['template'])
 {
@@ -63,10 +69,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	exit();
 }
 
-begin_page("Test a Solution");
+begin_page("Test a Solution",
+	array('notitle' => 1
+		));
+problem_actions_tabnav('test', $problem_info);
 
 ?>
+<h2><?php echo htmlspecialchars($problem_info['problem_name'])?></h2>
 
+<h3>Test a Solution</h3>
 <p>
 Use this form to test your code with the same system/environment that
 the judges are using. Your source code will be compiled and executed,
@@ -74,7 +85,7 @@ using the specified input file. Then the output from your program will
 be displayed.
 </p>
 
-<form name="form1" method="post" enctype="multipart/form-data" action="submit_test.php">
+<form name="form1" method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
 <table>
 <tr>
 <td valign="top">Source code:</td>
@@ -162,9 +173,11 @@ or enter text in this box:<br>
 		});
 		//--></script>
 <div>
-<input type="hidden" name="next_url" value="<?php echo htmlspecialchars($_REQUEST['next_url'])?>">
 <button type="submit">Test</button>
+<?php if ($_REQUEST['next_url']) { ?>
+<input type="hidden" name="next_url" value="<?php echo htmlspecialchars($_REQUEST['next_url'])?>">
 <button type="submit" name="action:cancel">Cancel</button>
+<?php } ?>
 </div>
 
 </form>

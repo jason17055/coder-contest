@@ -545,6 +545,48 @@ function get_basic_contest_info($contest_id, $extra = '')
 	return $contest_info;
 }
 
+function get_problem_info($problem_number)
+{
+	global $team_info;
+	global $contest_id;
+
+$sql = "SELECT problem_name,spec_file,spec_name,
+		".check_phase_option_sql('pp_read_solution')." AS solution_visible,
+		".check_phase_option_sql('pp_read_opponent')." AS read_opponent,
+		".check_phase_option_sql('pp_challenge')." AS challenge_phase,
+		solution_file,solution_name,
+		r.source_file AS source_file,
+		r.source_name AS source_name
+	FROM problem p
+	LEFT JOIN results r
+		ON r.team_number=".db_quote($team_info['team_number'])."
+		AND r.problem_number=p.problem_number
+	WHERE contest=".db_quote($contest_id)."
+	AND p.problem_number=".db_quote($problem_number)."
+	AND ".check_phase_option_bool('pp_read_problem')."
+	";
+$result = mysql_query($sql);
+$problem_info = mysql_fetch_assoc($result)
+	or die("invalid problem");
+
+$sql = "INSERT IGNORE INTO results (team_number,problem_number)
+	VALUES (".db_quote($team_info['team_number']).",
+	".db_quote($problem_number)."
+	)";
+mysql_query($sql)
+	or die("MySQL error");
+
+$sql = "UPDATE results
+	SET opened=NOW()
+	WHERE team_number=".db_quote($team_info['team_number'])."
+	AND problem_number=".db_quote($problem_number)."
+	AND (opened IS NULL OR opened>NOW())";
+mysql_query($sql)
+	or die("MySQL error");
+
+	return $problem_info;
+}
+
 function check_phase_option_sql($perphase_option)
 {
 	global $contest_info;
