@@ -44,11 +44,7 @@
 
 		?><div class="clarification-answer <?php echo $cl?>">
 		<div class="clarification-author"><span class="author"><?php echo $a?></span>
-		<?php
-			if ($row['status'] == 'reply-all') {
-				echo '(visible to all competitors)';
-			}
-			?></div>
+		</div>
 		<p><?php echo htmlspecialchars($row['response'])?></p>
 		</div>
 		<?php

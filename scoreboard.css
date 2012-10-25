@@ -257,8 +257,11 @@ tr.solution_row.selected {
 	background-color: #aaa;
 }
 .clarification-answer {
-	background-color: #99f;
+	background-color: #bbf;
 	margin-bottom: 20pt;
+}
+.clarification-answer.reply-one {
+	background-color: #aaa;
 }
 .clarification-answer-none {
 	margin-bottom: 20pt;

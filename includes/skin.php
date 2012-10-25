@@ -82,7 +82,10 @@ function problem_actions_tabnav($show_mode)
 <div id="problem_action_buttons_bar">
 <ul class="tabnav">
 <li<?php if ($show_mode=='problem') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("$purl&show=problem")?>">Problem</a></li>
-<li<?php if ($show_mode=='clarifications') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=clarifications')?>">Clarifications</a></li>
+<li<?php if ($show_mode=='clarifications') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=clarifications')?>">Clarifications<?php
+		if ($problem_info['clarification_count']) {
+			echo htmlspecialchars(" ($problem_info[clarification_count])");
+		}?></a></li>
 <li<?php if ($show_mode=='write') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=write')?>">Write Code</a></li>
 <li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>

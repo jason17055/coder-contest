@@ -556,7 +556,11 @@ $sql = "SELECT problem_name,spec_file,spec_name,
 		".check_phase_option_sql('pp_challenge')." AS challenge_phase,
 		solution_file,solution_name,
 		r.source_file AS source_file,
-		r.source_name AS source_name
+		r.source_name AS source_name,
+		(SELECT COUNT(*) FROM clarification cl
+			WHERE cl.contest=p.contest
+			AND cl.problem_number=p.problem_number
+			AND cl.status='reply-all') AS clarification_count
 	FROM problem p
 	LEFT JOIN results r
 		ON r.team_number=".db_quote($team_info['team_number'])."
@@ -565,7 +569,8 @@ $sql = "SELECT problem_name,spec_file,spec_name,
 	AND p.problem_number=".db_quote($problem_number)."
 	AND ".check_phase_option_bool('pp_read_problem')."
 	";
-$result = mysql_query($sql);
+$result = mysql_query($sql)
+	or die("SQL error: ".mysql_error());
 $problem_info = mysql_fetch_assoc($result)
 	or die("invalid problem");
 
