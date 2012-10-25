@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		$r = mysql_fetch_row($query);
 		$problem_number = $r[0];
 
-		$sql = "INSERT INTO problem (problem_number,problem_name,contest,spec_file,spec_name,solution_file,solution_name,judged_by,scoreboard_solved_image)
+		$sql = "INSERT INTO problem (problem_number,problem_name,contest,judged_by,scoreboard_solved_image)
 			SELECT ".db_quote($problem_number).", "
 				. db_quote($_REQUEST['problem_name']) . ", "
 				. db_quote($_REQUEST['contest']) . ",
