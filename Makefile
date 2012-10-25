@@ -10,6 +10,7 @@ script_files = \
 	includes/test_workflow.php \
 	worker/feed.php \
 	worker/script/worker.pl \
+	answer_clarification.php \
 	open_problem.php \
 	problem.php \
 	show_problem_clarifications.inc.php \

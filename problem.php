@@ -424,7 +424,8 @@ if (mysql_num_rows($query))
 	while ($row = mysql_fetch_assoc($query))
 	{
 		$count++;
-		$edit_url = "answer_clarification.php?id=".urlencode($row['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']);
+		$edit_url = "answer_clarification.php?id=".urlencode($row['id'])
+			."&next_url=".urlencode($_SERVER['REQUEST_URI']);
 	?>
 	<tr>
 	<td><a href="<?php echo htmlspecialchars($edit_url)?>">
@@ -436,13 +437,19 @@ if (mysql_num_rows($query))
 </table>
 <?php
 } // end if any clarifications defined
+
+
+$add_system_test_url = "system_test.php?contest=".urlencode($contest_id)."&problem=".urlencode($_REQUEST['id']);
+$add_clarification_url = "answer_clarification.php?contest=".urlencode($contest_id)
+		."&problem=".urlencode($_REQUEST['id'])
+		."&next_url=".urlencode($_SERVER['REQUEST_URI']);
+
 ?>
 
 <p>
-<a href="<?php
-	$add_system_test_url = "system_test.php?contest=".urlencode($_REQUEST['contest'])."&problem=".urlencode($_REQUEST['id']);
-	echo htmlspecialchars($add_system_test_url) ?>">Add System Test</a>
-
+<a href="<?php echo htmlspecialchars($add_system_test_url) ?>">Add System Test</a>
+|
+<a href="<?php echo htmlspecialchars($add_clarification_url)?>">Issue Clarification</a>
 <?php
 	if ($problem_info['solution_file']) {
 		$url = "submit_test.php?source_file=".urlencode($problem_info['solution_file'])

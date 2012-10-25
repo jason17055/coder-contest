@@ -215,13 +215,17 @@ CREATE TABLE test_result (
 --FOREIGN KEY (team)           REFERENCES team (team_number),
 --FOREIGN KEY (problem_number) REFERENCES problem (problem_number),
 --FOREIGN KEY (judge)          REFERENCES judge (judge_id)
+--status one of:
+--  'reply-all':
+--  others
+--
 CREATE TABLE clarification (
 	id             INTEGER AUTO_INCREMENT PRIMARY KEY,
 	contest        INTEGER NOT NULL,
 	problem_number INTEGER NOT NULL,
-	team           INTEGER NOT NULL,
+	team           INTEGER,
 	created        DATETIME NOT NULL,
-	request        TEXT NOT NULL,
+	request        TEXT,
 	response       TEXT,
 	status         VARCHAR(200),
 	judge          INT
