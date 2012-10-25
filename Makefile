@@ -12,11 +12,15 @@ script_files = \
 	worker/script/worker.pl \
 	open_problem.php \
 	problem.php \
+	show_problem_clarifications.inc.php \
 	submit_test.php
+
+data_files = \
+	scoreboard.css
 
 all:
 
 install:
-	for f in $(script_files); do \
+	for f in $(script_files) $(data_files); do \
 		install $$f $(prefix)/$$f; \
 	done

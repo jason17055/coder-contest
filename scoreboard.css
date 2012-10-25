@@ -249,3 +249,32 @@ tr.solution_row.selected {
 .next_phase {
 	background-color: #099;
 }
+
+.clarification-question {
+	background-color: #e88;
+}
+.clarification-question.opponent-question {
+	background-color: #aaa;
+}
+.clarification-answer {
+	background-color: #99f;
+	margin-bottom: 20pt;
+}
+.clarification-answer-none {
+	margin-bottom: 20pt;
+}
+
+.clarification-author .author {
+	color: black;
+	font-weight: bold;
+}
+.clarification-question p {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 20pt;
+}
+.clarification-answer p {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 20pt;
+}

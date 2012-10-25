@@ -69,57 +69,7 @@ if ($show_mode == 'problem')
 } //end if showing problem statement
 else if ($show_mode == 'clarifications')
 {
-	$sql = "SELECT request,response
-		FROM clarification
-		WHERE contest=".db_quote($contest_id)."
-		AND problem_number=".db_quote($_REQUEST['problem'])."
-		AND
-		(status='reply-all'
-		OR (status='reply-one' AND team=".db_quote($team_info['team_number'])."
-		  )
-		)
-		ORDER BY id";
-	$query = mysql_query($sql);
-	$count = 0;
-	while ($row = mysql_fetch_assoc($query))
-	{
-		$count++;
-		?><hr>
-		<p><?php echo htmlspecialchars($row['request'])?></p>
-		<p><?php echo htmlspecialchars($row['response'])?></p>
-		<?php
-	}
-
-	if ($count == 0)
-	{
-		?><p>
-		There have not been any clarifications issued for this problem.
-		</p>
-		<?php
-	}
-
-	$clar_url = 'newclarification.php?problem='.urlencode($problem_number);
-?>
-<p>
-Confused by a problem specification? Request a clarification here.
-</p>
-
-<form method="post" action="<?php echo htmlspecialchars($clar_url)?>">
-<table>
-<tr>
-<td valign="top">Message:</td>
-<td><textarea name="message" rows="10" cols="72"></textarea></td>
-</tr>
-</table>
-
-<div>
-<button type="submit">Submit</button>
-</div>
-
-</form>
-
-
-<?php
+	require('show_problem_clarifications.inc.php');
 
 } //end if showing clarifications
 else if ($show_mode == 'write')
