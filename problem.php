@@ -365,7 +365,7 @@ $sql = "SELECT contest,problem_number,test_number,
 	FROM system_test st
 	LEFT JOIN test_job j
 			ON j.id=st.expected_file_job
-	WHERE contest=".db_quote($_REQUEST['contest'])."
+	WHERE contest=".db_quote($contest_id)."
 	AND problem_number=".db_quote($_REQUEST['id'])."
 	ORDER BY test_number";
 $result = mysql_query($sql)
@@ -403,6 +403,39 @@ if ($row = mysql_fetch_assoc($result))
 
 <?php
 } //endif any system tests defined
+
+//
+// show clarifications issued for this problem
+//
+
+$sql = "SELECT id,
+		'clarification' AS type
+		FROM clarification
+		WHERE contest=".db_quote($contest_id)."
+		AND problem_number=".db_quote($_REQUEST['id'])."
+		ORDER BY id";
+$query = mysql_query($sql)
+	or die("SQL error: ".mysql_error());
+if (mysql_num_rows($query))
+{
+	?><p>Clarifications</p><table border="1">
+	<?php
+	$count = 0;
+	while ($row = mysql_fetch_assoc($query))
+	{
+		$count++;
+		$edit_url = "answer_clarification.php?id=".urlencode($row['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']);
+	?>
+	<tr>
+	<td><a href="<?php echo htmlspecialchars($edit_url)?>">
+	Clarification <?php echo htmlspecialchars($row['id'])?></td>
+	</tr>
+	<?php
+	} //end while loop
+?>
+</table>
+<?php
+} // end if any clarifications defined
 ?>
 
 <p>
