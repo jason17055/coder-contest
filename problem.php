@@ -201,7 +201,7 @@ begin_page("Problem Definition");
 <tr>
 <td>Name:</td>
 <td>
-<input type="text" name="problem_name" value="<?php echo htmlspecialchars($row['problem_name'])?>">
+<input type="text" name="problem_name" value="<?php echo htmlspecialchars($row['problem_name'])?>" size="40">
 </td>
 </tr>
 <tr>
