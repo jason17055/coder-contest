@@ -130,6 +130,37 @@ var myCM = CodeMirror.fromTextArea(
 } //end if showing write
 else if ($show_mode == 'submit')
 {
+	$sql = "SELECT id,
+		file AS source_file,
+		given_name AS source_name,
+		COALESCE(status,'Pending') AS status,
+		minutes
+		FROM submission
+		WHERE team=".db_quote($team_info['team_number'])."
+		AND problem=".db_quote($problem_number)."
+		ORDER BY id DESC
+		LIMIT 1";
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$submission_info = mysql_fetch_assoc($query);
+	if ($submission_info)
+	{
+		$source_url = "file.php/$submission_info[source_file]/$submission_info[source_name]";
+	?>
+	<div class="existing_submission">
+		You submitted
+		<a href="<?php echo htmlspecialchars($source_url)?>"><?php
+				echo htmlspecialchars($submission_info['source_name'])?></a>
+		at <span class="minutes"><?php
+				echo htmlspecialchars($submission_info['minutes'])?></span>
+		minutes.
+		Its status is: <span class="status">
+			<?php echo htmlspecialchars($submission_info['status'])?>
+			</span>
+	</div>
+<?php
+	}
+	
 	$submit_url = 'submit.php?problem='.urlencode($problem_number);
 ?>
 <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($submit_url)?>">

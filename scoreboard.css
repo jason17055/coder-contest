@@ -281,3 +281,17 @@ tr.solution_row.selected {
 	margin-bottom: 0;
 	margin-left: 20pt;
 }
+
+.existing_submission {
+	border: 1px solid black;
+	background-color: #ffc;
+	color: black;
+	margin-left: 2in;
+	margin-right: 2in;
+	margin-bottom: 28pt;
+	padding: 20pt;
+	}
+
+.existing_submission .status {
+	font-weight: bold;
+	}
