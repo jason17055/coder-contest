@@ -223,7 +223,9 @@ Allow contestants to submit solutions</label></div>
 <div><?php select_file_widget("solution", $row)?></div>
 <?php
 	if ($problem_info['solution_file']) {
-		$url = "submit_test.php?source_file=".urlencode($problem_info['solution_file'])
+		$url = "submit_test.php?contest=".urlencode($contest_id)
+		."&problem=".urlencode($_REQUEST['id'])
+		."&source_file=".urlencode($problem_info['solution_file'])
 		."&source_name=".urlencode($problem_info['solution_name'])
 		."&next_url=".urlencode($_SERVER['REQUEST_URI']);
 		?>
@@ -237,7 +239,9 @@ Allow contestants to submit solutions</label></div>
 <div><?php select_file_widget("input_validator", $row)?></div>
 <?php
 	if ($problem_info['input_validator_file']) {
-		$url = "submit_test.php?source_file=".urlencode($problem_info['input_validator_file'])
+		$url = "submit_test.php?contest=".urlencode($contest_id)
+		."&problem=".urlencode($_REQUEST['id'])
+		."&source_file=".urlencode($problem_info['input_validator_file'])
 		."&source_name=".urlencode($problem_info['input_validator_name'])
 		."&next_url=".urlencode($_SERVER['REQUEST_URI']);
 		?>

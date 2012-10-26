@@ -7,8 +7,17 @@ require_once('includes/functions.php');
 require_once('includes/notify.php');
 
 require_auth();
-$team_info = get_team_identity();
-$contest_id = $team_info['contest'];
+if ($_REQUEST['contest'])
+{
+	$contest_id = $_REQUEST['contest'];
+	is_judge_of($contest_id)
+		or die("Error: not a judge in contest $contest_id");
+}
+else
+{
+	$team_info = get_team_identity();
+	$contest_id = $team_info['contest'];
+}
 $contest_info = get_basic_contest_info($contest_id);
 
 $problem_number = $_REQUEST['problem'];

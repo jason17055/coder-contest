@@ -1,6 +1,7 @@
 <?php
 
 require_once('notify.php');
+require_once('auth.php');
 
 // update the 'score' value for a given team; it queries the results
 // for all the problems for this team, and calculates the cumulative
@@ -550,6 +551,9 @@ function get_problem_info($problem_number)
 	global $team_info;
 	global $contest_id;
 
+	$is_problem_readable_sql = is_judge_of($contest_id) ? "1<2"
+		: check_phase_option_bool('pp_read_problem');
+
 $sql = "SELECT problem_name,spec_file,spec_name,
 		".check_phase_option_sql('pp_read_solution')." AS solution_visible,
 		".check_phase_option_sql('pp_read_opponent')." AS read_opponent,
@@ -567,7 +571,7 @@ $sql = "SELECT problem_name,spec_file,spec_name,
 		AND r.problem_number=p.problem_number
 	WHERE contest=".db_quote($contest_id)."
 	AND p.problem_number=".db_quote($problem_number)."
-	AND ".check_phase_option_bool('pp_read_problem')."
+	AND $is_problem_readable_sql
 	";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
