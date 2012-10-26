@@ -98,14 +98,13 @@ begin_page("Issue Login Credentials");
 <th>Password</th>
 </tr>
 <?php
-	$sql = "SELECT team_number AS id,team_name,password,ordinal
+	$sql = "SELECT team_number AS id,team_name,user,password,ordinal
 		FROM team t
 		WHERE contest=".db_quote($_REQUEST['contest'])."
 		ORDER BY ordinal,team_name";
 	$result = mysql_query($sql)
 		or die("SQL error: ".mysql_error());
 while ($row = mysql_fetch_assoc($result)) {
-	$uid = "team$row[ordinal]";
 	$pass = generatePassword(5);
 	?><tr>
 <td><input type="checkbox" id="reset<?php echo htmlspecialchars($row['id'])?>_btn" name="reset<?php echo htmlspecialchars($row['id'])?>"<?php
@@ -113,7 +112,7 @@ while ($row = mysql_fetch_assoc($result)) {
 			echo ' checked="checked"';
 		}?>>
 <label for="reset<?php echo htmlspecialchars($row['id'])?>_btn"><?php echo htmlspecialchars($row['team_name'])?></label></td>
-<td><?php echo htmlspecialchars($uid)?></td>
+<td><?php echo htmlspecialchars($row['user'])?></td>
 <td><input type="text" name="password<?php echo htmlspecialchars($row['id'])?>" value="<?php echo htmlspecialchars($pass)?>"></td>
 </tr>
 <?php
