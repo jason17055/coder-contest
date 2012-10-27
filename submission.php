@@ -382,7 +382,8 @@ if ($submission_info['coauthors'])
 $first_test_result_url = null;
 $sql = "SELECT test_number,tr.result_status AS test_result_status,
 		test_file,tj.output_file AS output_file,
-		expected_file,tj.id AS job,
+		st.expected_file AS expected_file,
+		tj.id AS job,
 		tj.result_status AS result_status
 	FROM test_result tr
 	JOIN submission s

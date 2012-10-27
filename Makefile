@@ -15,6 +15,7 @@ script_files = \
 	open_problem.php \
 	problem.php \
 	show_problem_clarifications.inc.php \
+	submission.php \
 	submit_test.php \
 	team_menu.php
 
