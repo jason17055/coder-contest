@@ -1,3 +1,24 @@
+<?php
+function show_challenge_status($challenge_id)
+{
+	global $team_info;
+
+	$sql = "SELECT status FROM challenge
+		WHERE id=".db_quote($challenge_id)."
+		AND creator=".db_quote($team_info['team_number']);
+	$query = mysql_query($sql);
+	$info = mysql_fetch_assoc($query);
+
+	if ($info)
+	{
+		?>
+		<span class="challenge_status">** <?php
+		echo htmlspecialchars($info['status'])?></span>
+		<?php
+	}
+}
+
+?>
 <p>During the challenge phase, you can click on another contestant's
 solution to view or challenge the correctness of it.</p>
 <div id="all_solutions_table_container">
@@ -32,7 +53,11 @@ solution to view or challenge the correctness of it.</p>
 			file AS source_file,
 			most_recent_submission AS submission,
 			given_name AS source_name,
-			ss.status AS status
+			ss.status AS status,
+			(SELECT MAX(id) FROM challenge
+				WHERE creator=".db_quote($team_info['team_number'])."
+				AND submission=most_recent_submission
+				) AS most_recent_challenge
 		FROM (
 		SELECT
 			team_name,
@@ -80,6 +105,10 @@ solution to view or challenge the correctness of it.</p>
 				echo htmlspecialchars($row['status']);
 			} else {
 				echo "Opened";
+			}
+			if ($row['most_recent_challenge'])
+			{
+				show_challenge_status($row['most_recent_challenge']);
 			}
 				?></td>
 			<td><?php echo format_score($row['team_score'],$row['team_score_alt'])?></td>

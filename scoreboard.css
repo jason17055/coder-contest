@@ -295,3 +295,8 @@ tr.solution_row.selected {
 .existing_submission .status {
 	font-weight: bold;
 	}
+
+.challenge_status {
+	font-weight: bold;
+	color: red;
+	}
