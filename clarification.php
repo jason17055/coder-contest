@@ -3,6 +3,7 @@
 require_once('config.php');
 require_once('includes/skin.php');
 require_once('includes/auth.php');
+require_once('includes/functions.php');
 
 require_auth();
 $team_info = get_team_identity();

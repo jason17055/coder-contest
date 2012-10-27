@@ -11,6 +11,7 @@ script_files = \
 	worker/feed.php \
 	worker/script/worker.pl \
 	answer_clarification.php \
+	clarification.php \
 	controller.php \
 	issue_credentials.php \
 	open_problem.php \
