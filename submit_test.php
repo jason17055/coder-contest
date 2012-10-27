@@ -20,13 +20,6 @@ else
 }
 $contest_info = get_basic_contest_info($contest_id);
 
-$problem_number = $_REQUEST['problem'];
-$problem_info = get_problem_info($problem_number);
-
-$test_info = array(
-	'source_file' => ($_REQUEST['source_file'] ?: $problem_info['source_file']),
-	'source_name' => ($_REQUEST['source_name'] ?: $problem_info['source_name']),
-	);
 if ($_REQUEST['template'])
 {
 	$sql = "SELECT source_file,source_name,input_file
@@ -35,8 +28,18 @@ if ($_REQUEST['template'])
 		AND type='U'
 		AND user_uid=".db_quote($_SESSION['uid']);
 	$result = mysql_query($sql);
-	$row = mysql_fetch_assoc($result);
-	if ($row) { $test_info = $row; }
+	$test_info = mysql_fetch_assoc($result)
+		or die("invalid template number");
+}
+else if ($_REQUEST['problem'])
+{
+	$problem_number = $_REQUEST['problem'];
+	$problem_info = get_problem_info($problem_number);
+
+	$test_info = array(
+	'source_file' => ($_REQUEST['source_file'] ?: $problem_info['source_file']),
+	'source_name' => ($_REQUEST['source_name'] ?: $problem_info['source_name']),
+	);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
@@ -81,10 +84,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 begin_page("Test a Solution",
 	array('notitle' => 1
 		));
-problem_actions_tabnav('test', $problem_info);
 
+if ($problem_info)
+{
+problem_actions_tabnav('test', $problem_info);
 ?>
 <h2><?php echo htmlspecialchars($problem_info['problem_name'])?></h2>
+<?php
+}
+
+?>
 
 <h3>Test a Solution</h3>
 <p>
