@@ -400,14 +400,83 @@ function system_test_step2_completed($orig_job_id, $job_info)
 	}
 }
 
-function resolve_system_test($job_id, $result_status)
+function resolve_system_test($tr_job_id, $result_status)
 {
 	//find and update the system test that created this job
 	$sql = "UPDATE test_result
 		SET result_status=".db_quote($result_status)."
-		WHERE job=".db_quote($job_id);
+		WHERE job=".db_quote($tr_job_id);
 	mysql_query($sql)
 		or die("SQL error: ".mysql_error());
+
+	// check whether a preliminary judgment can be made for
+	// this problem
+
+	$sql = "SELECT
+			st.autojudge AS autojudge,
+			s.status AS status,
+			s.id AS submission_id
+		FROM test_result tr
+		JOIN submission s
+			ON s.id=tr.submission
+		JOIN team t
+			ON t.team_number=s.team
+		JOIN system_test st
+			ON st.contest=t.contest
+			AND st.problem_number=s.problem
+			AND st.input_file=tr.test_file
+		WHERE tr.job=".db_quote($tr_job_id);
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$info = mysql_fetch_assoc($query)
+		or die("submission not found");
+
+	if ($info['autojudge'] == 'Y' && !$info['status'])
+	{
+		if ($result_status == 'Correct')
+		{
+			//
+			// This test showed a CORRECT answer. Check whether there are
+			// any autojudge tests still remaining that haven't been shown
+			// correct. If there are none left, then report the submission
+			// status as ACCEPTED.
+			//
+
+			$sql = "SELECT COUNT(*) AS autojudge_count,
+					COUNT(IF(tr.result_status='Correct',1,NULL)) AS correct_count
+				FROM submission s
+				JOIN team t
+					ON t.team_number=s.team
+				JOIN system_test st
+					ON st.contest=t.contest
+					AND st.problem_number=s.problem
+				JOIN test_result tr
+					ON tr.submission=s.id
+					AND tr.test_file=st.input_file
+				WHERE s.id=".db_quote($info['submission_id'])."
+				AND st.autojudge='Y'";
+			$query=mysql_query($sql)
+				or die("SQL error: ".mysql_error());
+			$counts = mysql_fetch_assoc($query);
+
+			if ($counts['autojudge_count'] >= 1
+				&& $counts['correct_count'] == $counts['autojudge_count'])
+			{
+				set_submission_status($info['submission_id'], "Accepted");
+			}
+		}
+		else
+		{
+			//
+			// This test showed an INCORRECT answer, so immediately
+			// report back to the contestant the result of their
+			// submission.
+			//
+
+			set_submission_status($info['submission_id'], $result_status);
+
+		}
+	}
 
 	wakeup_listeners();
 }

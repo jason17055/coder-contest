@@ -190,7 +190,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	else
 	{
 		$updates = array();
-		$updates[] = "status=".db_quote($_REQUEST['status']);
 		if (is_director($contest_id))
 		{
 			if (isset($_REQUEST['source_file']))
@@ -207,23 +206,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 			$updates[] = "submitted=".db_quote($_REQUEST['submitted']);
 			}
 		}
-		$sql = "UPDATE submission SET ".join(',',$updates)."
-			WHERE id=" . db_quote($_REQUEST['id']);
-		mysql_query($sql)
-			or die("SQL error: " . mysql_error());
-
-		update_result($_REQUEST['team'],$_REQUEST['problem']);
-
-		if ($_REQUEST['status'] != $submission_info['status'])
+		if (count($updates))
 		{
-			if ($_REQUEST['status'])
-			{
-				$message = "Your solution for $problem_info[problem_name] has been judged.";
-				$url = "solution.php?id=".urlencode($_REQUEST['id']);
-				send_message('N', $contest_id,
-					$team_info['user'], $message, $url);
-			}
+			$sql = "UPDATE submission SET ".join(',',$updates)."
+				WHERE id=" . db_quote($_REQUEST['id']);
+			mysql_query($sql)
+				or die("SQL error: " . mysql_error());
 		}
+
+		set_submission_status($_REQUEST['id'], $_REQUEST['status']);
+		update_result($_REQUEST['team'],$_REQUEST['problem']);
 
 		if (isset($_REQUEST['source_file']))
 		{

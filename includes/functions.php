@@ -599,3 +599,72 @@ function check_phase_option_bool($perphase_option)
 
 	return "$perphase_option & ".(1<<$j)." <> 0";
 }
+
+function set_submission_status($submission_id, $submission_status)
+{
+syslog(LOG_NOTICE, 'in set_submission_status');
+
+	$sql = "SELECT s.status AS old_status,
+			s.team AS contestant_id,
+			s.problem AS problem_number
+		FROM submission s
+		WHERE s.id=".db_quote($submission_id);
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$submission_info = mysql_fetch_assoc($query)
+		or die("submission $submission_id not found");
+
+syslog(LOG_NOTICE, 'old status = '.$submission_info['old_status']."; desired status = $submission_status");
+	if ($submission_status == $submission_info['old_status'])
+		return;
+
+	// update the submission, but do it in a way that protects
+	// against multiple processes doing it at the same time
+
+	$sql = "UPDATE submission
+		SET status=".db_quote($submission_status)."
+		WHERE id=".db_quote($submission_id)."
+		AND (status IS NULL
+			OR status=".db_quote($submission_info['old_status'])."
+			)";
+	mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+
+	$rows = mysql_affected_rows();
+	syslog(LOG_NOTICE, "$rows affected rows");
+	if ($rows)
+	{
+		// give the submitter the news
+		update_result(
+				$submission_info['contestant_id'],
+				$submission_info['problem_number']
+				);
+		if ($submission_status)
+		{
+			notify_judgment($submission_id);
+		}
+	}
+}
+
+function notify_judgment($submission_id)
+{
+	$sql = "SELECT t.contest AS contest,
+			t.user AS contestant_username,
+			p.problem_name AS problem_name
+		FROM submission s
+		JOIN team t
+			ON t.team_number=s.team
+		JOIN problem p
+			ON p.contest=t.contest
+			AND p.problem_number=s.problem
+		WHERE s.id=".db_quote($submission_id);
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$submission_info = mysql_fetch_assoc($query)
+		or die("submission $submission_id not found");
+
+	$message = "Your solution for $submission_info[problem_name] has been judged.";
+	$url = "solution.php?id=".urlencode($submission_id);
+	send_message('N', $submission_info['contest'],
+		$submission_info['contestant_username'], $message, $url);
+}
