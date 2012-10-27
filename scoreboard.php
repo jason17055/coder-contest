@@ -8,7 +8,7 @@ require_once('includes/skin.php');
 
 // figure out which contest is being displayed
 $contest_id = $_REQUEST['contest'] ?: 1;
-$contest_info = get_basic_contest_info($contest_id, ",scoreboard");
+$contest_info = get_basic_contest_info($contest_id, ",scoreboard,scoreboard_images,score_system");
 $contest = $contest_info
 	or die("Error: contest $contest_id not found");
 
@@ -218,19 +218,24 @@ while ($problem = mysql_fetch_assoc($result)) {
 <th>TOTAL</th></tr>
 <?php
 
-function correct($thetime, $balloon_image)
+function correct($row, $balloon_image)
 {
 	global $contest;
+	global $contest_info;
+
 	if (!$balloon_image)
 	{
 		$balloon_image = "balloon_red.png";
 	}
 
-	if ($contest['scoreboard_images'] == 'Y') {
-		return '<img src="scoreboard_images/'.htmlspecialchars($balloon_image).'" width="14" height="24" alt="">' . $thetime;
+	$label = $contest_info['score_system'] == 'T' ?
+			$row['score'] : $row['thetime'];
+	if ($contest_info['scoreboard_images'] == 'Y')
+	{
+		return '<img src="scoreboard_images/'.htmlspecialchars($balloon_image).'" width="14" height="24" alt="">' . htmlspecialchars($label);
 	}
 	else {
-		return $thetime;
+		return htmlspecialchars($label);
 	}
 }
 function wrong($count)
@@ -246,6 +251,35 @@ function wrong($count)
 		return "+" . ($count * 20);
 	}
 }
+function display_result($row)
+{
+	$result_str = "&nbsp;";
+	$css_class = "";
+
+	global $contest_info;
+
+	if ($row['score'] || $row['score_alt'])
+	{
+		if ($row['score'] > 0)
+		{
+			$css_class = "correct";
+
+			if ($contest_info['scoreboard_images'] == 'Y') {
+				$result_str = wrong($row['incorrect_submissions']) . correct($row, $row['scoreboard_solved_image']);
+			}
+			else {
+				$result_str = correct($row, $row['scoreboard_solved_image']) . wrong($row['incorrect_submissions']);
+			}
+		} else if ($row['incorrect_submissions'] > 0) {
+			$result_str = wrong($row['incorrect_submissions']);
+			$css_class = "attempted";
+		}
+	}
+	echo "<td valign='center' class='pcolumn $css_class'>";
+	echo $result_str;
+	echo '</td>';
+}
+
 $orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC" :
 	($contest['scoreboard_order'] == 'o' ? "team_number ASC" :
 	"score DESC, score_alt DESC, team_name ASC");
@@ -269,10 +303,10 @@ while ($team = mysql_fetch_assoc($result)) {
 	}
 	echo '</td>';
 	
-	$correct = 0;
 	foreach ($problems_list as $problem_number) {
 	
-		$query3 = "SELECT thetime,incorrect_submissions,scoreboard_solved_image
+		$query3 = "SELECT thetime,incorrect_submissions,scoreboard_solved_image,
+				score,score_alt
 			FROM results r
 			JOIN problem p
 				ON p.contest=".db_quote($contest_id)."
@@ -280,28 +314,16 @@ while ($team = mysql_fetch_assoc($result)) {
 			WHERE team_number = " . db_quote($team['team_number']) . "
 			AND r.problem_number = " . db_quote($problem_number);
 		$result3 = mysql_query($query3);
-
-		$result_str = "&nbsp;";
-		$css_class = "";
-		if ($row = mysql_fetch_assoc($result3)) {
-			if (isset($row['thetime']) && $row['thetime'] > 0) {
-				$correct++;
-				$css_class = "correct";
-				
-				if ($contest['scoreboard_images'] == 'Y') {
-					$result_str = wrong($row['incorrect_submissions']) . correct($row['thetime'], $row['scoreboard_solved_image']);
-				}
-				else {
-					$result_str = correct($row['thetime'], $row['scoreboard_solved_image']) . wrong($row['incorrect_submissions']);
-				}
-			} else if ($row['incorrect_submissions'] > 0) {
-				$result_str = wrong($row['incorrect_submissions']);
-				$css_class = "attempted";
-			}
+		$row = mysql_fetch_assoc($result3);
+		if (!$row)
+		{
+			$row = array(
+				score => 0,
+				score_alt => 0
+				);
 		}
-		echo "<td valign='center' class='pcolumn $css_class'>";
-		echo $result_str;
-		echo '</td>';
+
+		display_result($row);
 	}
 	
 	echo '<td align="center">' . format_score($team['score'],$team['score_alt']) . '</td></tr>';
