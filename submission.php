@@ -380,7 +380,9 @@ if ($submission_info['coauthors'])
 <?php
 
 $first_test_result_url = null;
-$sql = "SELECT test_number,tr.result_status AS test_result_status,
+$sql = "SELECT test_number,
+		tr.result_status AS test_result_status,
+		tr.check_job AS check_job,
 		test_file,tj.output_file AS output_file,
 		st.expected_file AS expected_file,
 		tj.id AS job,
@@ -411,13 +413,9 @@ while ($row = mysql_fetch_assoc($result))
 	$job_result_url = "job_result.php?id=".urlencode($row['job']);
 	$diff_url = "diff.php?f1=$row[expected_file]&f2=$row[output_file]";
 
-	if ($row['test_result_status'] == "No Error")
-	{
-		if ($row['output_file'] == $row['expected_file'])
-			$row['test_result_status'] = "Correct";
-		else
-			$row['test_result_status'] = "Wrong";
-	}
+	$check_job_result_url = $row['check_job'] ?
+			"job_result.php?id=".urlencode($row['check_job']) : "";
+
 	$js = 'showTestResult('.js_quote($input_file_url).",".js_quote($diff_url).");return false";
 
 	?>
@@ -426,7 +424,12 @@ while ($row = mysql_fetch_assoc($result))
 <td><?php
 	if ($row['result_status']) {
 ?><a href="<?php echo htmlspecialchars($test_result_url)?>"><?php echo htmlspecialchars($row['test_result_status'])?></a>
-<?php } else {
+<?php 
+		if ($check_job_result_url) {
+		?>(<a href="<?php echo htmlspecialchars($check_job_result_url)?>">view custom checker output</a>)
+		<?php
+		}
+	} else {
 ?><img src="ajax-loader.gif" class="job-incomplete-indicator" id="ind_job_<?php echo htmlspecialchars($row['job'])?>">
 Pending
 <?php } ?>
