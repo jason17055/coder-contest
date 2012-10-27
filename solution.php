@@ -8,7 +8,9 @@ require_once('includes/auth.php');
 require_auth();
 $team_info = get_team_identity();
 
-$sql = "SELECT id,team,problem_name,minutes,file,given_name,
+$sql = "SELECT id,team,
+		s.problem AS problem_number,
+		problem_name,minutes,file,given_name,
 		COALESCE(status,'Pending') AS status
 	FROM submission s
 	JOIN team t
@@ -33,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 }
 
 begin_page('Solution');
+$problem_url = "open_problem.php?problem=".urlencode($submission_info['problem_number']);
+
 ?>
 <table page-reload-safe="page-reload-safe">
 <tr>
@@ -41,7 +45,7 @@ begin_page('Solution');
 </tr>
 <tr>
 <td>Problem:</td>
-<td><?php echo htmlspecialchars($submission_info['problem_name'])?></td>
+<td><a href="<?php echo htmlspecialchars($problem_url)?>"><?php echo htmlspecialchars($submission_info['problem_name'])?></a></td>
 </tr>
 <tr>
 <td>Minutes:</td>
