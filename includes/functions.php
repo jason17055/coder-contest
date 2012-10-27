@@ -8,8 +8,6 @@ require_once('auth.php');
 // score.
 function update_score($team_id)
 {
-	global $schema;
-
 	$main_points = 0;
 	$alt_points = 0;
 
@@ -38,8 +36,6 @@ function update_score($team_id)
 
 function update_result($team_id, $problem_number, $do_not_update_team_score)
 {
-	global $schema;
-
 	//calculate the time of first correct submission
 	//calculate the number of incorrect submissions
 	$sql = "SELECT
@@ -96,8 +92,8 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 				team_name, ''' in ',".db_quote($thetime) . ", ' minutes.') AS message,
 				15 AS duration,
 				DATE_ADD(NOW(), INTERVAL 5 MINUTE)
-			FROM $schema.team t
-			JOIN $schema.problem p ON t.contest=p.contest
+			FROM team t
+			JOIN problem p ON t.contest=p.contest
 			WHERE team_number=" . db_quote($team_id) . "
 			AND problem_number=" . db_quote($problem_number);
 		mysql_query($sql)
@@ -157,8 +153,6 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 
 function update_results_for_problem($contest_id, $problem_number)
 {
-	global $schema;
-
 	$sql = "SELECT team_number
 		FROM team t
 		WHERE t.contest=".db_quote($contest_id);
@@ -171,8 +165,6 @@ function update_results_for_problem($contest_id, $problem_number)
 
 function update_results_for_all_problems($contest_id)
 {
-	global $schema;
-
 	$seen_teams = array();
 
 	$sql = "SELECT team_number, problem_number
@@ -195,8 +187,6 @@ function update_results_for_all_problems($contest_id)
 
 function create_job($jobtype, $source_file, $source_name, $input_file)
 {
-	global $schema;
-
 	$sql = "INSERT INTO test_job
 		(type,source_file,source_name,input_file)
 		VALUES (
@@ -251,11 +241,9 @@ function generate_tests($submission_id)
 
 function generate_tests_helper($result)
 {
-	global $schema;
-
 	while ($row = mysql_fetch_assoc($result))
 	{
-		$sql = "SELECT COUNT(*) AS count FROM $schema.test_result
+		$sql = "SELECT COUNT(*) AS count FROM test_result
 			WHERE submission=".db_quote($row['submission_id'])."
 			AND test_file=".db_quote($row['input_file']);
 		$result2 = mysql_query($sql);
