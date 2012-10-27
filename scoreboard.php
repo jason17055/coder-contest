@@ -281,9 +281,9 @@ function display_result($row)
 	echo '</td>';
 }
 
-$orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC" :
-	($contest['scoreboard_order'] == 'o' ? "team_number ASC" :
-	"score DESC, score_alt DESC, team_name ASC");
+$orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC, ordinal ASC" :
+	($contest['scoreboard_order'] == 'o' ? "ordinal ASC, team_name ASC" :
+	"score DESC, score_alt DESC, ordinal ASC, team_name ASC");
 $query = "SELECT * FROM team
 	WHERE contest=" . db_quote($contest_id) . "
 	ORDER BY $orderby";
