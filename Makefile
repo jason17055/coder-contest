@@ -14,6 +14,7 @@ script_files = \
 	issue_credentials.php \
 	open_problem.php \
 	problem.php \
+	scoreboard.php \
 	show_problem_clarifications.inc.php \
 	submission.php \
 	submit_test.php \

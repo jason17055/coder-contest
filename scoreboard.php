@@ -3,13 +3,13 @@
 // connect to database
 require_once('config.php');
 require_once('includes/auth.php');
+require_once('includes/functions.php');
+require_once('includes/skin.php');
 
 // figure out which contest is being displayed
 $contest_id = $_REQUEST['contest'] ?: 1;
-$sql = "SELECT * FROM contest
-	WHERE contest_id=" . db_quote($contest_id);
-$result = mysql_query($sql);
-$contest = mysql_fetch_assoc($result)
+$contest_info = get_basic_contest_info($contest_id, ",scoreboard");
+$contest = $contest_info
 	or die("Error: contest $contest_id not found");
 
 if (!is_director($contest_id) && $contest['scoreboard'] != 'Y')
@@ -201,11 +201,11 @@ td.pcolumn {
 </div>
 
   <center>
-<table border="1"><tr><th>Team Name</th>
+<table border="1"><tr><th>Contestant</th>
 <?php
 $sql = "SELECT problem_number,problem_name FROM problem
 	WHERE contest=" . db_quote($contest_id) . "
-	AND visible IN ('Y','L')
+	AND ".check_phase_option_bool('pp_scoreboard')."
 	ORDER BY problem_number ASC";
 $result = mysql_query($sql);
 
@@ -248,7 +248,7 @@ function wrong($count)
 }
 $orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC" :
 	($contest['scoreboard_order'] == 'o' ? "team_number ASC" :
-	"score DESC, team_name ASC");
+	"score DESC, score_alt DESC, team_name ASC");
 $query = "SELECT * FROM team
 	WHERE contest=" . db_quote($contest_id) . "
 	ORDER BY $orderby";
@@ -304,7 +304,7 @@ while ($team = mysql_fetch_assoc($result)) {
 		echo '</td>';
 	}
 	
-	echo '<td align="center">' . $correct . '</td></tr>';
+	echo '<td align="center">' . format_score($team['score'],$team['score_alt']) . '</td></tr>';
 }
 ?>
 </table>
