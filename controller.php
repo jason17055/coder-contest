@@ -27,7 +27,7 @@ $edit_contest_url = "contest.php?contest=".urlencode($contest_id);
 <?php
 $sql = "SELECT * FROM problem
 	WHERE contest=" . db_quote($contest_id) . "
-	AND visible IN ('Y','L')
+	AND visible='Y'
 	ORDER BY problem_number ASC";
 $result = mysql_query($sql);
 

@@ -46,7 +46,7 @@ CREATE TABLE problem (
 	solution_name     VARCHAR(200),
 --	solution_visible  CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
 --	challenge_phase   CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
---	visible           CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N
+	visible           CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N
 --	allow_submissions CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N
 	judged_by         VARCHAR(255),
 	scoreboard_solved_image VARCHAR(255),

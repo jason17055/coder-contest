@@ -39,7 +39,7 @@ begin_page("Define Problems");
 <?php
 
 $sql = "SELECT problem_number,problem_name,scoreboard_solved_image,
-		".check_phase_option_sql('pp_scoreboard')." AS visible,
+		visible,
 		".check_phase_option_sql('pp_submit')." AS allow_submissions,
 		judged_by,
 		solution_file,

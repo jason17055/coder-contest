@@ -208,7 +208,7 @@ begin_page("Problem Definition");
 <td valign="top">Visible:</td>
 <td valign="top">
 <div><input type="checkbox" name="visible"<?php echo($row['visible']=='Y'?' checked="checked"' : '')?> id="visible_btn">
-<label for="visible_btn">On scoreboard</label></div>
+<label for="visible_btn">Counted as part of total score</label></div>
 <div><label><input type="checkbox" name="allow_submissions"<?php echo($row['allow_submissions']=='Y'?' checked="checked"' : '')?>>
 Allow contestants to submit solutions</label></div>
 </td>

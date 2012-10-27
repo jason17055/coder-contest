@@ -11,9 +11,11 @@ script_files = \
 	worker/feed.php \
 	worker/script/worker.pl \
 	answer_clarification.php \
+	controller.php \
 	issue_credentials.php \
 	open_problem.php \
 	problem.php \
+	problems.php \
 	scoreboard.php \
 	show_problem_clarifications.inc.php \
 	submission.php \
