@@ -298,11 +298,28 @@ function challenge_step4_completed($challenge_id, $job_info)
 
 function resolve_challenge($challenge_id, $status)
 {
+	$sql = "SELECT submission,
+				s.status AS submission_status
+			FROM challenge ch
+			JOIN submission s
+				ON s.id=ch.submission
+			WHERE ch.id =".db_quote($challenge_id);
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$challenge_info = mysql_fetch_assoc($query)
+		or die("invalid challenge $challenge_id");
+
 	$sql = "UPDATE challenge
 			SET status=".db_quote($status)."
 			WHERE id=".db_quote($challenge_id);
 	mysql_query($sql)
 		or die("SQL error: ".mysql_error());
+
+	if ($challenge_info['submission_status'] == 'Accepted'
+			&& $status == 'Challenge successful')
+	{
+		set_submission_status($challenge_info['submission'], 'Wrong Answer');
+	}
 }
 
 // This is called after running the submitted program against one
