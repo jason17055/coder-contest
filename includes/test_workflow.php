@@ -357,6 +357,13 @@ function system_test_step1_completed($job_info)
 			".db_quote("system test $job_info[id]").")";
 			mysql_query($sql)
 				or die("SQL error: ".mysql_error());
+			$check_job_id = mysql_insert_id();
+
+			$sql = "UPDATE test_result
+				SET check_job=".db_quote($check_job_id)."
+				WHERE job=".db_quote($job_info['id']);
+			mysql_query($sql)
+				or die("SQL error: ".mysql_error());
 
 			notify_worker();
 		}

@@ -209,6 +209,7 @@ CREATE TABLE test_result (
 	submission     INTEGER NOT NULL,
 	test_file      VARCHAR(200) NOT NULL,
 	job            INTEGER NOT NULL,
+	check_job      INTEGER,
 	result_status  VARCHAR(200),
 	PRIMARY KEY (submission, test_file)
 	);
