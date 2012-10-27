@@ -67,7 +67,7 @@ solution to view or challenge the correctness of it.</p>
 			<tr class="solution_row" solution-file="<?php echo htmlspecialchars($url)?>" solution-language="<?php
 					echo get_language_from_name($row['source_name'])?>"
 					<?php echo($problem_info['challenge_phase']=='Y'
-						? ' challenge-link="'.htmlspecialchars("challenge.php?submission=".urlencode($row['submission'])).'"' : '')?>>
+						? ' challenge-link="'.htmlspecialchars("new_challenge.php?submission=".urlencode($row['submission'])).'"' : '')?>>
 			<td><?php echo htmlspecialchars($place)?></td>
 			<td><?php echo htmlspecialchars($row['team_name'])?></td>
 			<td><?php echo htmlspecialchars($row['source_name'])?></td>

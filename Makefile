@@ -12,6 +12,7 @@ script_files = \
 	worker/script/worker.pl \
 	answer_clarification.php \
 	clarification.php \
+	new_challenge.php \
 	controller.php \
 	issue_credentials.php \
 	open_problem.php \
@@ -19,6 +20,7 @@ script_files = \
 	problems.php \
 	scoreboard.php \
 	show_problem_clarifications.inc.php \
+	show_solutions.inc.php \
 	submission.php \
 	submit_test.php \
 	team_menu.php
