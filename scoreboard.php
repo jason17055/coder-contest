@@ -8,7 +8,8 @@ require_once('includes/skin.php');
 
 // figure out which contest is being displayed
 $contest_id = $_REQUEST['contest'] ?: 1;
-$contest_info = get_basic_contest_info($contest_id, ",scoreboard,scoreboard_images,score_system");
+$contest_info = get_basic_contest_info($contest_id, ",scoreboard,scoreboard_images,score_system,subtitle,scoreboard_popups,
+	logo,scoreboard_order");
 $contest = $contest_info
 	or die("Error: contest $contest_id not found");
 
