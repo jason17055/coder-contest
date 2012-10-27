@@ -158,6 +158,7 @@ CREATE TABLE worker (
 --   user_uid must not be null
 --if type in ('V', 'C', 'D', 'G') then
 --   callback_data should be "challenge %d" where %d is the challenge id
+--                      or "system test %d" for a system test
 --
 --result_status is one of:
 --   NULL

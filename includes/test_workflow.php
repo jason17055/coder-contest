@@ -12,30 +12,7 @@ function test_completed($job_id)
 
 	if ($job_info['type']=='S')    // system test of a contestant's program
 	{
-		//expected output?
-//never tested...
-//		$sql = "SELECT st.expected_file AS expected_file
-//			FROM test_result tr
-//			JOIN submission s
-//				ON tr.submission = s.id
-//			JOIN team t
-//				ON s.team = t.team_number
-//			JOIN system_test st
-//				ON s.problem = st.problem_number
-//				AND t.contest = st.contest
-//				AND tr.test_file = st.input_file
-//			WHERE tr.job=".db_quote($job_id);
-//		$result = mysql_query($sql)
-//			or die("SQL error: ".mysql_error());
-
-		//find and update the system test that created this job
-		$sql = "UPDATE test_result
-			SET result_status=".db_quote($job_info['result_status'])."
-			WHERE job=".db_quote($job_id);
-		mysql_query($sql)
-			or die("SQL error: ".mysql_error());
-
-		wakeup_listeners();
+		system_test_step1_completed($job_info);
 	}
 	else if ($job_info['type']=='E')  // generating expected output
 									  // for a system test
@@ -88,6 +65,10 @@ function test_completed($job_id)
 		{
 			$challenge_id = $m[1];
 			challenge_step4_completed($challenge_id, $job_info);
+		}
+		else if (preg_match('/^system test (.*)$/', $job_info['callback_data'], $m))
+		{
+			system_test_step2_completed($m[1], $job_info);
 		}
 	}
 	else
@@ -324,3 +305,102 @@ function resolve_challenge($challenge_id, $status)
 		or die("SQL error: ".mysql_error());
 }
 
+// This is called after running the submitted program against one
+// of the system test files.
+// We check whether this problem has an "output validator". If so,
+// we schedule an output verification job; otherwise, we require
+// an exact match.
+//
+function system_test_step1_completed($job_info)
+{
+	// load information about this test
+	$sql = "SELECT
+			p.output_validator_file AS checker_file,
+			p.output_validator_name AS checker_name,
+			st.input_file AS input_file,
+			st.expected_file AS expected_file
+		FROM test_result tr
+		JOIN submission s
+			ON tr.submission = s.id
+		JOIN team t
+			ON s.team = t.team_number
+		JOIN system_test st
+			ON s.problem = st.problem_number
+			AND t.contest = st.contest
+			AND tr.test_file = st.input_file
+		JOIN problem p
+			ON p.contest=st.contest
+			AND p.problem_number=st.problem_number
+		WHERE tr.job=".db_quote($job_info['id']);
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	$test_info = mysql_fetch_assoc($query)
+		or die("No test record found for job $job_info[id]");
+
+	if ($job_info['result_status'] == 'No Error')
+	{
+		//
+		// evaluate the result
+		//
+
+		if ($test_info['checker_file'])
+		{
+			$sql = "INSERT INTO test_job
+			(type,source_file,source_name,input_file,expected_file,actual_file,created,callback_data)
+			VALUES ('G',
+			".db_quote($test_info['checker_file']).",
+			".db_quote($test_info['checker_name']).",
+			".db_quote($test_info['input_file']).",
+			".db_quote($test_info['expected_file']).",
+			".db_quote($job_info['output_file']).",
+			NOW(),
+			".db_quote("system test $job_info[id]").")";
+			mysql_query($sql)
+				or die("SQL error: ".mysql_error());
+
+			notify_worker();
+		}
+		else
+		{
+			if ($job_info['output_file'] == $test_info['expected_file'])
+			{
+				resolve_system_test($job_info['id'], "Correct");
+			}
+			else
+			{
+				resolve_system_test($job_info['id'], "Wrong Answer");
+			}
+		}
+	}
+	else
+	{
+		resolve_system_test($job_info['id'], $job_info['result_status']);
+	}
+}
+
+// This is called after running a custom output checker against the
+// results of a system test.
+//
+function system_test_step2_completed($orig_job_id, $job_info)
+{
+	if ($job_info['result_status'] == 'No Error')
+	{
+		resolve_system_test($orig_job_id, 'Correct');
+	}
+	else
+	{
+		resolve_system_test($orig_job_id, 'Wrong Answer');
+	}
+}
+
+function resolve_system_test($job_id, $result_status)
+{
+	//find and update the system test that created this job
+	$sql = "UPDATE test_result
+		SET result_status=".db_quote($result_status)."
+		WHERE job=".db_quote($job_id);
+	mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+
+	wakeup_listeners();
+}
