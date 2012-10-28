@@ -16,6 +16,7 @@ else
 {
 	$team_info = array(
 		contest => $_REQUEST['contest'],
+		visible => 'Y',
 		);
 }
 
@@ -33,6 +34,7 @@ if (is_director($team_info['contest']))
 	$can_change_description = true;
 	$can_change_username = true;
 	$can_change_password = true;
+	$can_change_visibility = true;
 }
 else
 {
@@ -42,6 +44,7 @@ else
 	$can_change_description = $contest_info['teams_can_change_description'] == 'Y';
 	$can_change_username = false;
 	$can_change_password = $contest_info['teams_can_change_password'];
+	$can_change_visibility = false;
 
 	$_SESSION['is_team'] == $team_info['team_number']
 		or die("Error: not authorized");
@@ -123,6 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		{
 			$updates[] = "password=SHA1(".db_quote($_REQUEST['new_passwd']).")";
 		}
+		if ($can_change_visibility && $_REQUEST['visible'])
+		{
+			$updates[] = "visible=".db_quote($_REQUEST['visible']);
+		}
 
 		if (count($updates))
 		{
@@ -151,6 +158,15 @@ begin_page("Edit Contestant");
 <td><input type="text" name="ordinal" value="<?php echo htmlspecialchars($team_info['ordinal'])?>"></td>
 </tr>
 <?php } // endif can change ordinal ?>
+<?php if ($can_change_visibility) { ?>
+<tr>
+<td>Visible:</td>
+<td><select name="visible">
+<option value="Y"<?php echo ($team_info['visible'] == 'Y' ? ' selected="selected"' : '')?>>Yes</option>
+<option value="N"<?php echo ($team_info['visible'] == 'N' ? ' selected="selected"' : '')?>>No</option>
+</select></td>
+</tr>
+<?php } // endif can change visibility ?>
 <tr>
 <td>Display Name:</td>
 <td><input type="text" name="team_name" value="<?php echo htmlspecialchars($team_info['team_name'])?>"<?php echo($can_change_name ? '' : ' disabled="disabled"')?>></td>

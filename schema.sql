@@ -77,6 +77,7 @@ CREATE TABLE team (
 	password    VARCHAR(200),
 	last_refreshed DATETIME,
 	last_message_acked INT,
+	visible     CHAR(1) NOT NULL DEFAULT 'Y',
 	UNIQUE INDEX (contest, ordinal),
 	UNIQUE INDEX (contest, user)
 	);

@@ -26,6 +26,7 @@ script_files = \
 	submission.php \
 	submit.php \
 	submit_test.php \
+	team.php \
 	team_menu.php
 
 data_files = \
