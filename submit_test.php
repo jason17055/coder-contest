@@ -59,6 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	$_REQUEST['input_file']
 		or die("Error: no input file provided");
 
+	if ($team_info && $problem_number)
+	{
+		$sql = "UPDATE results
+			SET source_file=".db_quote($_REQUEST['source_file']).",
+			source_name=".db_quote($_REQUEST['source_name'])."
+			WHERE team_number=".db_quote($team_info['team_number'])."
+			AND problem_number=".db_quote($problem_number);
+		mysql_query($sql)
+			or die("SQL error: ".mysql_error());
+	}
+
 	$sql = "INSERT INTO test_job
 		(type,user_uid,source_file,source_name,input_file,created)
 		VALUES ('U',

@@ -24,6 +24,7 @@ script_files = \
 	show_solutions.inc.php \
 	solution.php \
 	submission.php \
+	submit.php \
 	submit_test.php \
 	team_menu.php
 

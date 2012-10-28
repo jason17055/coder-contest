@@ -29,6 +29,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	$_REQUEST['source_file']
 		or die("Error: no file provided");
 
+	if ($team_info && $_REQUEST['problem'])
+	{
+		$sql = "UPDATE results
+			SET source_file=".db_quote($_REQUEST['source_file']).",
+			source_name=".db_quote($_REQUEST['source_name'])."
+			WHERE team_number=".db_quote($team_info['team_number'])."
+			AND problem_number=".db_quote($_REQUEST['problem']);
+		mysql_query($sql)
+			or die("SQL error: ".mysql_error());
+	}
+
 	$sql = "SELECT NOW() AS curtime,
 			p.start_time AS problem_start_time,
 			c.started AS contest_start_time,
