@@ -63,6 +63,9 @@ while ($team = mysql_fetch_assoc($result)) {
 <div>
 <img src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width="14" height="14" class="online-indicator" id="ind_online_team_<?php echo htmlspecialchars($team['team_number'] . "_" . $online)?>">
 <a href="<?php echo htmlspecialchars($team_url)?>"><?php echo htmlspecialchars($team['team_name'])?></a>
+<?php if ($team['visible'] == 'N') {
+	echo " (Invisible)";
+	}?>
 </div>
 </td>
 <?php
