@@ -64,6 +64,7 @@ solution to view or challenge the correctness of it.</p>
 			description AS team_description,
 			t.score AS team_score,
 			t.score_alt AS team_score_alt,
+			t.ordinal AS team_ordinal,
 			(SELECT MAX(id) FROM submission s
 			WHERE s.team=t.team_number
 			AND s.problem=".db_quote($_REQUEST['problem'])."
@@ -79,7 +80,8 @@ solution to view or challenge the correctness of it.</p>
 			) x
 		LEFT JOIN submission ss
 			ON ss.id=x.most_recent_submission
-		ORDER BY team_score DESC, team_score_alt DESC
+		ORDER BY team_score DESC, team_score_alt DESC,
+			team_ordinal ASC, team_name ASC
 		";
 		$query = mysql_query($sql)
 			or die("SQL error: ".mysql_error());
