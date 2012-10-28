@@ -18,6 +18,7 @@ script_files = \
 	open_problem.php \
 	problem.php \
 	problems.php \
+	result.php \
 	scoreboard.php \
 	show_problem_clarifications.inc.php \
 	show_solutions.inc.php \

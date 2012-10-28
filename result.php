@@ -20,6 +20,16 @@ $contest_id = $team_info['contest'];
 is_director($contest_id)
 	or die("Error: not authorized");
 
+if ($_REQUEST['reset_opened'])
+{
+	$sql = "UPDATE results
+		SET opened=NULL
+		WHERE team_number=".db_quote($team_number) . "
+		AND problem_number=".db_quote($problem_number);
+	mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+}
+
 $sql = "SELECT * FROM results
 	WHERE team_number=" . db_quote($team_number) . "
 	AND problem_number=" . db_quote($problem_number);
@@ -64,6 +74,11 @@ $problem_url = 'problem.php?contest='.urlencode($contest_id).'&id='.urlencode($p
 <td>Opened:</td>
 <td><?php if ($row['opened']) {
 	echo htmlspecialchars("Yes, at ".$row['opened']);
+	$reset_url = "result.php?problem=".urlencode($_REQUEST['problem'])
+		."&team=".urlencode($_REQUEST['team'])
+		."&reset_opened=1";
+	?> (<a href="<?php echo htmlspecialchars($reset_url)?>">Reset</a>)
+	<?php
 } else {
 	echo "No";
 }
