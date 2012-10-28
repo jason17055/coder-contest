@@ -300,6 +300,7 @@ $orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC, ordinal ASC" :
 	"score DESC, score_alt DESC, ordinal ASC, team_name ASC");
 $query = "SELECT * FROM team
 	WHERE contest=" . db_quote($contest_id) . "
+	AND visible='Y'
 	ORDER BY $orderby";
 $result = mysql_query($query);
 
