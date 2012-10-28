@@ -28,7 +28,9 @@ script_files = \
 	team_menu.php
 
 data_files = \
-	scoreboard.css
+	scoreboard.css \
+	scoreboard_images/eye4.png \
+	scoreboard_images/pencil.png
 
 all:
 

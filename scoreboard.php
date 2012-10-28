@@ -276,6 +276,14 @@ function display_result($row)
 			$css_class = "attempted";
 		}
 	}
+	else if ($row['source_file'])
+	{
+		$result_str = '<img src="scoreboard_images/pencil.png" alt="Writing" width="24" height="24">';
+	}
+	else if ($row['opened'])
+	{
+		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
+	}
 	echo "<td valign='center' class='pcolumn $css_class'>";
 	echo $result_str;
 	echo '</td>';
@@ -307,7 +315,7 @@ while ($team = mysql_fetch_assoc($result)) {
 	foreach ($problems_list as $problem_number) {
 	
 		$query3 = "SELECT thetime,incorrect_submissions,scoreboard_solved_image,
-				score,score_alt
+				score,score_alt,opened,source_file
 			FROM results r
 			JOIN problem p
 				ON p.contest=".db_quote($contest_id)."
