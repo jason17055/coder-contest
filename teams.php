@@ -119,7 +119,11 @@ while ($row = mysql_fetch_assoc($result))
 	$count++;
 	$edit_team_url = "team.php?id=".urlencode($row['team_number']);
 	?><tr>
-<td><a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo htmlspecialchars($row['user'])?></a></td>
+<td><a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo htmlspecialchars($row['user'])?></a>
+<?php if ($row['visible'] == 'N') {
+	?> (Invisible)<?php
+	}?>
+	</td>
 <td><input type="text" name="team<?php echo htmlspecialchars($row['team_number'])?>_name" value="<?php echo htmlspecialchars($row['team_name'])?>" size="20"></td>
 <td><input type="text" name="team<?php echo htmlspecialchars($row['team_number'])?>_description" value="<?php echo htmlspecialchars($row['description'])?>" size="40"></td>
 </tr>
