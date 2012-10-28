@@ -31,6 +31,7 @@ script_files = \
 data_files = \
 	scoreboard.css \
 	scoreboard_images/eye4.png \
+	scoreboard_images/green_flag.png \
 	scoreboard_images/pencil.png
 
 all:

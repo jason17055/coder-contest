@@ -259,7 +259,7 @@ function display_result($row)
 
 	global $contest_info;
 
-	if ($row['score'] || $row['score_alt'])
+	if ($row['score'] || $row['score_alt'] || $row['incorrect_submissions'])
 	{
 		if ($row['score'] > 0)
 		{
@@ -284,6 +284,12 @@ function display_result($row)
 	{
 		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
 	}
+
+	for ($i = 0; $i < $row['good_challenges']; $i++)
+	{
+		$result_str .= '<img src="scoreboard_images/green_flag.png" alt="">';
+	}
+
 	echo "<td valign='center' class='pcolumn $css_class'>";
 	echo $result_str;
 	echo '</td>';
@@ -315,7 +321,12 @@ while ($team = mysql_fetch_assoc($result)) {
 	foreach ($problems_list as $problem_number) {
 	
 		$query3 = "SELECT thetime,incorrect_submissions,scoreboard_solved_image,
-				score,score_alt,opened,source_file
+				score,score_alt,opened,source_file,
+				(SELECT COUNT(*) FROM challenge ch
+					JOIN submission s ON s.id=ch.submission
+					WHERE ch.creator=team_number
+					AND s.problem=p.problem_number
+					AND ch.status='Challenge successful') AS good_challenges
 			FROM results r
 			JOIN problem p
 				ON p.contest=".db_quote($contest_id)."
