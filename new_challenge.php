@@ -84,6 +84,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 begin_page("Challenge a Solution");
 
 ?>
+<p>
+Use this page to challenge another contestant's solution to a problem.
+You do this by providing a legal input file for which their program
+does not generate a correct answer.
+</p>
+<p>
+Be sure the input you provide is legal input. If it does not exactly match
+the format given in the problem definition, the challenge will fail.
+</p>
+
+
 <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
 <table>
 <tr>
