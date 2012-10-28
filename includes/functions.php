@@ -40,10 +40,12 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 	//calculate the number of incorrect submissions
 	$sql = "SELECT
 		(
-			SELECT MIN(minutes) FROM submission
+			SELECT CASE WHEN status IN ('Correct','Accepted') THEN minutes ELSE 0 END
+			FROM submission
 			WHERE team=".db_quote($team_id)."
 			AND problem=".db_quote($problem_number)."
-			AND status IN ('Correct', 'Accepted')
+			ORDER BY id DESC
+			LIMIT 1
 		) AS thetime,
 		(
 			SELECT COUNT(*)
