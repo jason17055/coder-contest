@@ -23,7 +23,9 @@ is_director($contest_id)
 if ($_REQUEST['reset_opened'])
 {
 	$sql = "UPDATE results
-		SET opened=NULL
+		SET opened=NULL,
+		source_file=NULL,
+		source_name=NULL
 		WHERE team_number=".db_quote($team_number) . "
 		AND problem_number=".db_quote($problem_number);
 	mysql_query($sql)
