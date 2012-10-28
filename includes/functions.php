@@ -54,6 +54,15 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 			AND status <> ''
 			AND status NOT IN ('Correct', 'Accepted')
 		) AS incorrect_submissions,
+		(
+			SELECT COUNT(*)
+			FROM challenge ch
+			JOIN submission s9
+				ON s9.id=ch.submission
+			WHERE ch.creator=t.team_number
+			AND s9.problem=p.problem_number
+			AND ch.status='Challenge successful'
+		) AS successful_challenges,
 		c.score_system AS score_system,
 		p.difficulty AS difficulty,
 		p.allocated_minutes AS allocated_minutes
@@ -74,6 +83,7 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 	$incorrects_penalty = 20;
 	$difficulty = $row['difficulty'];
 	$allocated_minutes = $row['allocated_minutes'];
+	$nchallenges = $row['successful_challenges'];
 
 	$sql = "SELECT * FROM results
 		WHERE team_number=" . db_quote($team_id) . "
@@ -114,6 +124,8 @@ function update_result($team_id, $problem_number, $do_not_update_team_score)
 			$score1 = 0;
 			$score2 = 0;
 		}
+
+		$score1 += 50 * $nchallenges;
 	}
 	else
 	{
