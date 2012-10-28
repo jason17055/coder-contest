@@ -77,6 +77,7 @@ solution to view or challenge the correctness of it.</p>
 			ON r.team_number=t.team_number
 			AND r.problem_number=".db_quote($_REQUEST['problem'])."
 		WHERE t.contest=".db_quote($contest_id)."
+		AND t.visible='Y'
 			) x
 		LEFT JOIN submission ss
 			ON ss.id=x.most_recent_submission
