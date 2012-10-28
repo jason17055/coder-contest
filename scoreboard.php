@@ -261,7 +261,7 @@ function display_result($row)
 
 	if ($row['score'] || $row['score_alt'] || $row['incorrect_submissions'])
 	{
-		if ($row['score'] > 0)
+		if ($row['thetime'])
 		{
 			$css_class = "correct";
 
