@@ -1,0 +1,42 @@
+<project name="falcon-contest" default="all">
+
+<property name="builddir" location="target/build" />
+<property name="project_name" value="falcon-contest" />
+
+<target name="all" depends="build" />
+
+<target name="init-builddir">
+<mkdir dir="${builddir}" />
+</target>
+
+<target name="copy-resources" depends="init-builddir">
+<copy todir="${builddir}">
+	<fileset dir="resources" />
+</copy>
+</target>
+
+<target name="compile" depends="init-builddir">
+<javac srcdir="src" destdir="${builddir}"
+	classpathref="build-classpath"
+	includeantruntime="false"
+	debug="true" debuglevel="lines,vars,source"
+	source="1.6" target="1.6"
+	>
+	<compilerarg value="-Xlint:unchecked" />
+	<compilerarg value="-Xlint:deprecation" />
+</javac>
+</target>
+
+<target name="build" depends="copy-resources,compile">
+<war destfile="${project_name}.war" webxml="web.xml">
+	<fileset dir="${builddir}" />
+	<fileset dir="webapp" />
+</war>
+
+</target>
+
+<target name="install" depends="build">
+<copy file="${project_name}.war" todir="/var/lib/tomcat/webapps" />
+</target>
+
+</project>
