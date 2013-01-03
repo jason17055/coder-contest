@@ -1,0 +1,24 @@
+package dragonfin.templates;
+
+public class Value
+{
+	private Value() {}
+
+	public static boolean asBoolean(Object obj)
+	{
+		if (obj == null)
+			return false;
+
+		if (obj instanceof Boolean)
+		{
+			return ((Boolean)obj).booleanValue();
+		}
+		if (obj instanceof Number)
+		{
+			return ((Number)obj).doubleValue() != 0.0;
+		}
+
+		String s = obj.toString();
+		return s.length() != 0;
+	}
+}

@@ -33,20 +33,26 @@ class Parser
 
 	static enum TokenType
 	{
-		EOF,
+	//literals
 		LITERAL_STRING,
 		SINGLE_QUOTE_STRING,
 		DOUBLE_QUOTE_STRING,
+		NUMBER,
+	//keywords
+		DEFAULT,
 		FILTER,
 		GET,
 		SET,
-		IDENTIFIER,
+	//punctuation and operators
 		PERIOD,
 		EQUAL,
 		NOT_EQUAL,
 		ASSIGN,
 		OPEN_PAREN,
-		CLOSE_PAREN;
+		CLOSE_PAREN,
+	//other
+		IDENTIFIER,
+		EOF;
 	}
 
 	static class Token
@@ -75,6 +81,8 @@ class Parser
 			return new Token(TokenType.SET, s);
 		else if (s.equals("FILTER"))
 			return new Token(TokenType.FILTER, s);
+		else if (s.equals("DEFAULT"))
+			return new Token(TokenType.DEFAULT, s);
 		else
 			return new Token(TokenType.IDENTIFIER, s);
 	}
@@ -434,7 +442,12 @@ class Parser
 			Directive d = parseGetDirective();
 			return d;
 		}
-		else if (token == TokenType.IDENTIFIER)
+		else if (token == TokenType.DEFAULT)
+		{
+			Directive d = parseDefaultDirective();
+			return d;
+		}
+		else if (isExpressionStart(token))
 		{
 			Expression expr = parseExpression();
 			if (peekToken() == TokenType.ASSIGN)
@@ -468,9 +481,41 @@ class Parser
 		return new SetDirective(lhs, rhs);
 	}
 
+	private DefaultDirective parseDefaultDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		DefaultDirective d = null;
+
+		eatToken(TokenType.DEFAULT);
+		ArrayList<SetDirective> cmds = new ArrayList<SetDirective>();
+		do
+		{
+			Expression lhs = parseExpression();
+			eatToken(TokenType.ASSIGN);
+			Expression rhs = parseExpression();
+			cmds.add(new SetDirective(lhs, rhs));
+		} while (isAssignmentStart(peekToken()));
+
+		return new DefaultDirective(cmds);
+	}
+
+	boolean isAssignmentStart(TokenType t)
+	{
+		return isExpressionStart(t);
+	}
+
+	boolean isExpressionStart(TokenType t)
+	{
+		return t == TokenType.IDENTIFIER ||
+			t == TokenType.SINGLE_QUOTE_STRING ||
+			t == TokenType.DOUBLE_QUOTE_STRING ||
+			t == TokenType.NUMBER;
+	}
+
 	public Expression parseExpression()
 		throws IOException, TemplateSyntaxException
 	{
+		assert isExpressionStart(peekToken());
 		return parseChain();
 	}
 
