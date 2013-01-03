@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Programming Contest: $page_title</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="$resources_prefix/scoreboard.css">
+<link rel="stylesheet" type="text/css" href="$resources_prefix/CodeMirror-2.33/lib/codemirror.css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="$resources_prefix/scoreboard_functions.js"></script>
+<script type="text/javascript" src="$resources_prefix/popup_message.js"></script>
+<?php
+	if ($options['javascript_files']) {
+		foreach ($options['javascript_files'] as $f) {
+?><script type="text/javascript" src="<?php echo "$static_files_url/$f"?>"></script>
+	<?php
+		}
+	} ?>
+</head>
+<body class="adminpage">
+<div id="top_banner" style="border: 1px solid green">
+<h1>Programming Contest</h1>
+
+<div id="sessionctl">
+<?php
+	if ($_SESSION['username']) { ?>
+<div><?php echo htmlspecialchars(strtoupper($_SESSION['username']))?></div>
+<div><a href="login.php?logout=1">Logout</a></div>
+<?php } else { ?>
+<div><a href="login.php">Login</a></div>
+<?php } /*endif */ ?>
+</div>
+<?php if ($contest_info && $contest_info['current_phase_name']) {
+	countdown_clock($contest_info);
+} ?>
+
+
+<div style="clear:both"></div>
+</div>
+<div id="contentarea">
+<div id="announcementPopup">
+<div style="text-align:center" id="announcementTitleBar">Message</div>
+<div id="announcementContent">&nbsp;</div>
+<div id="announcementButtons">
+<button type="button" id="announcementOpenBtn" onclick="openAnnouncement()">Open</button>
+<button type="button" onclick="dismissAnnouncement()">Dismiss</button>
+</div>
+</div>
+<?php if (!$options['notitle']) { ?>
+<h2><?php echo htmlspecialchars($page_title)?></h2>
+<?php } ?>
+

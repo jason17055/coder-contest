@@ -12,6 +12,17 @@ public class CoreServlet extends HttpServlet
 {
 	VelocityEngine engine;
 
+	public static String escapeUrl(String inStr)
+	{
+		try
+		{
+		return java.net.URLEncoder.encode(inStr, "UTF-8");
+		}catch (UnsupportedEncodingException e)
+		{
+			throw new Error("unexpected: "+e.getMessage(), e);
+		}
+	}
+
 	@Override
 	public void init()
 		throws ServletException
@@ -50,9 +61,24 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		String newUrl = req.getContextPath()+"/login?next=" + escapeUrl(req.getRequestURI());
+		resp.sendRedirect(newUrl);
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
+		HttpSession s = req.getSession(false);
+		if (s == null || s.getAttribute("uid") == null)
+		{
+			showLoginPage(req, resp);
+			return;
+		}
+
+		String path = req.getPathInfo();
 		renderTemplate(req, resp, "mytemplate.vm");
 	}
 

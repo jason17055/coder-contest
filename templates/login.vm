@@ -1,0 +1,36 @@
+#set( $page_title = "Login" )
+#parse( "begin_page.vm" )
+
+#if( $message )
+<p class="error"><?php echo htmlspecialchars($message)?></p>
+#end
+
+<form method="post" action="login.php">
+<table>
+<tr>
+<td>Contest:</td>
+<td><select name="contest"><?php
+	$sql = "SELECT contest_id,title FROM contest
+		WHERE enabled='Y'
+		ORDER BY contest_id";
+	$query = mysql_query($sql)
+		or die("SQL error: " . mysql_error());
+	while ($row = mysql_fetch_assoc($query)) { ?>
+<option value="<?php echo htmlspecialchars($row['contest_id'])?>"<?php
+	if ($row['contest_id'] == $_REQUEST['contest']) { echo ' selected="selected"'; } ?>><?php echo htmlspecialchars($row['title'])?></option>
+<?php }
+	?><option value="">(system administration)</option></select></td>
+</tr>
+<tr>
+<td>Username:</td>
+<td><input type="text" name="username" value="<?php echo htmlspecialchars($_REQUEST['username'])?>"></td>
+</tr>
+<tr>
+<td>Password:</td>
+<td><input type="password" name="password"></td>
+</tr>
+</table>
+<div><button type="submit">Login</button></div>
+</form>
+
+<?php end_page()?>
