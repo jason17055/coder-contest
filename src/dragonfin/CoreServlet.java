@@ -1,16 +1,14 @@
 package dragonfin;
 
-import org.apache.velocity.*;
-import org.apache.velocity.runtime.resource.*;
-import org.apache.velocity.runtime.resource.loader.*;
-import org.apache.velocity.app.VelocityEngine;
 import java.io.*;
+import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import dragonfin.templates.*;
 
 public class CoreServlet extends HttpServlet
 {
-	VelocityEngine engine;
+	TemplateToolkit engine;
 
 	public static String escapeUrl(String inStr)
 	{
@@ -29,14 +27,12 @@ public class CoreServlet extends HttpServlet
 	{
 		try
 		{
-			engine = new VelocityEngine();
-			engine.setProperty("resource.loader", "mine");
-			engine.setProperty("mine.resource.loader.instance", new MyResourceLoader(getServletContext()));
-			engine.init();
+			engine = new TemplateToolkit(
+				new MyResourceLoader(getServletContext()));
 		}
 		catch (Exception e)
 		{
-			throw new ServletException("Error initializing Velocity Engine", e);
+			throw new ServletException("Error initializing Template Engine", e);
 		}
 	}
 
@@ -44,20 +40,19 @@ public class CoreServlet extends HttpServlet
 			String templateName)
 		throws ServletException, IOException
 	{
-		VelocityContext ctx = new VelocityContext();
+		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("name", "Jason");
 
 		try
 		{
-		Template tmpl = engine.getTemplate(templateName);
 		Writer out = resp.getWriter();
-		tmpl.merge(ctx, out);
+		engine.process(templateName, ctx, out);
 		out.close();
 		}
 		catch (IOException e) { throw e; }
 		catch (Exception e)
 		{
-			throw new ServletException("Velocity Engine error", e);
+			throw new ServletException("Template Engine error", e);
 		}
 	}
 
@@ -88,7 +83,8 @@ public class CoreServlet extends HttpServlet
 	}
 }
 
-class MyResourceLoader extends ResourceLoader
+class MyResourceLoader
+	implements ResourceLoader
 {
 	ServletContext servletContext;
 
@@ -97,26 +93,9 @@ class MyResourceLoader extends ResourceLoader
 		this.servletContext = ctx;
 	}
 
-	@Override
-	public void init(org.apache.commons.collections.ExtendedProperties configuration)
-	{
-	}
-
-	@Override
+	//implements ResourceLoader
 	public InputStream getResourceStream(String source)
 	{
 		return servletContext.getResourceAsStream("/WEB-INF/templates/"+source);
-	}
-
-	@Override
-	public boolean isSourceModified(Resource rsrc)
-	{
-		return false;
-	}
-
-	@Override
-	public long getLastModified(Resource rsrc)
-	{
-		return 0;
 	}
 }
