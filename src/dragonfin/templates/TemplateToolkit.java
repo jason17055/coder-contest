@@ -13,7 +13,7 @@ public class TemplateToolkit
 	}
 
 	public void process(String templateName, Map<String,?> vars, Writer out)
-		throws IOException, TemplateSyntaxException
+		throws IOException, TemplateSyntaxException, TemplateRuntimeError
 	{
 		Context ctx = new Context();
 		ctx.templateName = templateName;

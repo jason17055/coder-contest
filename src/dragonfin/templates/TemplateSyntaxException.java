@@ -2,13 +2,8 @@ package dragonfin.templates;
 
 public class TemplateSyntaxException extends Exception
 {
-	public TemplateSyntaxException()
+	public TemplateSyntaxException(int lineno, int colno, String message)
 	{
-		super("Template syntax error");
-	}
-
-	public TemplateSyntaxException(String message)
-	{
-		super(message);
+		super(String.format("%d:%d: %s", lineno, colno, message));
 	}
 }

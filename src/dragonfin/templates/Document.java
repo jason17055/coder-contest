@@ -15,7 +15,7 @@ public class Document
 	}
 
 	public void execute(Context ctx)
-		throws IOException
+		throws IOException, TemplateRuntimeError
 	{
 		for (Object o : parts)
 		{

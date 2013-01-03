@@ -1,11 +1,14 @@
 package dragonfin.templates;
 
 import java.io.*;
+import java.util.*;
 
 class Parser
 {
 	TemplateToolkit toolkit;
-	BufferedReader in;
+	PushbackReader in;
+	int lineno;
+	int colno;
 	int st;            //parser state (see nextToken)
 	StringBuilder cur; //current token
 	Token peekToken;
@@ -15,15 +18,26 @@ class Parser
 		throws IOException
 	{
 		this.toolkit = toolkit;
-		this.in = in;
+		this.in = new PushbackReader(in,1);
 		this.st = 0;
 		this.cur = new StringBuilder();
+		this.lineno = 1;
+		this.colno = 0;
 	}
 
 	static enum TokenType
 	{
+		EOF,
 		LITERAL_STRING,
-		IDENTIFIER;
+		SINGLE_QUOTE_STRING,
+		FILTER,
+		IDENTIFIER,
+		PERIOD,
+		EQUAL,
+		NOT_EQUAL,
+		ASSIGN,
+		OPEN_PAREN,
+		CLOSE_PAREN;
 	}
 
 	static class Token
@@ -38,12 +52,23 @@ class Parser
 		}
 	}
 
+	static final Token FILTER    = new Token(TokenType.FILTER, "|");
+	static final Token PERIOD    = new Token(TokenType.PERIOD, ".");
+	static final Token EQUAL     = new Token(TokenType.EQUAL, "==");
+	static final Token NOT_EQUAL = new Token(TokenType.NOT_EQUAL, "!=");
+	static final Token ASSIGN    = new Token(TokenType.ASSIGN, "=");
+
 	private Token makeIdentifier(String s)
 	{
 		return new Token(TokenType.IDENTIFIER, s);
 	}
 
-	private Token peekToken()
+	private Token makeSingleQuoteString(String s)
+	{
+		return new Token(TokenType.SINGLE_QUOTE_STRING, s);
+	}
+
+	private TokenType peekToken()
 		throws IOException, TemplateSyntaxException
 	{
 		if (!peeked)
@@ -51,15 +76,23 @@ class Parser
 			peeked = true;
 			peekToken = nextToken_real();
 		}
-		return peekToken;
+		return peekToken != null ? peekToken.token : TokenType.EOF;
 	}
 
-	private Token eatToken()
+	private Token eatToken(TokenType expectedType)
 		throws IOException, TemplateSyntaxException
 	{
-		Token t = peekToken();
+		peekToken();
 		peeked = false;
-		return t;
+
+		if (peekToken == null)
+			throw unexpectedEof();
+
+		if (peekToken.token != expectedType)
+		{
+			throw unexpectedToken(peekToken.token, expectedType);
+		}
+		return peekToken;
 	}
 			
 	private Token nextToken_real()
@@ -71,6 +104,16 @@ class Parser
 		while (st != -1)
 		{
 			int c = in.read();
+			if (c == '\n')
+			{
+				lineno++;
+				colno = 0;
+			}
+			else
+			{
+				colno++;
+			}
+
 			switch(st)
 			{
 			case 0:
@@ -113,45 +156,118 @@ class Parser
 			case 2:
 				if (c == '%') {
 					st = 3;
+				} else if (c == '.') {
+					return PERIOD;
+				} else if (c == '=') {
+					st = 5;
+				} else if (c == '|') {
+					return FILTER;
+				} else if (c == '\'') {
+					st = 6;
 				} else if (Character.isJavaIdentifierStart(c)) {
 					cur.append((char)c);
 					st = 4;
 				} else if (Character.isWhitespace(c)) {
 					//do nothing
+				} else if (c == '#') {
+					st = 7;
 				} else {
-					throw new TemplateSyntaxException();
+					throw unexpectedCharacter(c);
 				}
 				break;
-			case 3:
+			case 3: // token beginning with "%"
 				if (c == -1) {
-					throw new TemplateSyntaxException("unexpected eof");
+					throw unexpectedEof();
 				} else if (c == ']') {
 					assert cur.length() == 0;
 					st = 0;
 				} else {
-					cur.append('%');
-					cur.append((char)c);
-					st = 2;
+					throw unexpectedCharacter(c);
 				}
 				break;
-			case 4:
-				if (c == -1) {
-					throw new TemplateSyntaxException("unexpected eof");
-				} else if (c == '%') {
-					Token t = makeIdentifier(cur.toString());
-					cur = new StringBuilder();
-					st = 3;
-					return t;
-				} else if (Character.isJavaIdentifierPart(c)) {
+			case 4: // token beginning with [A-Za-z]
+				if (Character.isJavaIdentifierPart(c))
+				{
+					// continues an identifier
 					cur.append((char)c);
-				} else if (Character.isWhitespace(c)) {
+				}
+				else
+				{
 					// end of identifier
 					Token t = makeIdentifier(cur.toString());
 					cur = new StringBuilder();
 					st = 2;
+					unread(c);
 					return t;
-				} else {
-					throw new TemplateSyntaxException();
+				}
+				break;
+
+			case 5: // token beginning with "="
+				if (c == '=')
+				{
+					return EQUAL;
+				}
+				else
+				{
+					assert cur.length() == 0;
+					st = 2;
+					unread(c);
+					return ASSIGN;
+				}
+
+			case 6: // single-quote-delimited string
+				if (c == '\'')
+				{
+					// end of string
+					Token t = makeSingleQuoteString(cur.toString());
+					cur = new StringBuilder();
+					st = 2;
+					return t;
+				}
+				else if (c == -1)
+				{
+					throw unexpectedEof();
+				}
+				else
+				{
+					cur.append((char)c);
+				}
+				break;
+
+			case 7: // token beginning with # (i.e. a comment)
+				if (c == '%')
+				{
+					// this might end the comment
+					st = 8;
+				}
+				else if (c == '\n')
+				{
+					// end of comment
+					st = 2;
+				}
+				else if (c == -1)
+				{
+					st = 2;
+					unread(c);
+				}
+				else
+				{
+					// ignore
+				}
+				break;
+
+			case 8: // found a % inside a comment
+				if (c == ']')
+				{
+					// end of comment, also: end of
+					// directive
+					assert cur.length() == 0;
+					st = 0;
+				}
+				else
+				{
+					st = 7;
+					unread(c);
 				}
 				break;
 
@@ -165,50 +281,177 @@ class Parser
 		return null;
 	}
 
+	private void unread(int c)
+		throws IOException
+	{
+		if (c == '\n')
+		{
+			//note- this does not correctly track the column
+			//number, but presumably this is being called to set
+			//the finite state machine back to a basic state,
+			//which will read the '\n' again without error,
+			//and the column number will again be correct.
+			lineno--;
+		}
+		else
+		{
+			colno--;
+		}
+		in.unread(c);
+	}
+
+	private SyntaxException unexpectedCharacter(int c)
+	{
+		return new SyntaxException("Unexpected character ("+((char)c)+")");
+	}
+
+	private SyntaxException unexpectedEof()
+	{
+		return new SyntaxException("Unexpected EOF");
+	}
+
+	private SyntaxException unexpectedToken(TokenType actual, TokenType expected)
+	{
+		return new SyntaxException("Found "+actual+" but expected "+expected);
+	}
+
+	class SyntaxException extends TemplateSyntaxException
+	{
+		SyntaxException(String message)
+		{
+			super(lineno, colno, message);
+		}
+	}
+
 	public Document parse()
 		throws IOException, TemplateSyntaxException
 	{
 		Document doc = new Document(toolkit);
-		Token t;
-		while ( (t = peekToken()) != null)
+		TokenType token;
+		while ( (token = peekToken()) != TokenType.EOF )
 		{
-		System.err.println("token "+t.token);
-			if (t.token == TokenType.LITERAL_STRING)
+		System.err.println("token "+token);
+			if (token == TokenType.LITERAL_STRING)
 			{
-				doc.parts.add(t.text);
-				eatToken();
+				doc.parts.add(eatToken(token).text);
 			}
-			else if (t.token == TokenType.IDENTIFIER)
+			else if (token == TokenType.IDENTIFIER)
 			{
-				doc.parts.add(parseExpression());
+				doc.parts.add(parseGetDirective());
 			}
 			else
 			{
-				throw new TemplateSyntaxException();
+				throw new SyntaxException("Unexpected token: "+token);
 			}
 		}
 		return doc;
 	}
 
-	private GetDirective parseExpression()
+	private GetDirective parseGetDirective()
 		throws IOException, TemplateSyntaxException
 	{
-		Token identifier = eatToken();
-		return new GetDirective(identifier.text);
+		return new GetDirective(parseExpression());
 	}
 
-	static class GetDirective implements Directive
+	private Expression parseExpression()
+		throws IOException, TemplateSyntaxException
+	{
+		return parseChain();
+	}
+
+	private Expression parseChain()
+		throws IOException, TemplateSyntaxException
+	{
+		TokenType t = peekToken();
+		if (t == TokenType.OPEN_PAREN)
+		{
+			throw new Error("TODO");
+		}
+
+		Expression rv = new Variable(parseIdentifier());
+		TokenType n = peekToken();
+		while (n == TokenType.PERIOD)
+		{
+			eatToken(TokenType.PERIOD);
+			String propName = parseIdentifier();
+			rv = new GetProperty(rv, propName);
+
+			n = peekToken();
+		}
+
+		return rv;
+	}
+
+	private String parseIdentifier()
+		throws IOException, TemplateSyntaxException
+	{
+		Token t = eatToken(TokenType.IDENTIFIER);
+		return t.text;
+	}
+
+	static abstract class Expression
+	{
+		abstract Object evaluate(Context ctx)
+			throws TemplateRuntimeError;
+	}
+
+	static class Variable extends Expression
 	{
 		String variableName;
-		GetDirective(String variableName)
+		Variable(String variableName)
 		{
 			this.variableName = variableName;
 		}
 
-		public void execute(Context ctx)
-			throws IOException
+		@Override
+		Object evaluate(Context ctx)
 		{
-			Object v = ctx.vars.get(variableName);
+			return ctx.vars.get(variableName);
+		}
+	}
+
+	static class GetProperty extends Expression
+	{
+		Expression subject;
+		String propertyName;
+
+		GetProperty(Expression subject, String propertyName)
+		{
+			this.subject = subject;
+			this.propertyName = propertyName;
+		}
+
+		@Override
+		Object evaluate(Context ctx)
+			throws TemplateRuntimeError
+		{
+			Object m = subject.evaluate(ctx);
+			if (m == null)
+				return null;
+
+			if (m instanceof Map)
+			{
+				return ((Map<?,?>)m).get(propertyName);
+			}
+			else
+			{
+				throw new TemplateRuntimeError("Cannot access property '"+propertyName+"' of instance of "+m.getClass().getName());
+			}
+		}
+	}
+
+	static class GetDirective implements Directive
+	{
+		Expression expr;
+		GetDirective(Expression expr)
+		{
+			this.expr = expr;
+		}
+
+		public void execute(Context ctx)
+			throws IOException, TemplateRuntimeError
+		{
+			Object v = expr.evaluate(ctx);
 			if (v != null)
 			{
 				ctx.out.write(v.toString());
