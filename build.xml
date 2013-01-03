@@ -1,22 +1,28 @@
 <project name="falcon-contest" default="all">
 
-<property name="builddir" location="target/build" />
 <property name="project_name" value="falcon-contest" />
+
+<path id="build-classpath">
+	<fileset dir="extlib">
+		<include name="*.jar" />
+	</fileset>
+</path>
 
 <target name="all" depends="build" />
 
 <target name="init-builddir">
-<mkdir dir="${builddir}" />
+<mkdir dir="build" />
 </target>
 
 <target name="copy-resources" depends="init-builddir">
-<copy todir="${builddir}">
+<copy todir="build/resources">
 	<fileset dir="resources" />
 </copy>
 </target>
 
 <target name="compile" depends="init-builddir">
-<javac srcdir="src" destdir="${builddir}"
+<mkdir dir="build/classes" />
+<javac srcdir="src" destdir="build/classes"
 	classpathref="build-classpath"
 	includeantruntime="false"
 	debug="true" debuglevel="lines,vars,source"
@@ -28,9 +34,13 @@
 </target>
 
 <target name="build" depends="copy-resources,compile">
+<copy file="context.xml" tofile="build/resources/META-INF/context.xml" />
 <war destfile="${project_name}.war" webxml="web.xml">
-	<fileset dir="${builddir}" />
 	<fileset dir="webapp" />
+	<fileset dir="build/resources" />
+	<classes dir="build/classes" />
+	<webinf dir="." includes="templates/*" />
+	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
 
 </target>

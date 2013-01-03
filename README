@@ -1,0 +1,7 @@
+Create an 'extlib' subdirectory, then acquire and place the following
+Jar files into that subdirectory-
+
+apache-commons-lang.jar
+tomcat-servlet-api.jar
+commons-collections-3.2.jar
+velocity.jar
