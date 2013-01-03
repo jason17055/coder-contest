@@ -14,6 +14,12 @@ class Parser
 	Token peekToken;
 	boolean peeked;
 
+	Parser(Reader in)
+		throws IOException
+	{
+		this(null, new BufferedReader(in));
+	}
+
 	Parser(TemplateToolkit toolkit, BufferedReader in)
 		throws IOException
 	{
@@ -30,6 +36,7 @@ class Parser
 		EOF,
 		LITERAL_STRING,
 		SINGLE_QUOTE_STRING,
+		DOUBLE_QUOTE_STRING,
 		FILTER,
 		GET,
 		SET,
@@ -173,6 +180,8 @@ class Parser
 					return FILTER;
 				} else if (c == '\'') {
 					st = 6;
+				} else if (c == '"') {
+					st = 9;
 				} else if (Character.isJavaIdentifierStart(c)) {
 					cur.append((char)c);
 					st = 4;
@@ -180,6 +189,9 @@ class Parser
 					//do nothing
 				} else if (c == '#') {
 					st = 7;
+				} else if (c == -1) {
+					st = -1;
+					return null;
 				} else {
 					throw unexpectedCharacter(c);
 				}
@@ -280,6 +292,45 @@ class Parser
 				}
 				break;
 
+			case 9: // double-quote-delimited string
+				if (c == '"')
+				{
+					// end of string
+					Token t = new Token(
+						TokenType.DOUBLE_QUOTE_STRING,
+						cur.toString()
+						);
+					cur = new StringBuilder();
+					st = 2;
+					return t;
+				}
+				else if (c == -1)
+				{
+					throw unexpectedEof();
+				}
+				else if (c == '\\')
+				{
+					cur.append((char)c);
+					st = 10;
+				}
+				else
+				{
+					cur.append((char)c);
+				}
+				break;
+
+			case 10: // backslash within double-quoted string
+				if (c == -1)
+				{
+					throw unexpectedEof();
+				}
+				else
+				{
+					cur.append((char)c);
+					st=9;
+				}
+				break;
+
 			default:
 				throw new Error("Should be unreachable");
 			}
@@ -293,6 +344,12 @@ class Parser
 	private void unread(int c)
 		throws IOException
 	{
+		if (c == -1)
+		{
+			st = -1;
+			return;
+		}
+
 		if (c == '\n')
 		{
 			//note- this does not correctly track the column
@@ -311,7 +368,11 @@ class Parser
 
 	private SyntaxException unexpectedCharacter(int c)
 	{
-		return new SyntaxException("Unexpected character ("+((char)c)+")");
+		if (c == -1) return unexpectedEof();
+
+		return new SyntaxException("Unexpected character ("+
+			(c >= 33 && c < 127 ? ((char)c) : "\\"+c)
+			+")");
 	}
 
 	private SyntaxException unexpectedEof()
@@ -337,9 +398,11 @@ class Parser
 		}
 	}
 
-	public Document parse()
+	public Document parseDocument()
 		throws IOException, TemplateSyntaxException
 	{
+		assert this.toolkit != null;
+
 		Document doc = new Document(toolkit);
 		TokenType token;
 		while ( (token = peekToken()) != TokenType.EOF )
@@ -405,10 +468,17 @@ class Parser
 		return new SetDirective(lhs, rhs);
 	}
 
-	private Expression parseExpression()
+	public Expression parseExpression()
 		throws IOException, TemplateSyntaxException
 	{
 		return parseChain();
+	}
+
+	private Expression parseString(String rawString)
+		throws IOException, TemplateSyntaxException
+	{
+		StringParser parser = new StringParser(rawString);
+		return parser.parse();
 	}
 
 	private Expression parseChain()
@@ -422,6 +492,10 @@ class Parser
 		else if (t == TokenType.SINGLE_QUOTE_STRING)
 		{
 			return new Expressions.Literal(eatToken(t).text);
+		}
+		else if (t == TokenType.DOUBLE_QUOTE_STRING)
+		{
+			return parseString(eatToken(t).text);
 		}
 
 		Expression rv = new Variable(parseIdentifier());

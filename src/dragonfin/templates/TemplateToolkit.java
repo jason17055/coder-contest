@@ -34,7 +34,7 @@ public class TemplateToolkit
 				);
 		Parser parser = new Parser(this, in);
 
-		Document doc = parser.parse();
+		Document doc = parser.parseDocument();
 		in.close();
 
 		doc.execute(ctx);
