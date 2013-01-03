@@ -1,0 +1,11 @@
+The following directives from Template::Toolkit are not supported:
+
+ CALL
+ PROCESS
+
+
+The following directives are supported with limitations:
+
+ INSERT, INCLUDE
+ The filename must be specified as a string or variable expression.
+ I.e. barewords are treated as variables.

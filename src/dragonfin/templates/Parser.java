@@ -42,6 +42,8 @@ class Parser
 		DEFAULT,
 		FILTER,
 		GET,
+		INCLUDE,
+		INSERT,
 		SET,
 	//punctuation and operators
 		PERIOD,
@@ -75,14 +77,18 @@ class Parser
 
 	private Token makeIdentifier(String s)
 	{
-		if (s.equals("GET"))
-			return new Token(TokenType.GET, s);
-		else if (s.equals("SET"))
-			return new Token(TokenType.SET, s);
+		if (s.equals("DEFAULT"))
+			return new Token(TokenType.DEFAULT, s);
 		else if (s.equals("FILTER"))
 			return new Token(TokenType.FILTER, s);
-		else if (s.equals("DEFAULT"))
-			return new Token(TokenType.DEFAULT, s);
+		else if (s.equals("GET"))
+			return new Token(TokenType.GET, s);
+		else if (s.equals("INCLUDE"))
+			return new Token(TokenType.INCLUDE, s);
+		else if (s.equals("INSERT"))
+			return new Token(TokenType.INSERT, s);
+		else if (s.equals("SET"))
+			return new Token(TokenType.SET, s);
 		else
 			return new Token(TokenType.IDENTIFIER, s);
 	}
@@ -432,9 +438,9 @@ class Parser
 		throws IOException, TemplateSyntaxException
 	{
 		TokenType token = peekToken();
-		if (token == TokenType.SET)
+		if (token == TokenType.DEFAULT)
 		{
-			Directive d = parseSetDirective();
+			Directive d = parseDefaultDirective();
 			return d;
 		}
 		else if (token == TokenType.GET)
@@ -442,9 +448,19 @@ class Parser
 			Directive d = parseGetDirective();
 			return d;
 		}
-		else if (token == TokenType.DEFAULT)
+		else if (token == TokenType.INCLUDE)
 		{
-			Directive d = parseDefaultDirective();
+			Directive d = parseIncludeDirective();
+			return d;
+		}
+		else if (token == TokenType.INSERT)
+		{
+			Directive d = parseInsertDirective();
+			return d;
+		}
+		else if (token == TokenType.SET)
+		{
+			Directive d = parseSetDirective();
 			return d;
 		}
 		else if (isExpressionStart(token))
@@ -464,23 +480,6 @@ class Parser
 		}
 	}
 
-	private GetDirective parseGetDirective()
-		throws IOException, TemplateSyntaxException
-	{
-		eatToken(TokenType.GET);
-		return new GetDirective(parseExpression());
-	}
-
-	private SetDirective parseSetDirective()
-		throws IOException, TemplateSyntaxException
-	{
-		eatToken(TokenType.SET);
-		Expression lhs = parseExpression();
-		eatToken(TokenType.ASSIGN);
-		Expression rhs = parseExpression();
-		return new SetDirective(lhs, rhs);
-	}
-
 	private DefaultDirective parseDefaultDirective()
 		throws IOException, TemplateSyntaxException
 	{
@@ -497,6 +496,53 @@ class Parser
 		} while (isAssignmentStart(peekToken()));
 
 		return new DefaultDirective(cmds);
+	}
+
+	private GetDirective parseGetDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.GET);
+		return new GetDirective(parseExpression());
+	}
+
+	private IncludeDirective parseIncludeDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.INCLUDE);
+		Expression path = parseExpression();
+		IncludeDirective d = new IncludeDirective(path);
+
+		while (isAssignmentStart(peekToken()))
+		{
+			SetDirective a = parseAssignment();
+			d.addAssignment(a);
+		}
+
+		return d;
+	}
+
+	private InsertDirective parseInsertDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.INSERT);
+		Expression path = parseExpression();
+		return new InsertDirective(path);
+	}
+
+	private SetDirective parseSetDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.SET);
+		return parseAssignment();
+	}
+
+	private SetDirective parseAssignment()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression lhs = parseExpression();
+		eatToken(TokenType.ASSIGN);
+		Expression rhs = parseExpression();
+		return new SetDirective(lhs, rhs);
 	}
 
 	boolean isAssignmentStart(TokenType t)
@@ -595,6 +641,75 @@ class Parser
 			{
 				ctx.out.write(v.toString());
 			}
+		}
+	}
+
+	static class IncludeDirective implements Directive
+	{
+		Expression pathExpr;
+		List<SetDirective> assignments;
+
+		IncludeDirective(Expression pathExpr)
+		{
+			this.pathExpr = pathExpr;
+			this.assignments = new ArrayList<SetDirective>();
+		}
+
+		void addAssignment(SetDirective d)
+		{
+			assignments.add(d);
+		}
+
+		public void execute(Context ctx)
+			throws IOException, TemplateRuntimeException
+		{
+			HashMap<String,Object> args = new HashMap<String,Object>();
+			for (SetDirective sd : assignments)
+			{
+				Variable var = (Variable) sd.lhs;
+				Object val = sd.rhs.evaluate(ctx);
+				args.put(var.variableName, val);
+			}
+
+			Map<String,?> oldVars = ctx.vars;
+			ctx.vars = new Parameters(args, oldVars);
+			try
+			{
+			String v = Value.asString(pathExpr.evaluate(ctx));
+			ctx.toolkit.processHelper(v, ctx);
+			}
+			catch (TemplateSyntaxException e)
+			{
+				throw new TemplateRuntimeException("Parse error on included file", e);
+			}
+			finally
+			{
+				ctx.vars = oldVars;
+			}
+		}
+	}
+
+	static class InsertDirective implements Directive
+	{
+		Expression pathExpr;
+		InsertDirective(Expression pathExpr)
+		{
+			this.pathExpr = pathExpr;
+		}
+
+		public void execute(Context ctx)
+			throws IOException, TemplateRuntimeException
+		{
+			String v = Value.asString(pathExpr.evaluate(ctx));
+			InputStream is = ctx.toolkit.resourceLoader.getResourceStream(v);
+			Reader r = new InputStreamReader(is);
+			char [] buf = new char[4096];
+			int nread;
+			while ( (nread = r.read(buf, 0, 4096)) != -1 )
+			{
+				ctx.out.write(buf, 0, nread);
+			}
+			r.close();
 		}
 	}
 }

@@ -16,6 +16,7 @@ public class TemplateToolkit
 		throws IOException, TemplateSyntaxException, TemplateRuntimeException
 	{
 		Context ctx = new Context();
+		ctx.toolkit = this;
 		ctx.templateName = templateName;
 		ctx.vars = vars;
 		ctx.out = out;
@@ -24,7 +25,12 @@ public class TemplateToolkit
 		{
 			ctx.vars = new HashMap<String,Object>();
 		}
+		processHelper(templateName, ctx);
+	}
 
+	void processHelper(String templateName, Context ctx)
+		throws IOException, TemplateSyntaxException, TemplateRuntimeException
+	{
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(
 					resourceLoader.getResourceStream(

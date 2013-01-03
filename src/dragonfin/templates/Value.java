@@ -21,4 +21,12 @@ public class Value
 		String s = obj.toString();
 		return s.length() != 0;
 	}
+
+	public static String asString(Object obj)
+	{
+		if (obj == null)
+			return "";
+		else
+			return obj.toString();
+	}
 }
