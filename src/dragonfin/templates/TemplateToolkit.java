@@ -12,32 +12,8 @@ public class TemplateToolkit
 		this.resourceLoader = resourceLoader;
 	}
 
-	static class Context
-	{
-		String templateName;
-		Map<String, Object> vars;
-		Writer out;
-	}
-
-	void processDirective(Context ctx, String directive)
-		throws IOException
-	{
-		directive = directive.trim();
-
-		Object v = ctx.vars.get(directive);
-		if (v != null)
-		{
-			String s = v.toString();
-			ctx.out.write(s);
-		}
-		else
-		{
-			ctx.out.write("<!-- unrecognized directive "+directive+" -->");
-		}
-	}
-
-	public void process(String templateName, Map<String,Object> vars, Writer out)
-		throws IOException
+	public void process(String templateName, Map<String,?> vars, Writer out)
+		throws IOException, TemplateSyntaxException
 	{
 		Context ctx = new Context();
 		ctx.templateName = templateName;
@@ -56,52 +32,29 @@ public class TemplateToolkit
 					"UTF-8"
 					)
 				);
+		Parser parser = new Parser(this, in);
 
-		int st = 0;
-		int c;
-		StringBuilder buf = null;
-		while ( (c = in.read()) != -1 )
-		{
-			switch(st)
-			{
-			case 0:
-				if (c == '[') {
-					st = 1;
-				} else {
-					out.write((char)c);
-				}
-				break;
-			case 1:
-				if (c == '%') {
-					st = 2;
-					buf = new StringBuilder();
-				} else {
-					out.write('[');
-					out.write((char)c);
-					st = 0;
-				}
-				break;
-			case 2:
-				if (c == '%') {
-					st = 3;
-				} else {
-					buf.append((char)c);
-				}
-				break;
-			case 3:
-				if (c == ']') {
-					processDirective(ctx, buf.toString());
-					st = 0;
-				} else {
-					buf.append('%');
-					buf.append((char)c);
-					st = 2;
-				}
-				break;
-			default:
-				throw new Error("Should be unreachable");
-			}
-		}
+		Document doc = parser.parse();
 		in.close();
+
+		doc.execute(ctx);
 	}
+
+	public static void main(String [] args)
+		throws Exception
+	{
+		TemplateToolkit toolkit = new TemplateToolkit(
+				new DefaultResourceLoader()
+				);
+		OutputStreamWriter w = new OutputStreamWriter(System.out);
+		toolkit.process(args[0], System.getenv(), w);
+		w.close();
+	}
+}
+
+class Context
+{
+	String templateName;
+	Map<String, ?> vars;
+	Writer out;
 }
