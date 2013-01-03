@@ -2,9 +2,10 @@ The following directives from Template::Toolkit are not supported:
 
  CALL
  PROCESS
+ BLOCK
 
 
-The following directives are supported with limitations:
+The following directives are supported with modification:
 
  INSERT, INCLUDE
  The filename must be specified as a string or variable expression.

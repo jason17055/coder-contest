@@ -40,6 +40,7 @@ class Parser
 		NUMBER,
 	//keywords
 		DEFAULT,
+		END,
 		FILTER,
 		GET,
 		INCLUDE,
@@ -80,6 +81,8 @@ class Parser
 	{
 		if (s.equals("DEFAULT"))
 			return new Token(TokenType.DEFAULT, s);
+		else if (s.equals("END"))
+			return new Token(TokenType.END, s);
 		else if (s.equals("FILTER"))
 			return new Token(TokenType.FILTER, s);
 		else if (s.equals("GET"))
@@ -420,20 +423,23 @@ class Parser
 	{
 		Block doc = new Block();
 
-		TokenType token;
-		while ( (token = peekToken()) != TokenType.EOF )
+		for(;;)
 		{
-		System.err.println("token "+token);
-			if (token == TokenType.LITERAL_STRING)
-			{
-				doc.parts.add(eatToken(token).text);
-			}
-			else
-			{
-				doc.parts.add(parseDirective());
-			}
+		switch (peekToken())
+		{
+		case LITERAL_STRING:
+			doc.parts.add(eatToken(TokenType.LITERAL_STRING).text);
+			break;
+		case EOF:
+			throw unexpectedEof();
+		case END:
+			eatToken(TokenType.END);
+			return doc;
+		default:
+			doc.parts.add(parseDirective());
+			break;
 		}
-		return doc;
+		}
 	}
 
 	public Document parseDocument()
