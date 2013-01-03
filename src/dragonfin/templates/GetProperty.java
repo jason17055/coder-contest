@@ -3,12 +3,12 @@ package dragonfin.templates;
 import java.lang.reflect.*;
 import java.util.*;
 
-class GetProperty extends Parser.Expression
+class GetProperty extends Expression
 {
-	Parser.Expression subject;
+	Expression subject;
 	String propertyName;
 
-	public GetProperty(Parser.Expression subject, String propertyName)
+	public GetProperty(Expression subject, String propertyName)
 	{
 		this.subject = subject;
 		this.propertyName = propertyName;

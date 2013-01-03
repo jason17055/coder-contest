@@ -389,12 +389,6 @@ class Parser
 		return t.text;
 	}
 
-	static abstract class Expression
-	{
-		abstract Object evaluate(Context ctx)
-			throws TemplateRuntimeException;
-	}
-
 	static class Variable extends Expression
 	{
 		String variableName;
