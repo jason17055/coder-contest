@@ -40,12 +40,16 @@ class Parser
 		NUMBER,
 	//keywords
 		DEFAULT,
+		ELSE,
+		ELSIF,
 		END,
 		FILTER,
 		GET,
+		IF,
 		INCLUDE,
 		INSERT,
 		SET,
+		UNLESS,
 		WRAPPER,
 	//punctuation and operators
 		PERIOD,
@@ -83,16 +87,24 @@ class Parser
 			return new Token(TokenType.DEFAULT, s);
 		else if (s.equals("END"))
 			return new Token(TokenType.END, s);
+		else if (s.equals("ELSE"))
+			return new Token(TokenType.ELSE, s);
+		else if (s.equals("ELSIF"))
+			return new Token(TokenType.ELSIF, s);
 		else if (s.equals("FILTER"))
 			return new Token(TokenType.FILTER, s);
 		else if (s.equals("GET"))
 			return new Token(TokenType.GET, s);
+		else if (s.equals("IF"))
+			return new Token(TokenType.IF, s);
 		else if (s.equals("INCLUDE"))
 			return new Token(TokenType.INCLUDE, s);
 		else if (s.equals("INSERT"))
 			return new Token(TokenType.INSERT, s);
 		else if (s.equals("SET"))
 			return new Token(TokenType.SET, s);
+		else if (s.equals("UNLESS"))
+			return new Token(TokenType.UNLESS, s);
 		else if (s.equals("WRAPPER"))
 			return new Token(TokenType.WRAPPER, s);
 		else
@@ -418,6 +430,32 @@ class Parser
 		}
 	}
 
+	Block parseIfBlock()
+		throws IOException, TemplateSyntaxException
+	{
+		Block doc = new Block();
+
+		for(;;)
+		{
+		switch (peekToken())
+		{
+		case LITERAL_STRING:
+			doc.parts.add(eatToken(TokenType.LITERAL_STRING).text);
+			break;
+		case EOF:
+			throw unexpectedEof();
+		case END:
+		case ELSE:
+		case ELSIF:
+			// leave the terminating token uneaten
+			return doc;
+		default:
+			doc.parts.add(parseDirective());
+			break;
+		}
+		}
+	}
+
 	Block parseBlock()
 		throws IOException, TemplateSyntaxException
 	{
@@ -475,6 +513,11 @@ class Parser
 		else if (token == TokenType.GET)
 		{
 			return parseGetDirective();
+		}
+		else if (token == TokenType.IF
+			|| token == TokenType.UNLESS)
+		{
+			return parseIfDirective(token);
 		}
 		else if (token == TokenType.INCLUDE)
 		{
@@ -563,6 +606,42 @@ class Parser
 	{
 		eatToken(TokenType.SET);
 		return parseAssignment();
+	}
+
+	private IfDirective parseIfDirective(TokenType ifElse)
+		throws IOException, TemplateSyntaxException
+	{
+		assert ifElse == TokenType.IF
+			|| ifElse == TokenType.UNLESS
+			|| ifElse == TokenType.ELSIF;
+
+		eatToken(ifElse);
+		Expression condition = parseExpression();
+		if (ifElse == TokenType.UNLESS)
+		{
+			condition = new Expressions.NotExpression(condition);
+		}
+
+		Block ifBlock = parseIfBlock();
+
+		if (peekToken() == TokenType.ELSE)
+		{
+			eatToken(TokenType.ELSE);
+			Block elseBlock = parseBlock();
+			return new IfDirective(condition, ifBlock, elseBlock);
+		}
+		else if (peekToken() == TokenType.ELSIF)
+		{
+			IfDirective elseIf = parseIfDirective(TokenType.ELSIF);
+			return new IfDirective(condition, ifBlock, elseIf);
+		}
+		else if (peekToken() == TokenType.END)
+		{
+			eatToken(TokenType.END);
+			return new IfDirective(condition, ifBlock, Block.NULL);
+		}
+		else
+			throw unexpectedToken(peekToken());
 	}
 
 	private WrapperDirective parseWrapperDirective()

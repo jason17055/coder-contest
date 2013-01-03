@@ -20,6 +20,23 @@ public class Expressions
 
 		static final Literal EMPTY_STRING = new Literal("");
 	}
+
+	static class NotExpression extends Expression
+	{
+		Expression expr;
+		public NotExpression(Expression expr)
+		{
+			this.expr = expr;
+		}
+
+		@Override
+		public Object evaluate(Context ctx)
+			throws TemplateRuntimeException
+		{
+			Object v = expr.evaluate(ctx);
+			return new Boolean(!Value.asBoolean(v));
+		}
+	}
 }
 
 class Concatenate extends Expression

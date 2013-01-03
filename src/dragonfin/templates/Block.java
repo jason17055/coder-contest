@@ -5,6 +5,8 @@ import java.util.*;
 
 class Block implements Directive
 {
+	static final Block NULL = new Block();
+
 	ArrayList<Object> parts;
 
 	Block()
