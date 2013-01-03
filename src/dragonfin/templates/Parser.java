@@ -392,7 +392,7 @@ class Parser
 	static abstract class Expression
 	{
 		abstract Object evaluate(Context ctx)
-			throws TemplateRuntimeError;
+			throws TemplateRuntimeException;
 	}
 
 	static class Variable extends Expression
@@ -410,36 +410,6 @@ class Parser
 		}
 	}
 
-	static class GetProperty extends Expression
-	{
-		Expression subject;
-		String propertyName;
-
-		GetProperty(Expression subject, String propertyName)
-		{
-			this.subject = subject;
-			this.propertyName = propertyName;
-		}
-
-		@Override
-		Object evaluate(Context ctx)
-			throws TemplateRuntimeError
-		{
-			Object m = subject.evaluate(ctx);
-			if (m == null)
-				return null;
-
-			if (m instanceof Map)
-			{
-				return ((Map<?,?>)m).get(propertyName);
-			}
-			else
-			{
-				throw new TemplateRuntimeError("Cannot access property '"+propertyName+"' of instance of "+m.getClass().getName());
-			}
-		}
-	}
-
 	static class GetDirective implements Directive
 	{
 		Expression expr;
@@ -449,7 +419,7 @@ class Parser
 		}
 
 		public void execute(Context ctx)
-			throws IOException, TemplateRuntimeError
+			throws IOException, TemplateRuntimeException
 		{
 			Object v = expr.evaluate(ctx);
 			if (v != null)
