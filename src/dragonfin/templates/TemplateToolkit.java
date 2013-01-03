@@ -51,10 +51,3 @@ public class TemplateToolkit
 		w.close();
 	}
 }
-
-class Context
-{
-	String templateName;
-	Map<String, ?> vars;
-	Writer out;
-}

@@ -31,6 +31,8 @@ class Parser
 		LITERAL_STRING,
 		SINGLE_QUOTE_STRING,
 		FILTER,
+		GET,
+		SET,
 		IDENTIFIER,
 		PERIOD,
 		EQUAL,
@@ -60,7 +62,14 @@ class Parser
 
 	private Token makeIdentifier(String s)
 	{
-		return new Token(TokenType.IDENTIFIER, s);
+		if (s.equals("GET"))
+			return new Token(TokenType.GET, s);
+		else if (s.equals("SET"))
+			return new Token(TokenType.SET, s);
+		else if (s.equals("FILTER"))
+			return new Token(TokenType.FILTER, s);
+		else
+			return new Token(TokenType.IDENTIFIER, s);
 	}
 
 	private Token makeSingleQuoteString(String s)
@@ -310,6 +319,11 @@ class Parser
 		return new SyntaxException("Unexpected EOF");
 	}
 
+	private SyntaxException unexpectedToken(TokenType actual)
+	{
+		return new SyntaxException("Found invalid "+actual);
+	}
+
 	private SyntaxException unexpectedToken(TokenType actual, TokenType expected)
 	{
 		return new SyntaxException("Found "+actual+" but expected "+expected);
@@ -335,22 +349,60 @@ class Parser
 			{
 				doc.parts.add(eatToken(token).text);
 			}
-			else if (token == TokenType.IDENTIFIER)
-			{
-				doc.parts.add(parseGetDirective());
-			}
 			else
 			{
-				throw new SyntaxException("Unexpected token: "+token);
+				doc.parts.add(parseDirective());
 			}
 		}
 		return doc;
 	}
 
+	private Directive parseDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		TokenType token = peekToken();
+		if (token == TokenType.SET)
+		{
+			Directive d = parseSetDirective();
+			return d;
+		}
+		else if (token == TokenType.GET)
+		{
+			Directive d = parseGetDirective();
+			return d;
+		}
+		else if (token == TokenType.IDENTIFIER)
+		{
+			Expression expr = parseExpression();
+			if (peekToken() == TokenType.ASSIGN)
+			{
+				eatToken(TokenType.ASSIGN);
+				Expression rhs = parseExpression();
+				return new SetDirective(expr, rhs);
+			}
+			return new GetDirective(expr);
+		}
+		else
+		{
+			throw unexpectedToken(token);
+		}
+	}
+
 	private GetDirective parseGetDirective()
 		throws IOException, TemplateSyntaxException
 	{
+		eatToken(TokenType.GET);
 		return new GetDirective(parseExpression());
+	}
+
+	private SetDirective parseSetDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.SET);
+		Expression lhs = parseExpression();
+		eatToken(TokenType.ASSIGN);
+		Expression rhs = parseExpression();
+		return new SetDirective(lhs, rhs);
 	}
 
 	private Expression parseExpression()
@@ -366,6 +418,10 @@ class Parser
 		if (t == TokenType.OPEN_PAREN)
 		{
 			throw new Error("TODO");
+		}
+		else if (t == TokenType.SINGLE_QUOTE_STRING)
+		{
+			return new Expressions.Literal(eatToken(t).text);
 		}
 
 		Expression rv = new Variable(parseIdentifier());

@@ -17,16 +17,25 @@ public class Document
 	public void execute(Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
-		for (Object o : parts)
+		Map<String,?> oldMap = ctx.vars;
+		ctx.vars = new ScopedVariables(oldMap);
+		try
 		{
-			if (o instanceof Directive)
+			for (Object o : parts)
 			{
-				((Directive)o).execute(ctx);
+				if (o instanceof Directive)
+				{
+					((Directive)o).execute(ctx);
+				}
+				else
+				{
+					ctx.out.write(o.toString());
+				}
 			}
-			else
-			{
-				ctx.out.write(o.toString());
-			}
+		}
+		finally
+		{
+			ctx.vars = oldMap;
 		}
 	}
 }

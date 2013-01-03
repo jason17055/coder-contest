@@ -39,24 +39,21 @@ class GetProperty extends Expression
 			}
 		}
 
-		if (Character.isLowerCase(propertyName.charAt(0)))
+		String beanMethodName = "get"+propertyName.substring(0,1).toUpperCase()+propertyName.substring(1);
+		try
 		{
-			String beanMethodName = "get"+propertyName.substring(0,1).toUpperCase()+propertyName.substring(1);
-			try
-			{
-				Method m = obj.getClass().getMethod(beanMethodName, (Class[])null);
-				Object rv = m.invoke(obj);
-				return rv;
-			}
-			catch (NoSuchMethodException e)
-			{
-				//ignore
-			}
-			catch (Exception e)
-			{
-				throw new TemplateRuntimeException("Exception thrown by "
-				+ obj.getClass().getName()+"."+beanMethodName+"() method", e);
-			}
+			Method m = obj.getClass().getMethod(beanMethodName, (Class[])null);
+			Object rv = m.invoke(obj);
+			return rv;
+		}
+		catch (NoSuchMethodException e)
+		{
+			//ignore
+		}
+		catch (Exception e)
+		{
+			throw new TemplateRuntimeException("Exception thrown by "
+			+ obj.getClass().getName()+"."+beanMethodName+"() method", e);
 		}
 
 		try
