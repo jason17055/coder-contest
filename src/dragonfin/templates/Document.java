@@ -3,15 +3,13 @@ package dragonfin.templates;
 import java.io.*;
 import java.util.*;
 
-public class Document
+public class Document extends Block
 {
 	TemplateToolkit toolkit;
-	ArrayList<Object> parts;
 
 	Document(TemplateToolkit toolkit)
 	{
 		this.toolkit = toolkit;
-		this.parts = new ArrayList<Object>();
 	}
 
 	public void execute(Context ctx)
@@ -21,17 +19,7 @@ public class Document
 		ctx.vars = new ScopedVariables(oldMap);
 		try
 		{
-			for (Object o : parts)
-			{
-				if (o instanceof Directive)
-				{
-					((Directive)o).execute(ctx);
-				}
-				else
-				{
-					ctx.out.write(o.toString());
-				}
-			}
+			super.execute(ctx);
 		}
 		finally
 		{
