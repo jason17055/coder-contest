@@ -117,6 +117,10 @@ class StringParser
 					// $[A-Za-z] start of variable name
 					cur.append((char)c);
 					st = 3;
+				} else if (c == -1) {
+					cur.append('$');
+					st = -1;
+					return Token.LITERAL;
 				} else {
 					// anything else
 					cur.append('$');
@@ -128,6 +132,9 @@ class StringParser
 			case 3: // token begins with "$a"
 				if (Character.isJavaIdentifierPart(c)) {
 					cur.append((char)c);
+				} else if (c == -1) {
+					st = -1;
+					return Token.EXPRESSION;
 				} else {
 					st = 0;
 					in.unread(c);
