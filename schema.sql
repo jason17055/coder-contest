@@ -1,6 +1,7 @@
 CREATE TABLE passwd (
 	username VARCHAR(200) NOT NULL PRIMARY KEY,
-	password VARCHAR(200) NOT NULL
+	password VARCHAR(200) NOT NULL,
+	is_sysadmin CHAR(1) NOT NULL DEFAULT 'N'
 	);
 
 --FOREIGN KEY (director) REFERENCES passwd (username)
@@ -78,6 +79,10 @@ CREATE TABLE team (
 	last_refreshed DATETIME,
 	last_message_acked INT,
 	visible     CHAR(1) NOT NULL DEFAULT 'Y',
+	is_contestant CHAR(1) NOT NULL DEFAULT 'Y',
+	is_judge      CHAR(1) NOT NULL DEFAULT 'N',
+	is_director   CHAR(1) NOT NULL DEFAULT 'N',
+	is_sysadmin   CHAR(1) NOT NULL DEFAULT 'N',
 	UNIQUE INDEX (contest, ordinal),
 	UNIQUE INDEX (contest, user)
 	);
