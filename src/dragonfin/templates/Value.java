@@ -29,4 +29,14 @@ public class Value
 		else
 			return obj.toString();
 	}
+
+	public static boolean checkEquality(Object a, Object b)
+	{
+		if (a == b)
+			return true;
+		else if (a != null)
+			return a.equals(b);
+		else
+			return false;
+	}
 }

@@ -45,6 +45,44 @@ public class Expressions
 		}
 	}
 
+	static class CompareExpression extends Expression
+	{
+		Expression lhs;
+		Parser.TokenType op;
+		Expression rhs;
+		public CompareExpression(Expression lhs, Parser.TokenType op, Expression rhs)
+		{
+			this.lhs = lhs;
+			this.op = op;
+			this.rhs = rhs;
+		}
+
+		@Override
+		public Object evaluate(Context ctx)
+			throws TemplateRuntimeException
+		{
+			Object a = lhs.evaluate(ctx);
+			Object b = rhs.evaluate(ctx);
+
+			if (op == Parser.TokenType.EQUAL)
+			{
+				return new Boolean(
+					Value.checkEquality(a, b)
+					);
+			}
+			else if (op == Parser.TokenType.NOT_EQUAL)
+			{
+				return new Boolean(
+					!Value.checkEquality(a,b)
+					);
+			}
+			else
+			{
+				throw new Error("invalid compare op: "+op);
+			}
+		}
+	}
+
 	static class NotExpression extends Expression
 	{
 		Expression expr;

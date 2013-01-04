@@ -282,6 +282,7 @@ class Parser
 			case 5: // token beginning with "="
 				if (c == '=')
 				{
+					st = 2;
 					return EQUAL;
 				}
 				else
@@ -790,11 +791,32 @@ class Parser
 			t == TokenType.NUMBER;
 	}
 
+	private Expression parseArith()
+		throws IOException, TemplateSyntaxException
+	{
+		return parseChain();
+	}
+
+	private Expression parseComparison()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression lhs = parseArith();
+		TokenType t = peekToken();
+		if (t == TokenType.EQUAL || t == TokenType.NOT_EQUAL)
+		{
+			eatToken(t);
+			Expression rhs = parseArith();
+			return new Expressions.CompareExpression(lhs, t, rhs);
+		}
+		return lhs;
+	}
+
 	public Expression parseExpression()
 		throws IOException, TemplateSyntaxException
 	{
 		assert isExpressionStart(peekToken());
-		return parseChain();
+		Expression e = parseComparison();
+		return e;
 	}
 
 	private Expression parseString(String rawString)
