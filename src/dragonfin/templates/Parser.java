@@ -581,6 +581,11 @@ class Parser
 			{
 				d = parseChainedFilter(d);
 			}
+			if (peekToken() == TokenType.IF
+				|| peekToken() == TokenType.UNLESS)
+			{
+				d = parseChainedCondition(d);
+			}
 			return d;
 		}
 		else
@@ -604,6 +609,24 @@ class Parser
 
 		DefaultDirective d = new DefaultDirective(cmds);
 		return d;
+	}
+
+	private IfDirective parseChainedCondition(Directive content)
+		throws IOException, TemplateSyntaxException
+	{
+		TokenType t = peekToken();
+		assert t == TokenType.IF || t == TokenType.UNLESS;
+		eatToken(t);
+
+		Expression condition = parseExpression();
+		if (t == TokenType.UNLESS)
+		{
+			return new IfDirective(condition, Block.NULL, content);
+		}
+		else
+		{
+			return new IfDirective(condition, content, Block.NULL);
+		}
 	}
 
 	private FilterDirective parseChainedFilter(Directive content)
