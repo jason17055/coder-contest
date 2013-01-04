@@ -1,5 +1,8 @@
 package dragonfin.templates;
 
+import java.io.*;
+import java.util.*;
+
 public class Expressions
 {
 	private Expressions() {}
@@ -19,6 +22,27 @@ public class Expressions
 		}
 
 		static final Literal EMPTY_STRING = new Literal("");
+	}
+
+	static class ArrayLiteral extends Expression
+	{
+		List<Expression> parts;
+		public ArrayLiteral(List<Expression> parts)
+		{
+			this.parts = parts;
+		}
+
+		@Override
+		public Object evaluate(Context ctx)
+			throws TemplateRuntimeException
+		{
+			List<Object> result = new ArrayList<Object>();
+			for (Expression e : parts)
+			{
+				result.add(e.evaluate(ctx));
+			}
+			return result;
+		}
 	}
 
 	static class NotExpression extends Expression

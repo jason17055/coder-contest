@@ -59,6 +59,8 @@ class Parser
 		EQUAL,
 		NOT_EQUAL,
 		ASSIGN,
+		OPEN_BRACKET,
+		CLOSE_BRACKET,
 		OPEN_PAREN,
 		CLOSE_PAREN,
 	//other
@@ -78,11 +80,16 @@ class Parser
 		}
 	}
 
-	static final Token FILTER    = new Token(TokenType.FILTER, "|");
+	static final Token ASSIGN    = new Token(TokenType.ASSIGN, "=");
 	static final Token DOT       = new Token(TokenType.DOT, ".");
 	static final Token EQUAL     = new Token(TokenType.EQUAL, "==");
+	static final Token FILTER    = new Token(TokenType.FILTER, "|");
 	static final Token NOT_EQUAL = new Token(TokenType.NOT_EQUAL, "!=");
-	static final Token ASSIGN    = new Token(TokenType.ASSIGN, "=");
+	static final Token OPEN_PAREN = new Token(TokenType.OPEN_PAREN, "(");
+	static final Token CLOSE_PAREN= new Token(TokenType.CLOSE_PAREN, ")");
+	static final Token OPEN_BRACKET = new Token(TokenType.OPEN_BRACKET, "[");
+	static final Token CLOSE_BRACKET= new Token(TokenType.CLOSE_BRACKET, "]");
+	static final Token COMMA = new Token(TokenType.COMMA, ",");
 
 	private Token makeIdentifier(String s)
 	{
@@ -213,6 +220,16 @@ class Parser
 					st = 3;
 				} else if (c == '.') {
 					return DOT;
+				} else if (c == '[') {
+					return OPEN_BRACKET;
+				} else if (c == ']') {
+					return CLOSE_BRACKET;
+				} else if (c == '(') {
+					return OPEN_PAREN;
+				} else if (c == ')') {
+					return CLOSE_PAREN;
+				} else if (c == ',') {
+					return COMMA;
 				} else if (c == '=') {
 					st = 5;
 				} else if (c == '|') {
@@ -764,6 +781,26 @@ class Parser
 		return parser.parse();
 	}
 
+	private Expression parseArrayLiteral()
+		throws IOException, TemplateSyntaxException
+	{
+		ArrayList<Expression> parts = new ArrayList<Expression>();
+		eatToken(TokenType.OPEN_BRACKET);
+		while (peekToken() != TokenType.CLOSE_BRACKET)
+		{
+			TokenType t = peekToken();
+			if (t == TokenType.COMMA)
+			{
+				eatToken(t);
+				continue;
+			}
+			Expression e = parseExpression();
+			parts.add(e);
+		}
+		eatToken(TokenType.CLOSE_BRACKET);
+		return new Expressions.ArrayLiteral(parts);
+	}
+
 	private Expression parseChain()
 		throws IOException, TemplateSyntaxException
 	{
@@ -771,6 +808,10 @@ class Parser
 		if (t == TokenType.OPEN_PAREN)
 		{
 			throw new Error("TODO");
+		}
+		else if (t == TokenType.OPEN_BRACKET)
+		{
+			return parseArrayLiteral();
 		}
 		else if (t == TokenType.SINGLE_QUOTE_STRING)
 		{
