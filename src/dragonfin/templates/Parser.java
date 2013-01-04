@@ -52,7 +52,8 @@ class Parser
 		UNLESS,
 		WRAPPER,
 	//punctuation and operators
-		PERIOD,
+		COMMA,
+		DOT,
 		EQUAL,
 		NOT_EQUAL,
 		ASSIGN,
@@ -76,7 +77,7 @@ class Parser
 	}
 
 	static final Token FILTER    = new Token(TokenType.FILTER, "|");
-	static final Token PERIOD    = new Token(TokenType.PERIOD, ".");
+	static final Token DOT       = new Token(TokenType.DOT, ".");
 	static final Token EQUAL     = new Token(TokenType.EQUAL, "==");
 	static final Token NOT_EQUAL = new Token(TokenType.NOT_EQUAL, "!=");
 	static final Token ASSIGN    = new Token(TokenType.ASSIGN, "=");
@@ -205,7 +206,7 @@ class Parser
 				if (c == '%') {
 					st = 3;
 				} else if (c == '.') {
-					return PERIOD;
+					return DOT;
 				} else if (c == '=') {
 					st = 5;
 				} else if (c == '|') {
@@ -502,6 +503,7 @@ class Parser
 		return doc;
 	}
 
+	//see "directive" in Template::Toolkit source
 	private Directive parseDirective()
 		throws IOException, TemplateSyntaxException
 	{
@@ -559,8 +561,6 @@ class Parser
 	private DefaultDirective parseDefaultDirective()
 		throws IOException, TemplateSyntaxException
 	{
-		DefaultDirective d = null;
-
 		eatToken(TokenType.DEFAULT);
 		ArrayList<SetDirective> cmds = new ArrayList<SetDirective>();
 		do
@@ -571,16 +571,18 @@ class Parser
 			cmds.add(new SetDirective(lhs, rhs));
 		} while (isAssignmentStart(peekToken()));
 
-		return new DefaultDirective(cmds);
+		DefaultDirective d = new DefaultDirective(cmds);
+		return d;
 	}
 
 	private FilterDirective parseFilterDirective()
 		throws IOException, TemplateSyntaxException
 	{
 		eatToken(TokenType.FILTER);
-		String filterName = parseIdentifier();
+		String filterName = parseItemName();
 		Block content = parseBlock();
-		return new FilterDirective(filterName, content);
+		FilterDirective d = new FilterDirective(filterName, content);
+		return d;
 	}
 
 	private GetDirective parseGetDirective()
@@ -597,13 +599,31 @@ class Parser
 		Expression path = parseExpression();
 		IncludeDirective d = new IncludeDirective(path);
 
-		while (isAssignmentStart(peekToken()))
+		if (isSetListStart(peekToken()))
 		{
-			SetDirective a = parseAssignment();
-			d.addAssignment(a);
+			d.assignments = parseSetList();
 		}
-
 		return d;
+	}
+
+	List<SetDirective> parseSetList()
+		throws IOException, TemplateSyntaxException
+	{
+		ArrayList<SetDirective> list = new ArrayList<SetDirective>();
+		do
+		{
+			list.add(parseAssignment());
+			if (peekToken() == TokenType.COMMA)
+				eatToken(TokenType.COMMA);
+		}
+		while (isSetListStart(peekToken()));
+
+		return list;
+	}
+
+	boolean isSetListStart(TokenType t)
+	{
+		return isAssignmentStart(t);
 	}
 
 	private InsertDirective parseInsertDirective()
@@ -664,10 +684,9 @@ class Parser
 		Expression path = parseExpression();
 		WrapperDirective d = new WrapperDirective(path);
 
-		while (isAssignmentStart(peekToken()))
+		if (isSetListStart(peekToken()))
 		{
-			SetDirective a = parseAssignment();
-			d.addAssignment(a);
+			d.assignments = parseSetList();
 		}
 
 		d.content = parseBlock();
@@ -677,7 +696,7 @@ class Parser
 	private SetDirective parseAssignment()
 		throws IOException, TemplateSyntaxException
 	{
-		Expression lhs = parseExpression();
+		Expression lhs = parseIdentifier();
 		eatToken(TokenType.ASSIGN);
 		Expression rhs = parseExpression();
 		return new SetDirective(lhs, rhs);
@@ -727,21 +746,23 @@ class Parser
 			return parseString(eatToken(t).text);
 		}
 
-		Expression rv = new Variable(parseIdentifier());
-		TokenType n = peekToken();
-		while (n == TokenType.PERIOD)
+		return parseIdentifier();
+	}
+
+	private Expression parseIdentifier()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression rv = new Variable(parseItemName());
+		while (peekToken() == TokenType.DOT)
 		{
-			eatToken(TokenType.PERIOD);
-			String propName = parseIdentifier();
+			eatToken(TokenType.DOT);
+			String propName = parseItemName();
 			rv = new GetProperty(rv, propName);
-
-			n = peekToken();
 		}
-
 		return rv;
 	}
 
-	private String parseIdentifier()
+	private String parseItemName()
 		throws IOException, TemplateSyntaxException
 	{
 		Token t = eatToken(TokenType.IDENTIFIER);
