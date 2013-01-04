@@ -70,7 +70,7 @@ public class CoreServlet extends HttpServlet
 	{
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("resources_prefix",req.getContextPath());
-		ctx.put("s", new SessionAdapter(req.getSession()));
+		ctx.put("s", new SessionAdapter(req.getSession(false)));
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
 		if (args != null)
