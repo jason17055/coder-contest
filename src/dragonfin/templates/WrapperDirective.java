@@ -16,6 +16,8 @@ class WrapperDirective extends IncludeDirective
 	public void execute(Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
+		HashMap<String,Object> args = makeArgs(ctx);
+
 		StringWriter contentCapture = new StringWriter();
 
 		Writer oldWriter = ctx.out;
@@ -29,7 +31,6 @@ class WrapperDirective extends IncludeDirective
 			ctx.out = oldWriter;
 		}
 
-		HashMap<String,Object> args = makeArgs(ctx);
 		args.put("content", contentCapture.toString());
 		executeHelper(args, ctx);
 	}
