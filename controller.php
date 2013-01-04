@@ -52,7 +52,7 @@ $result = mysql_query($sql)
 
 while ($team = mysql_fetch_assoc($result)) {
 	if ($team['team_name']=="") { $team['team_name'] = "(no name)"; }
-	$team_url = "team.php?id=" . urlencode($team['team_number'])
+	$team_url = "user.php?id=" . urlencode($team['team_number'])
 		. "&next_url=" . urlencode($_SERVER['REQUEST_URI']);
 
 	?><tr><td height="32">

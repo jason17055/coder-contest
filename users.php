@@ -117,7 +117,7 @@ $count = 0;
 while ($row = mysql_fetch_assoc($result))
 {
 	$count++;
-	$edit_team_url = "team.php?id=".urlencode($row['team_number']);
+	$edit_team_url = "user.php?id=".urlencode($row['team_number']);
 	?><tr>
 <td><a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo htmlspecialchars($row['user'])?></a>
 <?php if ($row['visible'] == 'N') {
@@ -130,7 +130,7 @@ while ($row = mysql_fetch_assoc($result))
 <?php
 }
 
-$new_team_url = "team.php?contest=".urlencode($_REQUEST['contest']);
+$new_team_url = "user.php?contest=".urlencode($_REQUEST['contest']);
 $issue_creds_url = "issue_credentials.php?contest=".urlencode($_REQUEST['contest']);
 $controller_url = "controller.php?contest=".urlencode($_REQUEST['contest']);
 ?>
@@ -165,7 +165,7 @@ while ($row = mysql_fetch_assoc($result))
 <?php
 }
 
-$new_team_url = "team.php?contest=".urlencode($_REQUEST['contest']);
+$new_team_url = "user.php?contest=".urlencode($_REQUEST['contest']);
 $issue_creds_url = "issue_credentials.php?contest=".urlencode($_REQUEST['contest']);
 $controller_url = "controller.php?contest=".urlencode($_REQUEST['contest']);
 ?>

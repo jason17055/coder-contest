@@ -26,9 +26,9 @@ script_files = \
 	submission.php \
 	submit.php \
 	submit_test.php \
-	team.php \
-	users.php \
-	team_menu.php
+	team_menu.php \
+	user.php \
+	users.php
 
 data_files = \
 	scoreboard.css \

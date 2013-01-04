@@ -14,7 +14,7 @@ $contest_info = get_basic_contest_info($contest_id);
 begin_page($contest_info['title']);
 //contest_clock($contest_info);
 
-$edit_team_url = "team.php?id=".urlencode($team_info['team_number']);
+$edit_team_url = "user.php?id=".urlencode($team_info['team_number']);
 $scoreboard_url = "scoreboard.php?contest=".urlencode($team_info['contest']);
 ?>
 <p>
