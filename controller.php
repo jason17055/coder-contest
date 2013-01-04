@@ -106,7 +106,7 @@ while ($team = mysql_fetch_assoc($result)) {
 <td><?php echo format_score($team['score'], $team['score_alt'])?></td>
 </tr><?php
 }
-$teams_url = "teams.php?contest=" . urlencode($contest_id);
+$teams_url = "users.php?contest=" . urlencode($contest_id);
 $problems_url = "problems.php?contest=" . urlencode($contest_id);
 $list_submissions_url = "listsubmissions.php?contest=".urlencode($contest_id);
 $scoreboard_url = "scoreboard.php?contest=" . urlencode($contest_id);

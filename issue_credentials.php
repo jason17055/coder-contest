@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
 	if (isset($_REQUEST['action:cancel']))
 	{
-		$next_url = "teams.php?contest=".urlencode($_REQUEST['contest']);
+		$next_url = "users.php?contest=".urlencode($_REQUEST['contest']);
 		header("Location: $next_url");
 		exit();
 	}
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 	}
 
-	$next_url = "teams.php?contest=".urlencode($_REQUEST['contest']);
+	$next_url = "users.php?contest=".urlencode($_REQUEST['contest']);
 	if ($_POST['do_printout'])
 	{
 		require("credentials_handouts.inc.php");

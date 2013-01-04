@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 	}
 	
-	header("Location: teams.php?contest=" . urlencode($_REQUEST['contest']));
+	header("Location: users.php?contest=" . urlencode($_REQUEST['contest']));
 	exit();
 }
 

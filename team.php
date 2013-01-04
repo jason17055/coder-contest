@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
 	$next_url = $_REQUEST['next_url'] ? $_REQUEST['next_url'] :
 		($_SESSION['is_team'] ? "team_menu.php"
-		: "teams.php?contest=".urlencode($team_info['contest']));
+		: "users.php?contest=".urlencode($team_info['contest']));
 
 	if (isset($_POST['action:cancel']))
 	{
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		mysql_query($sql)
 			or die("SQL error: " . mysql_error());
 
-		$url = "teams.php?contest=".urlencode($contest_id);
+		$url = "users.php?contest=".urlencode($contest_id);
 		header("Location: $next_url");
 		exit();
 	}
