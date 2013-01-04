@@ -36,6 +36,34 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	public static class SessionAdapter
+	{
+		HttpSession session;
+		SessionAdapter(HttpSession session)
+		{
+			this.session = session;
+		}
+
+		public Object get(String key)
+		{
+			return session.getAttribute(key);
+		}
+	}
+
+	public static class RequestAdapter
+	{
+		HttpServletRequest request;
+		RequestAdapter(HttpServletRequest request)
+		{
+			this.request = request;
+		}
+
+		public String get(String param)
+		{
+			return request.getParameter(param);
+		}
+	}
+
 	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
 			String templateName)
 		throws ServletException, IOException
@@ -43,6 +71,8 @@ public class CoreServlet extends HttpServlet
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("name", "Jason");
 		ctx.put("resources_prefix",req.getContextPath());
+		ctx.put("s", new SessionAdapter(req.getSession()));
+		ctx.put("r", new RequestAdapter(req));
 
 		try
 		{
