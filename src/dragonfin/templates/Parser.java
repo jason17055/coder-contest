@@ -44,8 +44,10 @@ class Parser
 		ELSIF,
 		END,
 		FILTER,
+		FOREACH,
 		GET,
 		IF,
+		IN,
 		INCLUDE,
 		INSERT,
 		SET,
@@ -94,10 +96,14 @@ class Parser
 			return new Token(TokenType.ELSIF, s);
 		else if (s.equals("FILTER"))
 			return new Token(TokenType.FILTER, s);
+		else if (s.equals("FOREACH"))
+			return new Token(TokenType.FOREACH, s);
 		else if (s.equals("GET"))
 			return new Token(TokenType.GET, s);
 		else if (s.equals("IF"))
 			return new Token(TokenType.IF, s);
+		else if (s.equals("IN"))
+			return new Token(TokenType.IN, s);
 		else if (s.equals("INCLUDE"))
 			return new Token(TokenType.INCLUDE, s);
 		else if (s.equals("INSERT"))
@@ -515,6 +521,10 @@ class Parser
 		{
 			return parseFilterDirective();
 		}
+		else if (token == TokenType.FOREACH)
+		{
+			return parseForEachDirective();
+		}
 		else if (token == TokenType.GET)
 		{
 			return parseGetDirective();
@@ -595,6 +605,19 @@ class Parser
 		Block content = parseBlock();
 		FilterDirective d = new FilterDirective(filterName, content);
 		return d;
+	}
+
+	private ForEachDirective parseForEachDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.FOREACH);
+		String varName = parseItemName();
+		eatToken(TokenType.IN);
+		Expression expr = parseExpression();
+		Block content = parseBlock();
+		return new ForEachDirective(
+			varName, expr, content
+			);
 	}
 
 	private GetDirective parseGetDirective()
