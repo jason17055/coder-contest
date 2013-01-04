@@ -1,0 +1,10 @@
+<Context>
+<Parameter name="filesdir" value="/srv/falcon-contest-files"/>
+<Resource name="jdbc/contestDB" auth="Container"
+	type="javax.sql.DataSource"
+	factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+	maxActive="100" maxIdle="30" maxWait="10000"
+	driverClassName="com.mysql.jdbc.Driver"
+	username="<--database user-->" password="<--database password-->"
+	url="jdbc:mysql://localhost/<--database name-->"/>
+</Context>

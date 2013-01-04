@@ -10,7 +10,7 @@
 <table>
 <tr>
 <td>Contest:</td>
-<td><select name="contest">[% FOREACH c IN contests %]
+<td><select name="contest">[% FOREACH c IN g.contests %]
 <option value="[% c.id |html %]"[% ' selected="selected"' IF r.contest == c.id %]>[% c.title |html %]</option>
 [% END %]
 <option value="">(system administration)</option>

@@ -2,3 +2,4 @@ config.php
 falcon-contest.war
 build
 extlib
+context.xml

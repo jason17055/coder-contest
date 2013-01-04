@@ -5,3 +5,16 @@ apache-commons-lang.jar
 tomcat-servlet-api.jar
 commons-collections-3.2.jar
 velocity.jar
+
+Make sure Tomcat/lib includes the following jars:
+ * apache-commons-dbcp.jar
+ * apache-commons-pool.jar
+ * mysql-connector-java.jar
+
+Create a directory to store uploaded files, e.g. /srv/falcon-contest-files.
+
+Create a Mysql database. Import schema.sql into then new database.
+
+Modify the context.xml file with your database connection information,
+and the path of the uploaded-files directory.
+

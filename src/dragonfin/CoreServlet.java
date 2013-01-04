@@ -5,6 +5,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.templates.*;
+import dragonfin.contest.model.*;
 
 public class CoreServlet extends HttpServlet
 {
@@ -73,6 +74,7 @@ public class CoreServlet extends HttpServlet
 		ctx.put("resources_prefix",req.getContextPath());
 		ctx.put("s", new SessionAdapter(req.getSession()));
 		ctx.put("r", new RequestAdapter(req));
+		ctx.put("g", new TemplateGlobals());
 
 		try
 		{
