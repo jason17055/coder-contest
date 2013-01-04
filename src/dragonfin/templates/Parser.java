@@ -550,7 +550,12 @@ class Parser
 				Expression rhs = parseExpression();
 				return new SetDirective(expr, rhs);
 			}
-			return new GetDirective(expr);
+			Directive d = new GetDirective(expr);
+			while (peekToken() == TokenType.FILTER)
+			{
+				d = parseChainedFilter(d);
+			}
+			return d;
 		}
 		else
 		{
@@ -573,6 +578,14 @@ class Parser
 
 		DefaultDirective d = new DefaultDirective(cmds);
 		return d;
+	}
+
+	private FilterDirective parseChainedFilter(Directive content)
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.FILTER);
+		String filterName = parseItemName();
+		return new FilterDirective(filterName, content);
 	}
 
 	private FilterDirective parseFilterDirective()
