@@ -65,21 +65,29 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
-	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
-			String templateName)
-		throws ServletException, IOException
+	protected Map<String,Object> makeVars(HttpServletRequest req,
+			Map<String,Object> args)
 	{
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
-		ctx.put("name", "Jason");
 		ctx.put("resources_prefix",req.getContextPath());
 		ctx.put("s", new SessionAdapter(req.getSession()));
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
+		if (args != null)
+			ctx.putAll(args);
+		return ctx;
+	}
+
+	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
+			String templateName, Map<String,Object> args)
+		throws ServletException, IOException
+	{
+		Map<String, Object> vars = makeVars(req, args);
 
 		try
 		{
 		Writer out = resp.getWriter();
-		engine.process(templateName, ctx, out);
+		engine.process(templateName, vars, out);
 		out.close();
 		}
 		catch (IOException e) { throw e; }
@@ -87,6 +95,13 @@ public class CoreServlet extends HttpServlet
 		{
 			throw new ServletException("Template Engine error", e);
 		}
+	}
+
+	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
+			String templateName)
+		throws ServletException, IOException
+	{
+		renderTemplate(req, resp, templateName, null);
 	}
 
 	void showLoginPage(HttpServletRequest req, HttpServletResponse resp)

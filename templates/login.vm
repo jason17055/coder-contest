@@ -6,7 +6,7 @@
 <p class="error">[% message |html %]</p>
 [% END %]
 
-<form method="post" action="login.php">
+<form method="post" action="login">
 <table>
 <tr>
 <td>Contest:</td>
