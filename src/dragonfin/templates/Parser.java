@@ -510,6 +510,10 @@ class Parser
 		{
 			return parseDefaultDirective();
 		}
+		else if (token == TokenType.FILTER)
+		{
+			return parseFilterDirective();
+		}
 		else if (token == TokenType.GET)
 		{
 			return parseGetDirective();
@@ -568,6 +572,15 @@ class Parser
 		} while (isAssignmentStart(peekToken()));
 
 		return new DefaultDirective(cmds);
+	}
+
+	private FilterDirective parseFilterDirective()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.FILTER);
+		String filterName = parseIdentifier();
+		Block content = parseBlock();
+		return new FilterDirective(filterName, content);
 	}
 
 	private GetDirective parseGetDirective()

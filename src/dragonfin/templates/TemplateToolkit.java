@@ -6,10 +6,14 @@ import java.util.*;
 public class TemplateToolkit
 {
 	ResourceLoader resourceLoader;
+	Map<String,Filter> filters;
 
 	public TemplateToolkit(ResourceLoader resourceLoader)
 	{
 		this.resourceLoader = resourceLoader;
+		this.filters = new HashMap<String,Filter>();
+		this.filters.put("html",
+			new HtmlFilter());
 	}
 
 	public void process(String templateName, Map<String,?> vars, Writer out)
@@ -55,5 +59,18 @@ public class TemplateToolkit
 		OutputStreamWriter w = new OutputStreamWriter(System.out);
 		toolkit.process(args[0], System.getenv(), w);
 		w.close();
+	}
+
+	static class HtmlFilter implements Filter
+	{
+		public String apply(String s)
+		{
+			return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+		}
+	}
+
+	public Filter getFilter(String filterName)
+	{
+		return filters.get(filterName);
 	}
 }
