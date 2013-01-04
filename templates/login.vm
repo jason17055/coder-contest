@@ -1,4 +1,4 @@
-[% WRAPPER common.inc
+[% WRAPPER 'common.inc'
 	page_title = 'Login'
 %]
 
@@ -10,10 +10,10 @@
 <table>
 <tr>
 <td>Contest:</td>
-<td><select name="contest">[% FOREACH c = contests %]
+<td><select name="contest">[% FOREACH c IN contests %]
 <option value="[% c.id |html %]"[% ' selected="selected"' IF r.contest == c.id %]>[% c.title |html %]</option>
 [% END %]
-<option value="">(system administration)</option></select></td>
+<option value="">(system administration)</option>
 </select>
 </td>
 </tr>

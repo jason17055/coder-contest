@@ -42,6 +42,7 @@ public class CoreServlet extends HttpServlet
 	{
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("name", "Jason");
+		ctx.put("resources_prefix",req.getContextPath());
 
 		try
 		{
