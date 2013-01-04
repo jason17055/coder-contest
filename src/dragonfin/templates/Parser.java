@@ -490,7 +490,6 @@ class Parser
 		TokenType token;
 		while ( (token = peekToken()) != TokenType.EOF )
 		{
-		System.err.println("token "+token);
 			if (token == TokenType.LITERAL_STRING)
 			{
 				doc.parts.add(eatToken(token).text);
@@ -793,7 +792,8 @@ class Parser
 		@Override
 		Object evaluate(Context ctx)
 		{
-			return ctx.vars.get(variableName);
+			Object v = ctx.vars.get(variableName);
+			return v;
 		}
 	}
 
