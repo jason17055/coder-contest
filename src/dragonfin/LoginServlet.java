@@ -38,72 +38,15 @@ public class LoginServlet extends CoreServlet
 		resp.sendRedirect(u);
 	}
 
-	private boolean checkDirectorLogin(HttpServletRequest req,
-			HttpServletResponse resp, Connection db)
+	private boolean checkUserLogin(HttpServletRequest req, HttpServletResponse resp)
 		throws Exception
 	{
-		PreparedStatement stmt = db.prepareStatement(
-			"SELECT contest_id"
-			+" FROM contest"
-			+" WHERE contest_id=?"
-			+" AND director=?"
-			+" AND director_password=SHA1(?)"
-			);
-		stmt.setString(1, req.getParameter("contest"));
-		stmt.setString(2, req.getParameter("username"));
-		stmt.setString(3, req.getParameter("password"));
-		ResultSet rs = stmt.executeQuery();
-		if (rs.next())
+		Connection db = Database.getConnection();
+		try
 		{
-			// found director login
-			HttpSession s = req.getSession(true);
-			s.removeAttribute("is_team");
-			s.removeAttribute("is_judge");
-			s.removeAttribute("is_sysadmin");
-			s.setAttribute("is_director", rs.getString(1));
-			s.setAttribute("uid", req.getParameter("contest")+"/"+req.getParameter("username"));
-			s.setAttribute("username", req.getParameter("username"));
-			return true;
-		}
-		return false;
-	}
 
-	private boolean checkJudgeLogin(HttpServletRequest req,
-			HttpServletResponse resp, Connection db)
-		throws Exception
-	{
 		PreparedStatement stmt = db.prepareStatement(
-			"SELECT judge_id"
-			+" FROM judge"
-			+" WHERE contest=?"
-			+" AND judge_user=?"
-			+" AND judge_password=SHA1(?)"
-			);
-		stmt.setString(1, req.getParameter("contest"));
-		stmt.setString(2, req.getParameter("username"));
-		stmt.setString(3, req.getParameter("password"));
-		ResultSet rs = stmt.executeQuery();
-		if (rs.next())
-		{
-			// found judge login
-			HttpSession s = req.getSession(true);
-			s.setAttribute("is_judge", rs.getString(1));
-			s.removeAttribute("is_team");
-			s.removeAttribute("is_director");
-			s.removeAttribute("is_sysadmin");
-			s.setAttribute("uid", req.getParameter("contest")+"/"+req.getParameter("username"));
-			s.setAttribute("username", req.getParameter("username"));
-			return true;
-		}
-		return false;
-	}
-
-	private boolean checkTeamLogin(HttpServletRequest req,
-			HttpServletResponse resp, Connection db)
-		throws Exception
-	{
-		PreparedStatement stmt = db.prepareStatement(
-			"SELECT team_number"
+			"SELECT team_number,is_contestant,is_judge,is_director"
 			+" FROM team"
 			+" WHERE contest=?"
 			+" AND user=?"
@@ -117,32 +60,39 @@ public class LoginServlet extends CoreServlet
 		{
 			// found team login
 			HttpSession s = req.getSession(true);
-			s.setAttribute("is_team", rs.getString(1));
-			s.removeAttribute("is_judge");
-			s.removeAttribute("is_director");
-			s.removeAttribute("is_sysadmin");
+			s.setAttribute("uidnumber", rs.getString(1));
+			s.setAttribute("contest", req.getParameter("contest"));
+			if (rs.getString(2).equals("Y"))
+				s.setAttribute("is_contestant", Boolean.TRUE);
+			else
+				s.removeAttribute("is_contestant");
+			if (rs.getString(3).equals("Y"))
+				s.setAttribute("is_judge", Boolean.TRUE);
+			else
+				s.removeAttribute("is_judge");
+			if (rs.getString(4).equals("Y"))
+				s.setAttribute("is_director", Boolean.TRUE);
+			else
+				s.removeAttribute("is_director");
 			s.setAttribute("uid", req.getParameter("contest")+"/"+req.getParameter("username"));
 			s.setAttribute("username", req.getParameter("username"));
 			return true;
 		}
 		return false;
+
+		}
+		finally
+		{
+			db.close();
+		}
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		try {
-
-		Connection db = Database.getConnection();
 		try
 		{
-			if(
-			checkTeamLogin(req, resp, db)
-			||
-			checkJudgeLogin(req, resp, db)
-			||
-			checkDirectorLogin(req, resp, db)
-			)
+			if (checkUserLogin(req, resp))
 			{
 				sendUserOnTheirWay(req, resp);
 			}
@@ -152,12 +102,6 @@ public class LoginServlet extends CoreServlet
 				args.put("message", "Error: invalid username/password");
 				renderTemplate(req, resp, "login.vm", args);
 			}
-		}
-		finally
-		{
-			db.close();
-		}
-
 		}
 		catch (Exception e)
 		{
