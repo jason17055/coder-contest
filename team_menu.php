@@ -142,7 +142,7 @@ Clarification: <?php echo htmlspecialchars(substr($row['request'],0,60));
 
 <h3>Actions</h3>
 <div>
-<a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_new">Scoreboard</a>
+<a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_blank">Scoreboard</a>
 <!--
 | <a href="submit_test.php">Test a Solution</a>
 | <a href="submit.php">Submit a Solution</a>
