@@ -19,7 +19,7 @@
 
 <div id="sessionctl">
 [% IF s.username %]
-<div>[% s.username |uppercase |html %]</div>
+<div>[% s.username |uc |html %]</div>
 <div><a href="login?logout=1">Logout</a></div>
 [% ELSE %]
 <div><a href="login">Login</a></div>

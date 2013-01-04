@@ -12,8 +12,9 @@ public class TemplateToolkit
 	{
 		this.resourceLoader = resourceLoader;
 		this.filters = new HashMap<String,Filter>();
-		this.filters.put("html",
-			new HtmlFilter());
+		this.filters.put("html", new HtmlFilter());
+		this.filters.put("uc", new UppercaseFilter());
+		this.filters.put("lc", new LowercaseFilter());
 	}
 
 	public void process(String templateName, Map<String,?> vars, Writer out)
@@ -66,6 +67,22 @@ public class TemplateToolkit
 		public String apply(String s)
 		{
 			return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+		}
+	}
+
+	static class LowercaseFilter implements Filter
+	{
+		public String apply(String s)
+		{
+			return s.toLowerCase();
+		}
+	}
+
+	static class UppercaseFilter implements Filter
+	{
+		public String apply(String s)
+		{
+			return s.toUpperCase();
 		}
 	}
 
