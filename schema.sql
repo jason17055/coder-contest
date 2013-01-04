@@ -82,7 +82,6 @@ CREATE TABLE team (
 	is_contestant CHAR(1) NOT NULL DEFAULT 'Y',
 	is_judge      CHAR(1) NOT NULL DEFAULT 'N',
 	is_director   CHAR(1) NOT NULL DEFAULT 'N',
-	is_sysadmin   CHAR(1) NOT NULL DEFAULT 'N',
 	UNIQUE INDEX (contest, ordinal),
 	UNIQUE INDEX (contest, user)
 	);
