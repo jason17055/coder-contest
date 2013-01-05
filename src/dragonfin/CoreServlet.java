@@ -59,6 +59,13 @@ public class CoreServlet extends HttpServlet
 			this.request = request;
 		}
 
+		public String getUri()
+		{
+			String s = request.getRequestURI();
+			String q = request.getQueryString();
+			return s + (q != null ? "?"+q : "");
+		}
+
 		public String get(String param)
 		{
 			return request.getParameter(param);
@@ -70,9 +77,21 @@ public class CoreServlet extends HttpServlet
 	{
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("resources_prefix",req.getContextPath());
-		ctx.put("s", new SessionAdapter(req.getSession(false)));
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
+
+		HttpSession s = req.getSession(false);
+		if (s != null)
+		{
+			ctx.put("s", new SessionAdapter(s));
+			String contestId = (String) s.getAttribute("contest");
+			if (contestId != null)
+			{
+				//ContestInfo contest = ContestInfo.loadForTemplate();
+				//ctx.put("contest", contest);
+			}
+		}
+
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
@@ -111,11 +130,16 @@ public class CoreServlet extends HttpServlet
 		resp.sendRedirect(newUrl);
 	}
 
+	protected boolean notLoggedIn(HttpServletRequest req)
+	{
+		HttpSession s = req.getSession(false);
+		return (s == null || s.getAttribute("uid") == null);
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		HttpSession s = req.getSession(false);
-		if (s == null || s.getAttribute("uid") == null)
+		if (notLoggedIn(req))
 		{
 			showLoginPage(req, resp);
 			return;

@@ -6,7 +6,7 @@
 <p class="error">[% message |html %]</p>
 [% END %]
 
-<form method="post" action="login">
+<form method="post" action="[% r.uri |html %]">
 <table>
 <tr>
 <td>Contest:</td>
