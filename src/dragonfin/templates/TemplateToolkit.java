@@ -36,12 +36,14 @@ public class TemplateToolkit
 	void processHelper(String templateName, Context ctx)
 		throws IOException, TemplateSyntaxException, TemplateRuntimeException
 	{
+		InputStream stream = resourceLoader.getResourceStream(templateName);
+		if (stream == null)
+		{
+			throw new FileNotFoundException(templateName);
+		}
+
 		BufferedReader in = new BufferedReader(
-				new InputStreamReader(
-					resourceLoader.getResourceStream(
-							templateName),
-					"UTF-8"
-					)
+				new InputStreamReader(stream, "UTF-8")
 				);
 		Parser parser = new Parser(this, in);
 
