@@ -870,17 +870,76 @@ class Parser
 		return parseIdentifier();
 	}
 
+	private List<Expression> parseArgs()
+		throws IOException, TemplateSyntaxException
+	{
+		ArrayList<Expression> args = new ArrayList<Expression>();
+		for (;;)
+		{
+			if (peekToken() == TokenType.COMMA)
+			{
+				eatToken(TokenType.COMMA);
+				continue;
+			}
+			else if (isExpressionStart(peekToken()))
+			{
+				Expression lhs = parseExpression();
+				//TODO- support named arguments
+
+				args.add(lhs);
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return args;
+	}
+
+	private Expression parseNode()
+		throws IOException, TemplateSyntaxException
+	{
+		String itemName = parseItemName();
+		if (peekToken() == TokenType.OPEN_PAREN)
+		{
+			eatToken(TokenType.OPEN_PAREN);
+			List<Expression> args = parseArgs();
+			eatToken(TokenType.CLOSE_PAREN);
+			return new FunctionCall(itemName, args);
+		}
+		else
+		{
+			return new Variable(itemName);
+		}
+	}
+
 	private Expression parseIdentifier()
 		throws IOException, TemplateSyntaxException
 	{
-		Expression rv = new Variable(parseItemName());
+		Expression lhs = parseNode();
 		while (peekToken() == TokenType.DOT)
 		{
 			eatToken(TokenType.DOT);
-			String propName = parseItemName();
-			rv = new GetProperty(rv, propName);
+			Expression rhs = parseNode();
+			if (rhs instanceof Variable)
+			{
+				String varName = ((Variable)rhs).variableName;
+				lhs = new GetProperty(lhs, varName);
+			}
+			else if (rhs instanceof FunctionCall)
+			{
+				FunctionCall fc = (FunctionCall) rhs;
+				String methodName = fc.functionName;
+				List<Expression> args = fc.arguments;
+				lhs = new MethodCall(lhs, methodName, args);
+			}
+			else
+			{
+				throw new Error("unexpected");
+			}
 		}
-		return rv;
+		return lhs;
 	}
 
 	private String parseItemName()
@@ -888,6 +947,25 @@ class Parser
 	{
 		Token t = eatToken(TokenType.IDENTIFIER);
 		return t.text;
+	}
+
+	static class FunctionCall extends Expression
+	{
+		String functionName;
+		List<Expression> arguments;
+
+		FunctionCall(String functionName, List<Expression> arguments)
+		{
+			this.functionName = functionName;
+			this.arguments = arguments;
+		}
+
+		@Override
+		Object evaluate(Context ctx)
+			throws TemplateRuntimeException
+		{
+			throw new TemplateRuntimeException("not implemented");
+		}
 	}
 
 	static class Variable extends Expression

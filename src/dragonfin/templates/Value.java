@@ -22,6 +22,29 @@ public class Value
 		return s.length() != 0;
 	}
 
+	public static int asInt(Object obj)
+		throws TemplateRuntimeException
+	{
+		if (obj == null)
+			return 0;
+		else if (obj instanceof Number)
+		{
+			return ((Number)obj).intValue();
+		}
+		else
+		{
+			try
+			{
+			int n = Integer.parseInt(obj.toString());
+			return n;
+			}
+			catch (NumberFormatException e)
+			{
+				throw new TemplateRuntimeException("unable to convert to integer", e);
+			}
+		}
+	}
+
 	public static String asString(Object obj)
 	{
 		if (obj == null)
