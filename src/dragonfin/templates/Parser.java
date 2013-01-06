@@ -241,6 +241,9 @@ class Parser
 				} else if (Character.isJavaIdentifierStart(c)) {
 					cur.append((char)c);
 					st = 4;
+				} else if (Character.isDigit(c)) {
+					cur.append((char)c);
+					st = 11;
 				} else if (Character.isWhitespace(c)) {
 					//do nothing
 				} else if (c == '#') {
@@ -385,6 +388,24 @@ class Parser
 				{
 					cur.append((char)c);
 					st=9;
+				}
+				break;
+
+			case 11: //token beginning with [0-9]
+				if (Character.isDigit(c))
+				{
+					cur.append((char)c);
+				}
+				else
+				{
+					// end of number
+					Token t = new Token(
+						TokenType.NUMBER,
+						cur.toString());
+					cur = new StringBuilder();
+					st = 2;
+					unread(c);
+					return t;
 				}
 				break;
 
@@ -866,8 +887,26 @@ class Parser
 		{
 			return parseString(eatToken(t).text);
 		}
+		else if (t == TokenType.NUMBER)
+		{
+			return parseNumber(eatToken(t).text);
+		}
 
 		return parseIdentifier();
+	}
+
+	private Expression parseNumber(String numberText)
+		throws TemplateSyntaxException
+	{
+		try
+		{
+			int x = Integer.parseInt(numberText);
+			return new Expressions.Literal(new Integer(x));
+		}
+		catch (NumberFormatException e)
+		{
+			throw new SyntaxException("Invalid number");
+		}
 	}
 
 	private List<Expression> parseArgs()
