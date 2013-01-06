@@ -9,16 +9,20 @@ public class Expressions
 
 	static class Literal extends Expression
 	{
-		String literalText;
-		public Literal(String literalText)
+		Object value;
+
+		public Literal(Object value)
 		{
-			this.literalText = literalText;
+			if (!((value instanceof String) || (value instanceof Number)))
+				throw new Error("invalid Literal "+value);
+
+			this.value = value;
 		}
 
 		@Override
 		public Object evaluate(Context ctx)
 		{
-			return literalText;
+			return value;
 		}
 
 		static final Literal EMPTY_STRING = new Literal("");
@@ -123,13 +127,10 @@ class Concatenate extends Expression
 			Expressions.Literal a = (Expressions.Literal) lhs;
 			Expressions.Literal b = (Expressions.Literal) rhs;
 			return new Expressions.Literal(
-				a.literalText + b.literalText
+				Value.asString(a.value) + Value.asString(b.value)
 				);
 		}
-		else
-		{
-			return new Concatenate(lhs, rhs);
-		}
+		return new Concatenate(lhs, rhs);
 	}
 
 	@Override
