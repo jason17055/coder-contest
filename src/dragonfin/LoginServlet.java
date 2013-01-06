@@ -42,10 +42,11 @@ public class LoginServlet extends CoreServlet
 		throws Exception
 	{
 		Connection db = Database.getConnection();
+		PreparedStatement stmt = null;
 		try
 		{
 
-		PreparedStatement stmt = db.prepareStatement(
+		stmt = db.prepareStatement(
 			"SELECT team_number,is_contestant,is_judge,is_director"
 			+" FROM team"
 			+" WHERE contest=?"
@@ -83,6 +84,8 @@ public class LoginServlet extends CoreServlet
 		}
 		finally
 		{
+			if (stmt != null)
+				stmt.close();
 			db.close();
 		}
 	}

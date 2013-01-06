@@ -1,6 +1,7 @@
 package dragonfin;
 
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -74,6 +75,7 @@ public class CoreServlet extends HttpServlet
 
 	protected Map<String,Object> makeVars(HttpServletRequest req,
 			Map<String,Object> args)
+		throws Exception
 	{
 		HashMap<String,Object> ctx = new HashMap<String,Object>();
 		ctx.put("resources_prefix",req.getContextPath());
@@ -87,8 +89,8 @@ public class CoreServlet extends HttpServlet
 			String contestId = (String) s.getAttribute("contest");
 			if (contestId != null)
 			{
-				//ContestInfo contest = ContestInfo.loadForTemplate();
-				//ctx.put("contest", contest);
+				ContestInfo contest = ContestInfo.load(contestId);
+				ctx.put("contest", contest);
 			}
 		}
 
@@ -101,15 +103,18 @@ public class CoreServlet extends HttpServlet
 			String templateName, Map<String,Object> args)
 		throws ServletException, IOException
 	{
-		Map<String, Object> vars = makeVars(req, args);
-
 		try
 		{
+		Map<String, Object> vars = makeVars(req, args);
 		Writer out = resp.getWriter();
 		engine.process(templateName, vars, out);
 		out.close();
 		}
 		catch (IOException e) { throw e; }
+		catch (SQLException e)
+		{
+			throw new ServletException("Database error", e);
+		}
 		catch (Exception e)
 		{
 			throw new ServletException("Template Engine error", e);

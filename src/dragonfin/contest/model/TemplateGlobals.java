@@ -6,12 +6,13 @@ import java.util.*;
 public class TemplateGlobals
 {
 	public List<ContestInfo> getContests()
-		throws javax.naming.NamingException, SQLException
+		throws SQLException
 	{
 		Connection db = Database.getConnection();
+		Statement stmt = null;
 		try
 		{
-			Statement stmt = db.createStatement();
+			stmt = db.createStatement();
 			ResultSet rs = stmt.executeQuery(
 				"SELECT contest_id,title FROM contest WHERE enabled='Y' ORDER BY contest_id"
 				);
@@ -27,6 +28,8 @@ public class TemplateGlobals
 		}
 		finally
 		{
+			if (stmt != null)
+				stmt.close();
 			db.close();
 		}
 	}
