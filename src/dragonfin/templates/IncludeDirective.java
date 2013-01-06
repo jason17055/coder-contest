@@ -42,12 +42,12 @@ class IncludeDirective implements Directive
 	protected void executeHelper(HashMap<String,Object> args, Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
+		String pathValue = Value.asString(pathExpr.evaluate(ctx));
 		Map<String,?> oldVars = ctx.vars;
 		ctx.vars = new Parameters(args, oldVars);
 		try
 		{
-		String v = Value.asString(pathExpr.evaluate(ctx));
-		ctx.toolkit.processHelper(v, ctx);
+		ctx.toolkit.processHelper(pathValue, ctx);
 		}
 		catch (TemplateSyntaxException e)
 		{
