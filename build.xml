@@ -49,4 +49,9 @@
 <copy file="${project_name}.war" todir="/var/lib/tomcat/webapps" />
 </target>
 
+<target name="clean">
+<delete dir="build" />
+<delete file="${project_name}.war" />
+</target>
+
 </project>
