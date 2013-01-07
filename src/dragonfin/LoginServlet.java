@@ -43,6 +43,7 @@ public class LoginServlet extends CoreServlet
 	{
 		Connection db = Database.getConnection();
 		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try
 		{
 
@@ -56,7 +57,7 @@ public class LoginServlet extends CoreServlet
 		stmt.setString(1, req.getParameter("contest"));
 		stmt.setString(2, req.getParameter("username"));
 		stmt.setString(3, req.getParameter("password"));
-		ResultSet rs = stmt.executeQuery();
+		rs = stmt.executeQuery();
 		if (rs.next())
 		{
 			// found team login
@@ -84,6 +85,8 @@ public class LoginServlet extends CoreServlet
 		}
 		finally
 		{
+			if (rs != null)
+				rs.close();
 			if (stmt != null)
 				stmt.close();
 			db.close();
