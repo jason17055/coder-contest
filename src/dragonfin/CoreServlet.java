@@ -3,6 +3,7 @@ package dragonfin;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.templates.*;
@@ -92,6 +93,16 @@ public class CoreServlet extends HttpServlet
 				ContestInfo contest = ContestInfo.load(contestId);
 				ctx.put("contest", contest);
 			}
+			final String userId = (String) s.getAttribute("uidnumber");
+			Callable<UserInfo> userC = new Callable<UserInfo>()
+			{
+			public UserInfo call() throws Exception
+			{
+				return UserInfo.loadById(userId);
+			}
+
+			};
+			ctx.put("user", userC);
 		}
 
 		if (args != null)
