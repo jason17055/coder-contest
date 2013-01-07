@@ -50,31 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 	}
 
-	$sql = "SELECT judge_id,judge_user
-		FROM judge
-		WHERE contest=".db_quote($_REQUEST['contest'])."
-		ORDER BY judge_id";
-	$result = mysql_query($sql);
-	while ($row = mysql_fetch_assoc($result))
-	{
-		if ($_POST["reset_judge$row[judge_id]"])
-		{
-			$pass = $_POST["judge_password$row[judge_id]"];
-			$sql = "UPDATE judge
-				SET judge_password=SHA1(".db_quote($pass).")
-				WHERE judge_id=".db_quote($row['judge_id']);
-			mysql_query($sql)
-				or die("SQL error: ".mysql_error());
-
-			$passwords[] = array(
-				team_name => $row['judge_user'],
-				description => 'Contest Judge',
-				username => $row['judge_user'],
-				password => $pass,
-				);
-		}
-	}
-
 	$next_url = "users.php?contest=".urlencode($_REQUEST['contest']);
 	if ($_POST['do_printout'])
 	{
@@ -101,7 +76,7 @@ begin_page("Issue Login Credentials");
 	$sql = "SELECT team_number AS id,team_name,user,password,ordinal
 		FROM team t
 		WHERE contest=".db_quote($_REQUEST['contest'])."
-		ORDER BY ordinal,team_name";
+		ORDER BY is_contestant DESC,ordinal,team_name";
 	$result = mysql_query($sql)
 		or die("SQL error: ".mysql_error());
 while ($row = mysql_fetch_assoc($result)) {
@@ -114,27 +89,6 @@ while ($row = mysql_fetch_assoc($result)) {
 <label for="reset<?php echo htmlspecialchars($row['id'])?>_btn"><?php echo htmlspecialchars($row['team_name'])?></label></td>
 <td><?php echo htmlspecialchars($row['user'])?></td>
 <td><input type="text" name="password<?php echo htmlspecialchars($row['id'])?>" value="<?php echo htmlspecialchars($pass)?>"></td>
-</tr>
-<?php
-} //end while
-?>
-<?php
-	$sql = "SELECT judge_id AS id,judge_user,judge_password AS password
-		FROM judge
-		WHERE contest=".db_quote($_REQUEST['contest'])."
-		ORDER BY judge_user";
-	$result = mysql_query($sql)
-		or die("SQL error: ".mysql_error());
-while ($row = mysql_fetch_assoc($result)) {
-	$pass = generatePassword(5);
-	?><tr>
-<td><input type="checkbox" id="reset_judge<?php echo htmlspecialchars($row['id'])?>_btn" name="reset_judge<?php echo htmlspecialchars($row['id'])?>"<?php
-		if (!$row['password']) {
-			echo ' checked="checked"';
-		}?>>
-<label for="reset_judge<?php echo htmlspecialchars($row['id'])?>_btn"><?php echo htmlspecialchars($row['judge_user'])?></label></td>
-<td><?php echo htmlspecialchars($row['judge_user'])?></td>
-<td><input type="text" name="judge_password<?php echo htmlspecialchars($row['id'])?>" value="<?php echo htmlspecialchars($pass)?>"></td>
 </tr>
 <?php
 } //end while
