@@ -2,6 +2,7 @@ package dragonfin.templates;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 class GetProperty extends Expression
 {
@@ -22,6 +23,12 @@ class GetProperty extends Expression
 		if (obj == null)
 			return null;
 
+		return evalHelper(obj);
+	}
+
+	private Object evalHelper(Object obj)
+		throws TemplateRuntimeException
+	{
 		if (obj instanceof Map)
 		{
 			return ((Map<?,?>)obj).get(propertyName);
@@ -77,6 +84,19 @@ class GetProperty extends Expression
 		catch (Exception e)
 		{
 			throw new TemplateRuntimeException("Exception thrown by "+obj.getClass().getName()+".get() method", e);
+		}
+
+		if (obj instanceof Callable)
+		{
+			Callable<?> asCallable = (Callable<?>) obj;
+			try
+			{
+			return evalHelper(asCallable.call());
+			}
+			catch (Exception e)
+			{
+				throw new TemplateRuntimeException("Exception thrown by "+obj.getClass().getName()+".call() method", e);
+			}
 		}
 
 		throw new TemplateRuntimeException("Cannot access property '"+propertyName+"' of instance of "+obj.getClass().getName());
