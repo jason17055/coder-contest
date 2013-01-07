@@ -29,10 +29,16 @@ class GetProperty extends Expression
 
 		if (obj instanceof List)
 		{
+			List<?> asList = (List<?>) obj;
+			if ("size".equals(propertyName))
+			{
+				return new Integer(asList.size());
+			}
+
 			try
 			{
 				int i = Integer.parseInt(propertyName);
-				return ((List<?>)obj).get(i);
+				return asList.get(i);
 			}
 			catch (NumberFormatException e)
 			{

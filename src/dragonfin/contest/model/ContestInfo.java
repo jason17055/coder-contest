@@ -101,4 +101,14 @@ public class ContestInfo implements java.io.Serializable
 			super("Invalid contest: "+contestId);
 		}
 	}
+
+	public String getCurrent_phase_name()
+	{
+		return "CODING";
+	}
+
+	public String getCurrent_phase_timeleft()
+	{
+		return "foo";
+	}
 }

@@ -13,7 +13,8 @@ Your name: <a href="[% edit_team_url |html %]">[% team_name |html %]</a>
 <table border="1">
 <tr><th>Problem</th><th>Status</th></tr>
 [% FOREACH p IN problems %]
-	[% IF p.thetime %]
+	[% u = "problems/${p.number}" %]
+	[% IF p.solution_time %]
 		[% status = 'Solved' %]
 	[% ELSIF p.incorrect_submissions %]
 		[% status = 'Attempted' %]
@@ -22,7 +23,7 @@ Your name: <a href="[% edit_team_url |html %]">[% team_name |html %]</a>
 	[% ELSE %]
 		[% status = 'Unopened' %]
 	[% END %]
-<tr><td><a href="[% p.url |html %]">[% p.name %][%
+<tr><td><a href="[% u |html %]">[% p.name %][%
 	" (${p.difficulty})" IF p.difficulty %]</a></td>
 <td>[% status |html %]</td>
 </tr>
@@ -33,7 +34,6 @@ Your name: <a href="[% edit_team_url |html %]">[% team_name |html %]</a>
 
 <h3 page-reload-safe="page-reload-safe">Submissions/Responses</h3>
 
-[% messages = contest.messages %]
 [% IF messages.size %]
 
 <table border="1">
