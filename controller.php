@@ -46,6 +46,7 @@ $sql = "SELECT *,
 	CASE WHEN last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT.") THEN 'N' ELSE 'Y' END AS online
 	FROM team
 	WHERE contest=" . db_quote($contest_id) . "
+	AND is_contestant='Y'
 	ORDER BY ordinal,team_name ASC";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
@@ -117,19 +118,20 @@ $test_url = 'submit_test.php?next_url=' . urlencode($_SERVER['REQUEST_URI']);
 </table>
 
 <?php
-$sql = "SELECT judge_user,judge_id,
+$sql = "SELECT user,team_number AS judge_id,
 		CASE WHEN last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(), INTERVAL ".USER_ONLINE_TIMEOUT.") THEN 'N' ELSE 'Y' END AS online,
-		(SELECT COUNT(*) FROM submission WHERE judge=judge_id
+		(SELECT COUNT(*) FROM submission WHERE judge=team_number
 			AND (status IS NULL OR status='')) AS submissions_pending,
-		(SELECT COUNT(*) FROM submission WHERE judge=judge_id
+		(SELECT COUNT(*) FROM submission WHERE judge=team_number
 			) AS submissions_total,
-		(SELECT COUNT(*) FROM clarification WHERE judge=judge_id
+		(SELECT COUNT(*) FROM clarification WHERE judge=team_number
 			AND (status IS NULL OR status='')) AS clarifications_pending,
-		(SELECT COUNT(*) FROM clarification WHERE judge=judge_id
+		(SELECT COUNT(*) FROM clarification WHERE judge=team_number
 			) AS clarifications_total
-	FROM judge
+	FROM team
 	WHERE contest=".db_quote($_REQUEST['contest'])."
-	ORDER BY judge_user";
+	AND is_contestant='N'
+	ORDER BY ordinal,team_name ASC";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 if (mysql_num_rows($result)) {
@@ -141,7 +143,7 @@ if (mysql_num_rows($result)) {
 <?php
 while ($judge_info = mysql_fetch_assoc($result))
 {
-	$edit_judge_url = "judge.php?id=".urlencode($judge_info['judge_id']);
+	$edit_judge_url = "user.php?id=".urlencode($judge_info['judge_id']);
 	$online = $judge_info['online'];
 	$online_img = $online == 'Y' ? "images/plus.png" : "images/minus.png";
 	$online_lbl = $online == 'Y' ? '[Online]' : '[Offline]';
@@ -149,7 +151,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 	$judge_info['clarifications_done'] = $judge_info['clarifications_total'] - $judge_info['clarifications_pending'];
 	?><tr>
 <td height="32"><img class="online-indicator" id="ind_online_judge_<?php echo htmlspecialchars($judge_info['judge_id'] . "_" . $online)?>" src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width='14' height='14'>
-<a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($judge_info['judge_user'])?></a>
+<a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($judge_info['user'])?></a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
 <img src="images/clarification.png" alt="Clarifications:"
