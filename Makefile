@@ -37,6 +37,7 @@ script_files = \
 	users.php
 
 data_files = \
+	popup_message.js \
 	scoreboard.css \
 	scoreboard_images/eye4.png \
 	scoreboard_images/green_flag.png \

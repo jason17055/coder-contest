@@ -64,7 +64,7 @@ function dismissAnnouncement()
 	}
 
 	var andThen = checkForAnnouncement;
-	if ($('[page-reload-safe]').length)
+	if ($('form').length == 0)
 	{
 		andThen = function() { window.location.reload(); };
 	}

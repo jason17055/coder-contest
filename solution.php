@@ -38,7 +38,7 @@ begin_page('Solution');
 $problem_url = "open_problem.php?problem=".urlencode($submission_info['problem_number']);
 
 ?>
-<table page-reload-safe="page-reload-safe">
+<table>
 <tr>
 <td>Contestant:</td>
 <td><?php echo htmlspecialchars($team_info['team_name'])?></td>
