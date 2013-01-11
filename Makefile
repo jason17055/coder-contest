@@ -25,6 +25,7 @@ script_files = \
 	show_problem_clarifications.inc.php \
 	show_problems_list.inc.php \
 	show_solutions.inc.php \
+	show_unjudged_submissions.inc.php \
 	solution.php \
 	submission.php \
 	submit.php \

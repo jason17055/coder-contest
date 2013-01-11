@@ -32,6 +32,11 @@ if ($team_info['is_contestant'] == 'Y')
 	require('show_my_submissions.inc.php');
 }
 
+if ($team_info['is_judge'] == 'Y')
+{
+	require('show_unjudged_submissions.inc.php');
+}
+
 ?>
 
 <h3>Actions</h3>
