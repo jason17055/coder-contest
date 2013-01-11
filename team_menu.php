@@ -22,52 +22,12 @@ Your name: <a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo ht
 </p>
 <?php
 
-$sql = "SELECT p.problem_number,problem_name,spec_file,spec_name,
-	thetime,incorrect_submissions,opened,difficulty
-	FROM problem p
-	LEFT JOIN results r
-	ON r.problem_number=p.problem_number
-	AND team_number=".db_quote($team_info['team_number'])."
-	WHERE contest=" . db_quote($contest_id) . "
-	AND ".check_phase_option_bool('pp_read_problem')."
-	ORDER BY problem_number
-		";
-$result = mysql_query($sql)
-	or die("SQL error: ".mysql_error());
-if ($row = mysql_fetch_assoc($result)) {
-?>
-<h3>Problems</h3>
-<table border="1">
-<tr><th>Problem</th><th>Status</th></tr>
-<?php
+if (TRUE || $team_info['is_contestant'] == 'Y')
+{
+	require('show_problems_list.inc.php');
+}
 
-while ($row) {
-	$open_url = "open_problem.php?problem=" . urlencode($row['problem_number']);
-	$status = "Unopened";
-	if ($row['thetime']) {
-		$status = "Solved";
-	} else if ($row['incorrect_submissions']) {
-		$status = "Attempted";
-	} else if ($row['opened']) {
-		$status = "Opened at $row[opened]";
-	}
 ?>
-<tr><td><a href="<?php echo htmlspecialchars($open_url)?>">
-<?php echo htmlspecialchars($row['problem_name']);
-if ($row['difficulty']) { echo htmlspecialchars(" ($row[difficulty])"); }
-?>
-</a></td>
-<td><?php echo htmlspecialchars($status)?></td>
-</tr>
-<?php
-
-$row = mysql_fetch_assoc($result);
-} //end list of problems in order
-?>
-</table>
-<?php } //end if any problems have spec files
-?>
-
 <h3 page-reload-safe="page-reload-safe">Submissions/Responses</h3>
 
 <?php
