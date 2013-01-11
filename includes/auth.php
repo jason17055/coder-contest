@@ -63,7 +63,7 @@ function is_sysadmin()
 
 function get_team_identity()
 {
-	$sql = "SELECT team_number,team_name,contest,ordinal
+	$sql = "SELECT team_number,team_name,contest,ordinal,is_contestant,is_judge
 		FROM team
 		WHERE team_number=".db_quote($_SESSION['is_team']);
 	$result = mysql_query($sql)

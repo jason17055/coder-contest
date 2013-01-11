@@ -74,6 +74,7 @@ function begin_page($page_title, $options)
 function problem_actions_tabnav($show_mode)
 {
 	global $problem_info;
+	global $team_info;
 
 	$problem_number = $_REQUEST['problem'];
 	$purl = "open_problem.php?problem=".urlencode($problem_number);
@@ -86,10 +87,12 @@ function problem_actions_tabnav($show_mode)
 		if ($problem_info['clarification_count']) {
 			echo htmlspecialchars(" ($problem_info[clarification_count])");
 		}?></a></li>
+<?php if ($team_info['is_contestant'] == 'Y') { ?>
 <li<?php if ($show_mode=='write') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=write')?>">Write Code</a></li>
 <li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>
-<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y')) { ?>
+<?php } // end if contestant ?>
+<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'])) { ?>
 <li<?php if ($show_mode=='solutions') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=solutions')?>">Solutions</a></li>
 <?php } ?>
 </ul>
