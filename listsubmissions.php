@@ -15,6 +15,10 @@ $result = mysql_query($sql);
 $contest_info = mysql_fetch_assoc($result)
 	or die("Error: contest $contest_id not found");
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+	die("Not implemented");
+}
 
 $filters = array();
 $filters[] = array(name => "Judged");
@@ -47,23 +51,16 @@ foreach ($filters as $f)
 ?>
 </p>
 
-<table border="1"<?php
-if ($_REQUEST['filter'] == 'Unjudged') { echo ' id="submissions_table"'; }?>>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
+<table border="1">
 <tr>
+<th>&nbsp;</th>
 <th>Submitted</th>
 <th>Problem</th>
 <th>Type</th>
 <th>Team</th>
 <th>Judge</th>
 <th>Status</th>
-</tr>
-<tr class="aTemplate">
-<td class="submitted_column"></td>
-<td class="problem_column"></td>
-<td class="type_column"></td>
-<td class="team_column"></td>
-<td class="judge_column"></td>
-<td class="status_column"></td>
 </tr>
 <?php
 
@@ -108,6 +105,7 @@ while ($submission = mysql_fetch_assoc($result))
 		"submission.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']) :
 		"answer_clarification.php?id=".urlencode($submission['id']);
 ?><tr id="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>">
+<td><input type="checkbox" name="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>"></td>
 <td><a href="<?php echo htmlspecialchars($edit_url)?>">
 <?php echo htmlspecialchars($submission['submitted'])?></a></td>
 <td><?php echo htmlspecialchars($submission['problem_name'])?></td>
@@ -128,6 +126,26 @@ if ($count == 0) { ?>
 } //endif count == 0
 ?>
 </table>
+<p>
+Assign selected submissions to:
+<select name="assign_to">
+<option value="">--nobody--</option>
+<?php
+	$sql = "SELECT team_number,team_name
+		FROM team
+		WHERE contest=".db_quote($contest_id)."
+		AND is_judge='Y'
+		ORDER BY ordinal,team_name";
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	while ($row = mysql_fetch_assoc($query)) {
+		?><option value="<?php echo htmlspecialchars($row['team_number'])?>"><?php echo htmlspecialchars($row['team_name'])?></option>
+		<?php
+	} ?></select>
+	<button name="action:assign">Go</button>
+</p>
+
+</form>
 <?php
 
 $controller_url = "controller.php?contest=".urlencode($contest_id);

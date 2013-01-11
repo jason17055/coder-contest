@@ -28,6 +28,8 @@ $result = mysql_query($sql)
 if (mysql_num_rows($result) != 0)
 {
 ?>
+<!-- this table id is special; the Ajax code will recognize it as a list
+of unjudged submissions for this user -->
 <table border="1" id="submissions_table">
 <tr>
 <th>Submitted</th>
@@ -36,14 +38,6 @@ if (mysql_num_rows($result) != 0)
 <th>Team</th>
 <th>Judge</th>
 <th>Status</th>
-</tr>
-<tr class="aTemplate">
-<td class="submitted_column"></td>
-<td class="problem_column"></td>
-<td class="type_column"></td>
-<td class="team_column"></td>
-<td class="judge_column"></td>
-<td class="status_column"></td>
 </tr>
 <?php
 

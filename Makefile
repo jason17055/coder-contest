@@ -15,6 +15,7 @@ script_files = \
 	new_challenge.php \
 	controller.php \
 	issue_credentials.php \
+	listsubmissions.php \
 	login.php \
 	open_problem.php \
 	problem.php \
