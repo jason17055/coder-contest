@@ -21,6 +21,7 @@ script_files = \
 	problems.php \
 	result.php \
 	scoreboard.php \
+	show_my_submissions.inc.php \
 	show_problem_clarifications.inc.php \
 	show_problems_list.inc.php \
 	show_solutions.inc.php \
