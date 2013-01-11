@@ -74,7 +74,7 @@ while ($submission = mysql_fetch_assoc($result))
 else
 {
 ?>
-<p class="none_at_this_time">None at this time.</p>
+<p class="none_at_this_time">Nothing to judge at this time.</p>
 <?php
 } //endif count == 0
 ?>

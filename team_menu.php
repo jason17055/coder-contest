@@ -22,19 +22,16 @@ Your name: <a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo ht
 </p>
 <?php
 
-if (TRUE || $team_info['is_contestant'] == 'Y')
+if ($team_info['is_judge'] == 'Y')
 {
-	require('show_problems_list.inc.php');
+	require('show_unjudged_submissions.inc.php');
 }
+
+require('show_problems_list.inc.php');
 
 if ($team_info['is_contestant'] == 'Y')
 {
 	require('show_my_submissions.inc.php');
-}
-
-if ($team_info['is_judge'] == 'Y')
-{
-	require('show_unjudged_submissions.inc.php');
 }
 
 ?>
@@ -42,6 +39,11 @@ if ($team_info['is_judge'] == 'Y')
 <h3>Actions</h3>
 <div>
 <a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_blank">Scoreboard</a>
+<?php
+if ($team_info['is_judge'] == 'Y' || $team_info['is_director'] == 'Y') {
+$url="listsubmissions.php?contest=".urlencode($contest_id);
+?>| <a href="<?php echo htmlspecialchars($url)?>">View Submissions</a>
+<?php } ?>
 <!--
 | <a href="submit_test.php">Test a Solution</a>
 | <a href="submit.php">Submit a Solution</a>
