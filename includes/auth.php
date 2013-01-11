@@ -99,10 +99,10 @@ function is_a_team()
 
 function is_a_judge()
 {
-	$sql = "SELECT judge_id,contest,
+	$sql = "SELECT team_number AS judge_id,contest,
 		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online
-		FROM judge
-		WHERE judge_id=".db_quote($_SESSION['is_judge']);
+		FROM team
+		WHERE team_number=".db_quote($_SESSION['is_judge']);
 	$result = mysql_query($sql)
 		or die("SQL error: ".mysql_error());
 	$judge_info = mysql_fetch_assoc($result);

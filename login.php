@@ -6,7 +6,7 @@ require_once('includes/auth.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
-	$sql = "SELECT team_number FROM team
+	$sql = "SELECT team_number,is_judge FROM team
 		WHERE contest=".db_quote($_REQUEST['contest'])."
 		AND user=".db_quote($_REQUEST['username'])."
 		AND password=SHA1(".db_quote($_REQUEST['password']).")
@@ -16,32 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	{
 		// found team login
 		$_SESSION['is_team'] = $user_info[0];
-		unset($_SESSION['is_judge']);
-		unset($_SESSION['is_director']);
-		unset($_SESSION['is_sysadmin']);
-		$_SESSION['uid'] = "$_REQUEST[contest]/$_REQUEST[username]";
-		$_SESSION['username'] = $_REQUEST['username'];
-
-		$url = $_REQUEST['next_url'];
-		if (!$url)
-		{
-			$url = ".";
+		if ($user_info[1]=='Y') {
+			$_SESSION['is_judge'] = $user_info[0];
+		} else {
+			unset($_SESSION['is_judge']);
 		}
-		header("Location: $url");
-		exit();
-	}
-
-	$sql = "SELECT judge_id FROM judge
-		WHERE contest=".db_quote($_REQUEST['contest'])."
-		AND judge_user=".db_quote($_REQUEST['username'])."
-		AND judge_password=SHA1(".db_quote($_REQUEST['password']).")
-		";
-	$result = mysql_query($sql);
-	if ($user_info = mysql_fetch_row($result))
-	{
-		// found judge login
-		$_SESSION['is_judge'] = $user_info[0];
-		unset($_SESSION['is_team']);
 		unset($_SESSION['is_director']);
 		unset($_SESSION['is_sysadmin']);
 		$_SESSION['uid'] = "$_REQUEST[contest]/$_REQUEST[username]";
