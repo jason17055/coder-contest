@@ -3,8 +3,20 @@
 require_once('config.php');
 require_once('includes/skin.php');
 require_once('includes/auth.php');
+require_once('includes/functions.php');
 
 require_auth();
+if ($_REQUEST['contest'])
+{
+	$contest_id = $_REQUEST['contest'];
+	is_judge_of($contest_id)
+		or die("Error: not a judge in contest $contest_id");
+}
+else
+{
+	$team_info = get_team_identity();
+	$contest_id = $team_info['contest'];
+}
 
 $sql = "SELECT * FROM test_job
 	WHERE id=".db_quote($_REQUEST['id']);
@@ -32,7 +44,19 @@ if (isset($_REQUEST['onany'])
 	exit();
 }
 
-begin_page("Test Results");
+begin_page("Test Results",
+	array('notitle' => 1
+		));
+
+if ($_REQUEST['problem']) {
+	$problem_number = $_REQUEST['problem'];
+	$problem_info = get_problem_info($problem_number);
+problem_actions_tabnav('test', $problem_info);
+?>
+<h2><?php echo htmlspecialchars($problem_info['problem_name'])?></h2>
+<?php
+	
+}
 
 $source_file_url = "file.php/$test_info[source_file]/$test_info[source_name]";
 $input_file_url = "file.php/$test_info[input_file]/input.txt";
@@ -41,6 +65,7 @@ $job_result_url = "job_result.php?id=" . urlencode($_REQUEST['id']);
 
 ?>
 
+<h3>Test Results</h3>
 <table>
 <tr>
 <td>Test:</td>

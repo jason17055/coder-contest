@@ -34,7 +34,8 @@ script_files = \
 	submit_test.php \
 	team_menu.php \
 	user.php \
-	users.php
+	users.php \
+	user_test.php
 
 data_files = \
 	popup_message.js \

@@ -84,6 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 
 	$test_id = mysql_insert_id();
 	$url = "user_test.php?id=" . urlencode($test_id);
+	if ($team_info && $problem_number)
+	{
+		$url .= "&problem=".urlencode($problem_number);
+	}
 	if ($_REQUEST['next_url'])
 	{
 		$url .= "&next_url=".urlencode($_REQUEST['next_url']);
