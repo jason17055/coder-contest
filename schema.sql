@@ -23,6 +23,7 @@ CREATE TABLE contest (
 	teams_can_change_name CHAR(1) NOT NULL DEFAULT 'N',        -- Y/N
 	teams_can_change_description CHAR(1) NOT NULL DEFAULT 'N', -- Y/N
 	teams_can_change_password CHAR(1) NOT NULL DEFAULT 'Y',    -- Y/N
+	teams_can_write_code      CHAR(1) NOT NULL DEFAULT 'Y',    -- Y/N
 	score_system      CHAR(1) NOT NULL DEFAULT 'A', -- A=ACM, T=Topcoder
 	collaboration     CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
 	handout_html      TEXT,

@@ -13,6 +13,7 @@ script_files = \
 	answer_clarification.php \
 	clarification.php \
 	new_challenge.php \
+	contest.php \
 	controller.php \
 	index.php \
 	issue_credentials.php \

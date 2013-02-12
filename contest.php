@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	$checkboxes = array('scoreboard_images', 'scoreboard_popups',
 		'scoreboard_fanfare',
 		'teams_can_change_name', 'teams_can_change_description',
-		'teams_can_change_password');
+		'teams_can_change_password', 'teams_can_write_code');
 	$updates = array();
 	foreach ($checkboxes as $c) {
 		if ($_REQUEST[$c]) {
@@ -191,12 +191,13 @@ Change Password: <input type="text" name="director_password" value="">
 </tr>
 <?php } /* end if sysadmin */ ?>
 <tr>
-<td>Team options:</td>
+<td>Contestant options:</td>
 <td><?php
 	foreach (array(
 		"teams_can_change_name|Change name",
 		"teams_can_change_description|Change description",
 		"teams_can_change_password|Change password",
+		"teams_can_write_code|Write code"
 		) as $option_info)
 	{
 		list($name,$label) = explode("|", $option_info);
