@@ -79,6 +79,11 @@ function problem_actions_tabnav($show_mode)
 	$problem_number = $_REQUEST['problem'];
 	$purl = "open_problem.php?problem=".urlencode($problem_number);
 
+	$show_write_tab = ($team_info['is_contestant'] == 'Y');
+	$show_test_tab = 1;
+	$show_submit_tab = ($team_info['is_contestant'] == 'Y');
+	$show_solutions_tab = ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'] == 'Y'));
+
 ?>
 <div id="problem_action_buttons_bar">
 <ul class="tabnav">
@@ -87,13 +92,16 @@ function problem_actions_tabnav($show_mode)
 		if ($problem_info['clarification_count']) {
 			echo htmlspecialchars(" ($problem_info[clarification_count])");
 		}?></a></li>
-<?php if ($team_info['is_contestant'] == 'Y') { ?>
+<?php if ($show_write_tab) { ?>
 <li<?php if ($show_mode=='write') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=write')?>">Write Code</a></li>
+<?php } ?>
+<?php if ($show_test_tab) { ?>
 <li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
+<?php } ?>
+<?php if ($show_submit_tab) { ?>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>
-<?php } // end if contestant ?>
-<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'] == 'Y')) {
-?>
+<?php } ?>
+<?php if ($show_solutions_tab) { ?>
 <li<?php if ($show_mode=='solutions') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=solutions')?>">Solutions</a></li>
 <?php } ?>
 </ul>
