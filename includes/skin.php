@@ -75,11 +75,12 @@ function problem_actions_tabnav($show_mode)
 {
 	global $problem_info;
 	global $team_info;
+	global $contest_info;
 
 	$problem_number = $_REQUEST['problem'];
 	$purl = "open_problem.php?problem=".urlencode($problem_number);
 
-	$show_write_tab = ($team_info['is_contestant'] == 'Y');
+	$show_write_tab = ($team_info['is_contestant'] == 'Y' && $contest_info['teams_can_write_code'] == 'Y');
 	$show_test_tab = 1;
 	$show_submit_tab = ($team_info['is_contestant'] == 'Y');
 	$show_solutions_tab = ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'] == 'Y'));
