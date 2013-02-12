@@ -390,7 +390,7 @@ function handle_upload_file($name)
 	else if (isset($_REQUEST[$name."_content"]))
 	{
 		$x = str_replace("\r", "", $_REQUEST[$name.'_content']);
-		if (substr($x, -1) != "\n")
+		if (strlen($x) != 0 && substr($x, -1) != "\n")
 		{
 			$x .= "\n";
 		}
