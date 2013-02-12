@@ -1,3 +1,11 @@
+* config option for "Write Code" tab
+   - let director disable the "Write Code" tab for all contestants
+      (I am worried that if teams write code online in the editor
+       they might lose their work if they forget to click Save, or
+       upload a different file on the Test/Submit tab.)
+* programming language support
+   - let director specify exactly which programming languages are
+     supported.
 * message acknowledgement:
    - when user clicked 'Dismiss' or 'Open' on a message,
      make sure the message is never displayed again, even if user
