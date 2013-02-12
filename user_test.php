@@ -109,6 +109,9 @@ $job_result_url = "job_result.php?id=" . urlencode($_REQUEST['id']);
 
 <?php
 $another_test_url = "submit_test.php?template=".urlencode($_REQUEST['id']);
+if ($_REQUEST['problem']) {
+	$another_test_url .= "&problem=".urlencode($_REQUEST['problem']);
+}
 if ($_REQUEST['next_url']) {
 	$another_test_url .= "&next_url=".urlencode($_REQUEST['next_url']);
 }
