@@ -40,7 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 $show_mode = $_REQUEST['show'];
 if (!$show_mode)
 {
-	$show_mode = $problem_info['spec_file'] && !$problem_info['source_file'] ? 'problem' : 'write';
+	if ($problem_info['spec_file'] && !$problem_info['source_file']) {
+		$show_mode = 'problem';
+	}
+	else if ($contest_info['teams_can_write_code'] == 'Y') {
+		$show_mode = 'write';
+	}
+	else {
+		$show_mode = 'submit';
+	}
 }
 
 begin_page($problem_info['problem_name'],
