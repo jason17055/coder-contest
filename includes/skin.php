@@ -92,7 +92,8 @@ function problem_actions_tabnav($show_mode)
 <li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>
 <?php } // end if contestant ?>
-<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'])) { ?>
+<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'] == 'Y')) {
+?>
 <li<?php if ($show_mode=='solutions') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=solutions')?>">Solutions</a></li>
 <?php } ?>
 </ul>
