@@ -183,7 +183,7 @@ function format_score($score, $score_alt)
 	if ($score_alt > 0)
 		return htmlspecialchars("$score (+$score_alt)");
 	else if ($score_alt != 0)
-		return htmlspecialchars("$score ($score_alt)");
+		return htmlspecialchars("$score (".(-$score_alt).")");
 	else
 		return htmlspecialchars($score);
 }
