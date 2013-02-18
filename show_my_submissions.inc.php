@@ -48,7 +48,7 @@ while ($row = mysql_fetch_assoc($result)) { ?>
 			"solution.php?id=".urlencode($row['id']) :
 			"clarification.php?id=".urlencode($row['id']);
 ?><tr>
-<td><?php echo htmlspecialchars($row['submitted'])?></td>
+<td><?php echo format_sqldatetime($row['submitted'])?></td>
 <td><?php echo htmlspecialchars($row['problem_name'])?></td>
 <td><?php 
 	if ($row['type'] == 'solution') { ?>

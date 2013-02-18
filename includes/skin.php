@@ -178,6 +178,23 @@ function countdown_clock($contest_info)
 <?php
 }
 
+function format_sqldatetime($timestr)
+{
+	$date = DateTime::createFromFormat('Y-m-d H:i:s', $timestr);
+	$date_t = $date->getTimestamp();
+	$age = time() - $date_t;
+
+	if (abs($age) < 8*60*60) { //less than six hours off
+		return $date->format('g:ia');
+	}
+	else if (abs($age) < 3*86400) { // less than three days off
+		return $date->format('D g:ia');
+	}
+	else {
+		return $date->format('D n M g:ia');
+	}
+}
+
 function format_score($score, $score_alt)
 {
 	if ($score_alt > 0)

@@ -21,13 +21,13 @@ if ($row = mysql_fetch_assoc($result)) {
 
 while ($row) {
 	$open_url = "open_problem.php?problem=" . urlencode($row['problem_number']);
-	$status = "Unopened";
+	$status_h = "Unopened";
 	if ($row['thetime']) {
-		$status = "Solved";
+		$status_h = "Solved";
 	} else if ($row['incorrect_submissions']) {
-		$status = "Attempted";
+		$status_h = "Attempted";
 	} else if ($row['opened']) {
-		$status = "Opened at $row[opened]";
+		$status_h = "Opened ".format_sqldatetime($row['opened']);
 	}
 ?>
 <tr><td><a href="<?php echo htmlspecialchars($open_url)?>">
@@ -35,7 +35,7 @@ while ($row) {
 if ($row['difficulty']) { echo htmlspecialchars(" ($row[difficulty])"); }
 ?>
 </a></td>
-<td><?php echo htmlspecialchars($status)?></td>
+<td><?php echo($status_h)?></td>
 </tr>
 <?php
 
