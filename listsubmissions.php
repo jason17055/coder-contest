@@ -164,11 +164,11 @@ while ($submission = mysql_fetch_assoc($result))
 	$count++;
 	$edit_url = $submission['type'] == 'submission' ?
 		"submission.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']) :
-		"answer_clarification.php?id=".urlencode($submission['id']);
+		"answer_clarification.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']);
 ?><tr id="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>">
 <td><input type="checkbox" name="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>"></td>
 <td><a href="<?php echo htmlspecialchars($edit_url)?>">
-<?php echo htmlspecialchars($submission['submitted'])?></a></td>
+<?php echo format_sqldatetime($submission['submitted'])?></a></td>
 <td><?php echo htmlspecialchars($submission['problem_name'])?></td>
 <td>
 <img src="images/<?php echo htmlspecialchars($submission['type'])?>.png" alt="">
