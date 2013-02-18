@@ -276,14 +276,14 @@ function display_result($row)
 			$css_class = "attempted";
 		}
 	}
-	else if ($row['source_file'])
-	{
-		$result_str = '<img src="scoreboard_images/pencil.png" alt="Writing" width="24" height="24">';
-	}
-	else if ($row['opened'])
-	{
-		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
-	}
+//	else if ($row['source_file'])
+//	{
+//		$result_str = '<img src="scoreboard_images/pencil.png" alt="Writing" width="24" height="24">';
+//	}
+//	else if ($row['opened'])
+//	{
+//		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
+//	}
 
 	for ($i = 0; $i < $row['good_challenges']; $i++)
 	{
