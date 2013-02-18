@@ -80,6 +80,7 @@ function problem_actions_tabnav($show_mode)
 	$problem_number = $_REQUEST['problem'];
 	$purl = "open_problem.php?problem=".urlencode($problem_number);
 
+	$show_problem_tab = ($problem_info && $problem_info['spec_file']);
 	$show_write_tab = ($team_info['is_contestant'] == 'Y' && $contest_info['teams_can_write_code'] == 'Y');
 	$show_test_tab = 1;
 	$show_submit_tab = ($team_info['is_contestant'] == 'Y');
@@ -88,7 +89,9 @@ function problem_actions_tabnav($show_mode)
 ?>
 <div id="problem_action_buttons_bar">
 <ul class="tabnav">
+<?php if ($show_problem_tab) { ?>
 <li<?php if ($show_mode=='problem') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("$purl&show=problem")?>">Problem</a></li>
+<?php } ?>
 <li<?php if ($show_mode=='clarifications') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=clarifications')?>">Clarifications<?php
 		if ($problem_info['clarification_count']) {
 			echo htmlspecialchars(" ($problem_info[clarification_count])");
