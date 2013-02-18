@@ -24,11 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			or die("Only director can reassign work.");
 
 		$clarifications = array();
+		$submissions = array();
 		foreach ($_POST as $k => $v)
 		{
 			if (preg_match('/^clarification(\d+)$/', $k, $m))
 			{
 				$clarifications[] = db_quote($m[1]);
+			}
+			else if (preg_match('/^submission(\d+)$/', $k, $m))
+			{
+				$submissions[] = db_quote($m[1]);
 			}
 		}
 
@@ -52,9 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 					WHERE id IN (".join(',',$clarifications).")
 					AND contest=".db_quote($contest_id);
 			mysql_query($sql);
-
-			wakeup_listeners();
 		}
+		if (count($submissions))
+		{
+			$sql = "UPDATE submission
+					SET judge=".db_quote($target)."
+					WHERE id IN (".join(',',$submissions).")
+					AND team IN (SELECT team_number FROM team
+						WHERE contest=".db_quote($contest_id)."
+						)";
+			mysql_query($sql);
+		}
+
+		wakeup_listeners();
 
 		$next_url = $_SERVER['REQUEST_URI'];
 		header("Location: $next_url");
