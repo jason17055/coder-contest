@@ -9,22 +9,30 @@ script_files = \
 	includes/notify.php \
 	includes/test_workflow.php \
 	worker/feed.php \
+	worker/index.php \
 	worker/script/worker.pl \
+	announcement.php \
 	answer_clarification.php \
+	checkmessage-js.php \
 	clarification.php \
-	new_challenge.php \
 	contest.php \
 	controller.php \
+	credentials_handouts.inc.php \
+	diff.php \
+	file.php \
 	index.php \
 	issue_credentials.php \
+	job_result.php \
 	listsubmissions.php \
 	login.php \
+	new_challenge.php \
 	newclarification.php \
 	open_problem.php \
 	problem.php \
 	problems.php \
 	result.php \
 	scoreboard.php \
+	sendmessage.php \
 	show_my_submissions.inc.php \
 	show_problem_clarifications.inc.php \
 	show_problems_list.inc.php \
@@ -34,7 +42,10 @@ script_files = \
 	submission.php \
 	submit.php \
 	submit_test.php \
+	sysadmin.php \
+	system_test.php \
 	team_menu.php \
+	test_result.php \
 	user.php \
 	users.php \
 	user_test.php
