@@ -251,7 +251,9 @@ tr.solution_row.selected {
 }
 
 .clarification-question {
-	background-color: #e88;
+	border-top: 1px solid #888;
+	color: #666;
+	background-color: #fff;
 }
 .clarification-question.opponent-question {
 	background-color: #aaa;
@@ -259,14 +261,20 @@ tr.solution_row.selected {
 .clarification-answer {
 	background-color: #bbf;
 	margin-bottom: 20pt;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
 }
 .clarification-answer.reply-one {
 	background-color: #aaa;
 }
 .clarification-answer-none {
+	border-top: 1px solid #888;
 	margin-bottom: 20pt;
 }
 
+.clarification-author {
+	color: black;
+}
 .clarification-author .author {
 	color: black;
 	font-weight: bold;

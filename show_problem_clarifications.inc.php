@@ -28,7 +28,7 @@
 		}
 		if ($row['request']) {
 		?><div class="clarification-question <?php echo $cl?>">
-		<div class="clarification-author"><span class="author"><?php echo htmlspecialchars($row['q_author_name'])?></span></div>
+		<div class="clarification-author"><span class="author"><?php echo htmlspecialchars($row['q_author_name'])?></span> asked:</div>
 		<p><?php echo htmlspecialchars($row['request'])?></p>
 		</div>
 		<?php
@@ -40,7 +40,9 @@
 			$cl = "reply-one";
 		}
 		if ($row['response']) {
-			$a = $row['request'] ? 'Response' : 'Clarification';
+			$a = (!$row['request'] || $row['status'] == 'reply-all') ?
+					'A clarification has been issued:' :
+					"Judge's Reply:";
 
 		?><div class="clarification-answer <?php echo $cl?>">
 		<div class="clarification-author"><span class="author"><?php echo $a?></span>
