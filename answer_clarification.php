@@ -50,10 +50,11 @@ else
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
+	$next_url = $_REQUEST['next_url'] ?: "listsubmissions.php?contest=".urlencode($contest_id);
+
 	if (isset($_REQUEST['action:cancel']))
 	{
-		$url = $_REQUEST['next_url'] ?: "listsubmissions.php?contest=".urlencode($contest_id);
-		header("Location: $url");
+		header("Location: $next_url");
 		exit();
 	}
 	else if (isset($_REQUEST['action:delete_clarification']))
@@ -67,8 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		mysql_query($sql)
 			or die("SQL error: ".mysql_error());
 
-		$url = "listsubmissions.php?contest=".urlencode($contest_id);
-		header("Location: $url");
+		header("Location: $next_url");
 		exit();
 	}
 
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	if ($s != $clarification_info['status'])
 	{
 		$url = "clarification.php?id=".urlencode($_REQUEST['id']);
-		if ($_REQUEST['status'] == 'reply-one')
+		if ($s == 'reply-one')
 		{
 			$message = "Your clarification request for $clarification_info[problem_name] has been answered.";
 
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 				or die("SQL error: ".mysql_error());
 			wakeup_listeners();
 		}
-		else if ($_REQUEST['status'] == 'reply-all')
+		else if ($s == 'reply-all')
 		{
 			$message = "A clarification for $clarification_info[problem_name] has been issued.";
 			
@@ -140,8 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 	}
 
-	$url = $_REQUEST['next_url'] ?: "listsubmissions.php?contest=".urlencode($contest_id);
-	header("Location: $url");
+	header("Location: $next_url");
 	exit();
 }
 
