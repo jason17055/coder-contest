@@ -171,6 +171,12 @@ else if ($show_mode == 'submit')
 	
 	$submit_url = 'submit.php?problem='.urlencode($problem_number);
 ?>
+<p>
+Use this form to submit your solution to the selected problem.
+Please note it may take a few minutes for your solution to be judged.
+In the meantime, continue working on other problems.
+</p>
+
 <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($submit_url)?>">
 <table>
 <tr>

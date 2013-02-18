@@ -110,12 +110,11 @@ problem_actions_tabnav('test', $problem_info);
 
 ?>
 
-<h3>Test a Solution</h3>
 <p>
 Use this form to test your code with the same system/environment that
 the judges are using. Your source code will be compiled and executed,
-using the specified input file. Then the output from your program will
-be displayed.
+using the specified input file. Your program's output will then be
+displayed for you.
 </p>
 
 <form name="form1" method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
