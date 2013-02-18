@@ -74,7 +74,7 @@ function displayAnnouncement(data)
 
 	if (data.messagetype == 'S')
 	{
-<?php if (!$_REQUEST['nosound']) { ?>
+<?php if ($_REQUEST['sound'] != '0') { ?>
 		if (data.fanfare)
 			document.getElementById('announcementAudio').play();
 <?php } ?>
