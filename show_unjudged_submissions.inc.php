@@ -3,6 +3,18 @@
 These are team submissions and clarification requests
 that are in your queue.
 </p>
+<audio id="newSubmissionAudio" src="audio/microsoft/REMINDER.ogg"></audio>
+<script type="text/javascript"><!--
+function ringaling()
+{
+	document.getElementById('newSubmissionAudio').play();
+}
+if (localStorage.getItem('ringaling'))
+{
+	localStorage.removeItem('ringaling');
+	ringaling();
+}
+//--></script>
 
 <?php
 
