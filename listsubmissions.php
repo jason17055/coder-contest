@@ -156,6 +156,8 @@ $scoreboard_url = "scoreboard.php?contest=" . urlencode($contest_id);
 <p>
 <?php if (is_director($_REQUEST['contest'])) { ?>
 <a href="<?php echo htmlspecialchars($controller_url)?>">Controller</a> |
+<?php } else { ?>
+<a href=".">Home</a> |
 <?php } /* endif is_director */?>
 <a href="<?php echo htmlspecialchars($problems_url)?>">Define Problems</a> |
 <a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_new">Live Scoreboard</a>
