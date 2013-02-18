@@ -206,23 +206,39 @@ function check_for_job_completion()
 
 function check_for_new_submission()
 {
+	$submissions_list = array();
+	$clarifications_list = array();
+	foreach (explode(',', $_REQUEST['newsubmissionsafter']) as $it)
+	{
+		if (preg_match('/submission(\d+)/', $it, $m))
+		{
+			$submissions_list[] = db_quote($m[1]);
+		}
+		if (preg_match('/clarification(\d+)/', $it, $m))
+		{
+			$clarifications_list[] = db_quote($m[1]);
+		}
+	}
+
+	// set up query filter
 	$submission_limit = array();
-	if (preg_match('/submission(\d+)/', $_REQUEST['newsubmissionsafter'], $m))
-	{
-		$submission_limit[] = "id>".$m[1];
-	}
-
 	$clarification_limit = array();
-	if (preg_match('/clarification(\d+)/', $_REQUEST['newsubmissionsafter'], $m))
-	{
-		$clarification_limit[] = "id>".$m[1];
+
+	// limit to submissions that aren't already seen
+	if (count($submissions_list)) {
+		$submission_limit[] = "id NOT IN (".join(',',$submissions_list).")";
+	}
+	if (count($clarifications_list)) {
+		$clarification_limit[] = "id NOT IN (".join(',',$clarifications_list).")";
 	}
 
+	// limit to submissions that are targetted to this user
 	global $targets;
 	$targets_sql = implode(", ", $targets);
-
 	$submission_limit[] = "j.user IN ($targets_sql)";
 	$clarification_limit[] = "j.user IN ($targets_sql)";
+
+	// limit to submissions that are not yet judged
 	$submission_limit[] = "(s.status IS NULL OR s.status='')";
 	$clarification_limit[] = "(s.status IS NULL OR s.status='')";
 

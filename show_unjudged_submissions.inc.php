@@ -35,7 +35,7 @@ if (mysql_num_rows($result) != 0)
 ?>
 <!-- this table id is special; the Ajax code will recognize it as a list
 of unjudged submissions for this user -->
-<table class="realtable" id="submissions_table">
+<table class="realtable auto_reload_trigger" data-auto-reload-type="submissions_table" id="submissions_table">
 <tr>
 <th>Submitted</th>
 <th>Problem</th>
@@ -52,7 +52,7 @@ while ($submission = mysql_fetch_assoc($result))
 	$edit_url = $submission['type'] == 'submission' ?
 		"submission.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']) :
 		"answer_clarification.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']);
-?><tr id="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>">
+?><tr data-submission-id="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>">
 <td><a href="<?php echo htmlspecialchars($edit_url)?>">
 <?php echo format_sqldatetime($submission['submitted'])?></a></td>
 <td><?php echo htmlspecialchars($submission['problem_name'])?></td>
@@ -71,7 +71,7 @@ while ($submission = mysql_fetch_assoc($result))
 else
 {
 ?>
-<p class="none_at_this_time" id="submissions_table">Nothing to judge at this time.</p>
+<p class="none_at_this_time auto_reload_trigger" data-auto-reload-type="submissions_table">Nothing to judge at this time.</p>
 <?php
 } //endif count == 0
 ?>
