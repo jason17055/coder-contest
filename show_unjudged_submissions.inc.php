@@ -1,25 +1,30 @@
-<h3>Submissions</h3>
+<h3>Unjudged Submissions</h3>
+<p>
+These are team submissions and clarification requests
+that are in your queue.
+</p>
+
 <?php
 
 $team_info['is_judge'] == 'Y'
 	or die("Error: invalid invocation");
 
-$filter_sql = "(s.status IS NOT NULL AND s.status <> '')
-	AND (judge_id IS NULL OR judge_id=".db_quote($_SESSION['is_judge']).")";
+$filter_sql = "(s.status IS NULL OR s.status = '' OR s.status = 'Pending')
+	AND (j.team_number=".db_quote($_SESSION['is_judge']).")";
 
-$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,status
 	FROM submission s
 	JOIN team t ON s.team=t.team_number
 	JOIN problem p ON s.problem=p.problem_number AND t.contest=p.contest
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND $filter_sql
 	UNION
-	SELECT 'clarification' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+	SELECT 'clarification' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,status
 	FROM clarification s
 	JOIN team t ON t.team_number=s.team
 	JOIN problem p ON p.contest=t.contest AND p.problem_number=s.problem_number
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE s.contest=".db_quote($contest_id)."
 	AND $filter_sql
 	ORDER BY submitted ASC, id ASC";
@@ -36,7 +41,6 @@ of unjudged submissions for this user -->
 <th>Problem</th>
 <th>Type</th>
 <th>Team</th>
-<th>Judge</th>
 <th>Status</th>
 </tr>
 <?php
@@ -56,7 +60,6 @@ while ($submission = mysql_fetch_assoc($result))
 <img src="images/<?php echo htmlspecialchars($submission['type'])?>.png" alt="">
 <?php echo htmlspecialchars($submission['type'])?></td>
 <td><?php echo htmlspecialchars($submission['team_name'])?></td>
-<td><?php echo htmlspecialchars($submission['judge_user'])?></td>
 <td><?php echo htmlspecialchars($submission['status'])?></td>
 </tr>
 <?php
