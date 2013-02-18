@@ -17,7 +17,50 @@ $contest_info = mysql_fetch_assoc($result)
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-	die("Not implemented");
+	if (isset($_REQUEST['action:assign']))
+	{
+		is_director($contest_id)
+			or die("Only director can reassign work.");
+
+		$clarifications = array();
+		foreach ($_POST as $k => $v)
+		{
+			if (preg_match('/^clarification(\d+)$/', $k, $m))
+			{
+				$clarifications[] = db_quote($m[1]);
+			}
+		}
+
+		$target = $_REQUEST['assign_to'];
+
+		// check that target is a judge of this contest
+		if ($target != '') {
+			$sql = "SELECT 1 FROM team
+				WHERE team_number=".db_quote($target)."
+				AND contest=".db_quote($contest_id)."
+				AND is_judge='Y'";
+			$result = mysql_query($sql);
+			$is_valid = mysql_fetch_assoc($result)
+				or die("Error: specified judge $target not found");
+		}
+
+		if (count($clarifications))
+		{
+			$sql = "UPDATE clarification
+					SET judge=".db_quote($target)."
+					WHERE id IN (".join(',',$clarifications).")
+					AND contest=".db_quote($contest_id);
+			mysql_query($sql);
+		}
+
+		$next_url = $_SERVER['REQUEST_URI'];
+		header("Location: $next_url");
+		exit();
+	}
+	else
+	{
+		die("Not implemented");
+	}
 }
 
 $filters = array();
