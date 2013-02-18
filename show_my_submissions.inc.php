@@ -32,7 +32,7 @@ $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 if (mysql_num_rows($result) > 0) {
 ?>
-<table border="1">
+<table class="realtable">
 <tr><th>Time</th>
 <th>Problem</th>
 <th>Submitted</th>

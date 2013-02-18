@@ -26,7 +26,7 @@ begin_page("Define Problems");
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
 
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Problem Name</th>
 <th>Scored</th>

@@ -23,7 +23,7 @@ begin_page($contest_info['title']);
 $edit_contest_url = "contest.php?contest=".urlencode($contest_id);
 ?>
 
-<table id="controller_teams_table" border="1"><tr><th>Contestant</th>
+<table id="controller_teams_table" class="realtable"><tr><th>Contestant</th>
 <?php
 $sql = "SELECT * FROM problem
 	WHERE contest=" . db_quote($contest_id) . "
@@ -136,7 +136,7 @@ $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 if (mysql_num_rows($result)) {
 ?>
-<table id="controller_judges_table" border="1">
+<table id="controller_judges_table" class="realtable">
 <tr>
 <th>Judge Name</th>
 <th>Totals</th>
@@ -171,7 +171,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 <?php } //end if any judges for this contest
 ?>
 
-<table id="controller_workers_table" border="1">
+<table id="controller_workers_table" class="realtable">
 <tr>
 <th>Worker</th>
 <th>Supported File Types</th>

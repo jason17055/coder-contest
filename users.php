@@ -111,7 +111,7 @@ Number of contestants:
 <input type="text" name="count" value="<?php echo $contestant_count?>" size="3">
 <button type="submit" name="action:autocreate">Go</button>
 </p>
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Contestant ID</th>
 <th>Display Name</th>
@@ -155,7 +155,7 @@ Number of judges:
 <button type="submit" name="action:autocreate_judge">Go</button>
 </p>
 
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Judge ID</th>
 </tr>

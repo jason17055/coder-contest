@@ -95,7 +95,7 @@ foreach ($filters as $f)
 </p>
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
-<table border="1">
+<table class="realtable">
 <tr>
 <th>&nbsp;</th>
 <th>Submitted</th>

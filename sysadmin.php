@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 
 begin_page("System Administration");
 ?>
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Contest</th><th>Subtitle</th><th>Enabled</th>
 </tr>

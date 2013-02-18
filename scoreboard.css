@@ -300,3 +300,26 @@ tr.solution_row.selected {
 	font-weight: bold;
 	color: red;
 	}
+
+.realtable {
+	border: 1px solid #ccc;
+	border-collapse: collapse;
+}
+
+.realtable th {
+	border: 1px solid #ccc;
+	background-color: #006;
+	color: #fff;
+	padding-left: 8pt;
+	padding-right: 8pt;
+}
+
+.realtable td {
+	border: 1px solid #ccc;
+	padding-left: 2pt;
+	padding-right: 2pt;
+}
+
+.realtable th a {
+	color: #fff;
+}

@@ -66,7 +66,7 @@ begin_page("Issue Login Credentials");
 ?>
 <form method="post">
 <p>Select which teams/judges you want to set passwords on:</p>
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Name</th>
 <th>Username</th>

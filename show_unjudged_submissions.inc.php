@@ -35,7 +35,7 @@ if (mysql_num_rows($result) != 0)
 ?>
 <!-- this table id is special; the Ajax code will recognize it as a list
 of unjudged submissions for this user -->
-<table border="1" id="submissions_table">
+<table class="realtable" id="submissions_table">
 <tr>
 <th>Submitted</th>
 <th>Problem</th>

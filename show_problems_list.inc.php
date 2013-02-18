@@ -15,7 +15,7 @@ $result = mysql_query($sql)
 if ($row = mysql_fetch_assoc($result)) {
 ?>
 <h3>Problems</h3>
-<table border="1">
+<table class="realtable">
 <tr><th>Problem</th><th>Status</th></tr>
 <?php
 
