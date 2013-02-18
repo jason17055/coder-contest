@@ -143,7 +143,8 @@ if (mysql_num_rows($result)) {
 <?php
 while ($judge_info = mysql_fetch_assoc($result))
 {
-	$edit_judge_url = "user.php?id=".urlencode($judge_info['judge_id']);
+	$edit_judge_url = "user.php?id=".urlencode($judge_info['judge_id'])
+			. "&next_url=".urlencode($_SERVER['REQUEST_URI']);
 	$online = $judge_info['online'];
 	$online_img = $online == 'Y' ? "images/plus.png" : "images/minus.png";
 	$online_lbl = $online == 'Y' ? '[Online]' : '[Offline]';
