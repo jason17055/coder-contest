@@ -119,14 +119,14 @@ else if ($_REQUEST['filter'] == "Unjudged")
 
 if (!is_director($contest_id))
 {
-	$filter_sql = $filter_sql . " AND (judge_id IS NULL OR judge_id=".db_quote($_SESSION['is_judge']).")";
+	$filter_sql = $filter_sql . " AND (j.team_number IS NULL OR j.team_number=".db_quote($_SESSION['is_judge']).")";
 }
 
-$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,j.user AS judge_user,status
 	FROM submission s
 	JOIN team t ON s.team=t.team_number
 	JOIN problem p ON s.problem=p.problem_number AND t.contest=p.contest
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND $filter_sql
 	UNION
