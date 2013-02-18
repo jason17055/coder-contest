@@ -49,9 +49,9 @@ else if ($judge_info = is_a_judge())
 		$updates[] = "last_message_acked=".db_quote($_REQUEST['after']);
 	}
 
-	$sql = "UPDATE judge SET ".join(',',$updates)."
+	$sql = "UPDATE team SET ".join(',',$updates)."
 		WHERE contest=".db_quote($contest_id)."
-		AND judge_id=".db_quote($judge_info['judge_id']);
+		AND team_number=".db_quote($judge_info['judge_id']);
 	mysql_query($sql);
 
 	if ($judge_info['online'] == 'N')
@@ -63,7 +63,7 @@ else if ($_REQUEST['contest'])
 	$contest_id = $_REQUEST['contest'];
 }
 
-$sql = "SELECT * FROM $schema.contest
+$sql = "SELECT * FROM contest
 		WHERE contest_id=" . db_quote($contest_id);
 $result = mysql_query($sql);
 $contest_info = mysql_fetch_assoc($result);
@@ -128,12 +128,10 @@ function check_for_online_status_change()
 {
 	$teams_on = array();
 	$teams_off = array();
-	$judges_on = array();
-	$judges_off = array();
 
 	foreach (explode(',', $_REQUEST['onlinestatuschange']) as $statcode)
 	{
-		if (preg_match('/^(team|judge)_(\d+)_(Y|N)$/', $statcode, $matches))
+		if (preg_match('/^(team)_(\d+)_(Y|N)$/', $statcode, $matches))
 		{
 			if ($matches[1] == 'team')
 			{
@@ -141,13 +139,6 @@ function check_for_online_status_change()
 					$teams_on[] = $matches[2];
 				else
 					$teams_off[] = $matches[2];
-			}
-			else if ($matches[1] == 'judge')
-			{
-				if ($matches[3] == 'Y')
-					$judges_on[] = $matches[2];
-				else
-					$judges_off[] = $matches[2];
 			}
 		}
 		
@@ -164,18 +155,6 @@ function check_for_online_status_change()
 	{
 		$sql_stmts[] = "SELECT COUNT(*) FROM team
 		WHERE team_number IN (" . join(',',$teams_on) . ")
-			AND (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT."))";
-	}
-	if (count($judges_off))
-	{
-		$sql_stmts[] = "SELECT COUNT(*) FROM judge
-		WHERE judge_id IN (" . join(',',$judges_off) . ")
-			AND NOT (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(), INTERVAL ".USER_ONLINE_TIMEOUT."))";
-	}
-	if (count($judges_on))
-	{
-		$sql_stmts[] = "SELECT COUNT(*) FROM judge
-		WHERE judge_id IN (" . join(',',$judges_on) . ")
 			AND (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT."))";
 	}
 
@@ -242,8 +221,8 @@ function check_for_new_submission()
 	global $targets;
 	$targets_sql = implode(", ", $targets);
 
-	$submission_limit[] = "judge_user IN ($targets_sql)";
-	$clarification_limit[] = "judge_user IN ($targets_sql)";
+	$submission_limit[] = "j.user IN ($targets_sql)";
+	$clarification_limit[] = "j.user IN ($targets_sql)";
 	$submission_limit[] = "(s.status IS NULL OR s.status='')";
 	$clarification_limit[] = "(s.status IS NULL OR s.status='')";
 
@@ -253,7 +232,7 @@ function check_for_new_submission()
 	FROM submission s
 	JOIN team t ON s.team=t.team_number
 	JOIN problem p ON s.problem=p.problem_number AND t.contest=p.contest
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND ".join(' AND ',$submission_limit)."
 	UNION
@@ -261,7 +240,7 @@ function check_for_new_submission()
 	FROM clarification s
 	JOIN team t ON t.team_number=s.team
 	JOIN problem p ON p.contest=t.contest AND p.problem_number=s.problem_number
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE s.contest=".db_quote($contest_id)."
 	AND ".join(' AND ',$clarification_limit)."
 	ORDER BY id ASC";

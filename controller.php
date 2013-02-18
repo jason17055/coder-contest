@@ -151,7 +151,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 	$judge_info['submissions_done'] = $judge_info['submissions_total'] - $judge_info['submissions_pending'];
 	$judge_info['clarifications_done'] = $judge_info['clarifications_total'] - $judge_info['clarifications_pending'];
 	?><tr>
-<td height="32"><img class="online-indicator" id="ind_online_judge_<?php echo htmlspecialchars($judge_info['judge_id'] . "_" . $online)?>" src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width='14' height='14'>
+<td height="32"><img class="online-indicator" id="ind_online_team_<?php echo htmlspecialchars($judge_info['judge_id'] . "_" . $online)?>" src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width='14' height='14'>
 <a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($judge_info['user'])?></a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
