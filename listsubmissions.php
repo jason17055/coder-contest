@@ -120,7 +120,7 @@ while ($submission = mysql_fetch_assoc($result))
 } //end for each submission/clarification
 if ($count == 0) { ?>
 <tr>
-<td colspan="6" class="none_at_this_time" valign="top">None at this time.</td>
+<td colspan="7" class="none_at_this_time" valign="top">None at this time.</td>
 </tr>
 <?php
 } //endif count == 0
