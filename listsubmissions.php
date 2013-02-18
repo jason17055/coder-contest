@@ -3,6 +3,7 @@
 require_once('config.php');
 require_once('includes/skin.php');
 require_once('includes/auth.php');
+require_once('includes/notify.php');
 
 require_auth();
 is_judge_of($_REQUEST['contest'])
@@ -51,6 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 					WHERE id IN (".join(',',$clarifications).")
 					AND contest=".db_quote($contest_id);
 			mysql_query($sql);
+
+			wakeup_listeners();
 		}
 
 		$next_url = $_SERVER['REQUEST_URI'];
