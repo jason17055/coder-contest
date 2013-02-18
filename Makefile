@@ -19,6 +19,7 @@ script_files = \
 	issue_credentials.php \
 	listsubmissions.php \
 	login.php \
+	newclarification.php \
 	open_problem.php \
 	problem.php \
 	problems.php \

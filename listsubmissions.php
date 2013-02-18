@@ -87,11 +87,11 @@ $sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,team_name,probl
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND $filter_sql
 	UNION
-	SELECT 'clarification' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+	SELECT 'clarification' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,j.user AS judge_user,status
 	FROM clarification s
 	JOIN team t ON t.team_number=s.team
 	JOIN problem p ON p.contest=t.contest AND p.problem_number=s.problem_number
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE s.contest=".db_quote($contest_id)."
 	AND $filter_sql
 	ORDER BY submitted ASC, id ASC";
