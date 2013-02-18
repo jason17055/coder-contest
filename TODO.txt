@@ -31,3 +31,6 @@
    - show current activity levels
 * general notification architecture:
    - notify completion of a run
+* schema fixups
+   - rename 'team' table to 'user'
+   - rename team.team_number column to 'user_id'
