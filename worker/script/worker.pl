@@ -343,6 +343,10 @@ sub run_command
 
 	use IPC::Open3;
 
+	if ($^O ne "MSWin32") {
+		unshift @$cmdline, "nice";
+	}
+
 	$input_file ||= ($^O eq "MSWin32" ? "NUL" : "/dev/null");
 	open INPUT_FILE, "<", $input_file
 		or die "$input_file: $!\n";
