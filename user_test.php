@@ -17,6 +17,7 @@ else
 	$team_info = get_team_identity();
 	$contest_id = $team_info['contest'];
 }
+$contest_info = get_basic_contest_info($contest_id);
 
 $sql = "SELECT * FROM test_job
 	WHERE id=".db_quote($_REQUEST['id']);
