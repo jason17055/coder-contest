@@ -448,7 +448,7 @@ function choose_judge($contest_id, $team_ordinal, $problem_number)
 		return "judges";
 
 	$judges_array = explode(',',$row[0]);
-	$i = ($team_ordinal-1) % count($judges_array);
+	$i = abs($team_ordinal-1) % count($judges_array);
 	return $judges_array[$i];
 }
 
