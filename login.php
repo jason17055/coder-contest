@@ -6,22 +6,26 @@ require_once('includes/auth.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
-	$sql = "SELECT team_number,is_judge FROM team
+	$sql = "SELECT team_number,is_judge,is_director FROM team
 		WHERE contest=".db_quote($_REQUEST['contest'])."
 		AND user=".db_quote($_REQUEST['username'])."
 		AND password=SHA1(".db_quote($_REQUEST['password']).")
 		";
 	$result = mysql_query($sql);
-	if ($user_info = mysql_fetch_row($result))
+	if ($user_info = mysql_fetch_assoc($result))
 	{
 		// found team login
-		$_SESSION['is_team'] = $user_info[0];
-		if ($user_info[1]=='Y') {
-			$_SESSION['is_judge'] = $user_info[0];
+		$_SESSION['is_team'] = $user_info['team_number'];
+		if ($user_info['is_judge']=='Y') {
+			$_SESSION['is_judge'] = $user_info['team_number'];
 		} else {
 			unset($_SESSION['is_judge']);
 		}
-		unset($_SESSION['is_director']);
+		if ($user_info['is_director']=='Y') {
+			$_SESSION['is_director'] = $_REQUEST['contest'];
+		} else {
+			unset($_SESSION['is_director']);
+		}
 		unset($_SESSION['is_sysadmin']);
 		$_SESSION['uid'] = "$_REQUEST[contest]/$_REQUEST[username]";
 		$_SESSION['username'] = $_REQUEST['username'];
