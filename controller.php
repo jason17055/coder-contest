@@ -32,7 +32,7 @@ $sql = "SELECT * FROM problem
 $result = mysql_query($sql);
 
 while ($problem = mysql_fetch_assoc($result)) {
-	$problem_url = "problem.php?id=" . urlencode($problem['problem_number']) . "&contest=" . urlencode($contest_id);
+	$problem_url = "open_problem.php?problem=" . urlencode($problem['problem_number']) . "&contest=".urlencode($contest_id);
 	$problems_list[] = $problem['problem_number'];
 
 	?><th><a href="<?php echo htmlspecialchars($problem_url) ?>"><?php echo htmlspecialchars($problem['problem_name'])?></a></th>
