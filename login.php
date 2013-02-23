@@ -6,7 +6,7 @@ require_once('includes/auth.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
-	$sql = "SELECT team_number,is_judge,is_director FROM team
+	$sql = "SELECT team_number,is_judge,is_director,last_message_acked FROM team
 		WHERE contest=".db_quote($_REQUEST['contest'])."
 		AND user=".db_quote($_REQUEST['username'])."
 		AND password=SHA1(".db_quote($_REQUEST['password']).")
@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		unset($_SESSION['is_sysadmin']);
 		$_SESSION['uid'] = "$_REQUEST[contest]/$_REQUEST[username]";
 		$_SESSION['username'] = $_REQUEST['username'];
+		$_SESSION['user_id'] = $user_info['team_number'];
+		$_SESSION['last_message'] = $user_info['last_message_acked'];
 
 		$url = $_REQUEST['next_url'];
 		if (!$url)

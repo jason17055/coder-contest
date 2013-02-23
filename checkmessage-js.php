@@ -12,50 +12,42 @@ $contest_id = 0;
 $targets = array();
 $targets[] = db_quote('*');
 $targets[] = db_quote($_SESSION['username']);
+
+if ($_REQUEST['after'])
+{
+	if (!$_SESSION['last_message'] || $_SESSION['last_message'] < $_REQUEST['after']) {
+		$_SESSION['last_message'] = $_REQUEST['after'];
+	}
+}
+
+if (!$_SESSION['last_message']) {
+	$_SESSION['last_message'] = 0;
+}
+
 if ($team_info = is_a_team())
 {
-	$targets[] = db_quote('teams');
+	if ($team_info['is_contestant'] == 'Y') {
+		$targets[] = db_quote('teams');
+	}
+	if ($team_info['is_judge'] == 'Y') {
+		$targets[] = db_quote("judges");
+	}
+	if ($team_info['is_director'] == 'Y') {
+	}
 	$contest_id = $team_info['contest'];
 
 	$updates = array();
 	$updates[] = "last_refreshed=NOW()";
-	if ($_REQUEST['after'])
-	{
-		$updates[] = "last_message_acked=".db_quote($_REQUEST['after']);
-	}
+	$updates[] = "last_message_acked=GREATEST(last_message_acked,".db_quote($_REQUEST['after']).")";
 
 	$sql = "UPDATE team SET ".join(',',$updates)."
 		WHERE contest=".db_quote($contest_id)."
 		AND team_number=".db_quote($team_info['team_number']);
 	mysql_query($sql);
 
-	if ($team_info['online'] == 'N')
+	if ($team_info['online'] == 'N') {
 		wakeup_listeners();
-}
-else if ($director_info = is_a_director())
-{
-	$targets[] = db_quote('judges');
-	$contest_id = $director_info['contest'];
-}
-else if ($judge_info = is_a_judge())
-{
-	$targets[] = db_quote('judges');
-	$contest_id = $judge_info['contest'];
-
-	$updates = array();
-	$updates[] = "last_refreshed=NOW()";
-	if ($_REQUEST['after'])
-	{
-		$updates[] = "last_message_acked=".db_quote($_REQUEST['after']);
 	}
-
-	$sql = "UPDATE team SET ".join(',',$updates)."
-		WHERE contest=".db_quote($contest_id)."
-		AND team_number=".db_quote($judge_info['judge_id']);
-	mysql_query($sql);
-
-	if ($judge_info['online'] == 'N')
-		wakeup_listeners();
 }
 else if ($_REQUEST['contest'])
 {
@@ -91,7 +83,7 @@ function check_for_message()
 
 	$sql = "SELECT * FROM announcement
 		WHERE contest=".db_quote($contest_id) . "
-		AND id>".db_quote($_REQUEST['after']) . "
+		AND id>".db_quote($_SESSION['last_message']) . "
 		AND NOW()<expires
 		AND (recipient IS NULL OR recipient IN ($targets_sql))
 		$other_sql

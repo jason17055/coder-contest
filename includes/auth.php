@@ -88,7 +88,8 @@ function is_in_a_contest()
 function is_a_team()
 {
 	$sql = "SELECT team_number,contest,
-		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online
+		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online,
+		is_contestant,is_judge,is_director
 		FROM team
 		WHERE team_number=".db_quote($_SESSION['is_team']);
 	$result = mysql_query($sql)
