@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
 	$def_next_url = is_director($contest_id) ?
 			"result.php?team=".urlencode($_REQUEST['team'])."&problem=".urlencode($_REQUEST['problem']) :
-			"listsubmissions.php?contest=".urlencode($contest_id);
+			".";
 
 	if (isset($_REQUEST['action:cancel']))
 	{
