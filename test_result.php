@@ -156,7 +156,7 @@ else if (isset($_REQUEST['custom_test']))
 		$add_systest_url .= "&expected_file=".urlencode($job_info['output_file']);
 	}
 ?>
-<button type="button" onclick='location.href="<?php echo htmlspecialchars($add_systest_url)?>";'>Add to Test Suite</button>
+<button type="button" onclick='location.href="<?php echo htmlspecialchars($add_systest_url)?>";'>Add to Test Suite (experimental)</button>
 
 <?php
 } //end if $_REQUEST['custom_test']
