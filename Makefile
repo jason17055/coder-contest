@@ -25,6 +25,7 @@ script_files = \
 	job_result.php \
 	listsubmissions.php \
 	login.php \
+	make_contest_archive.php \
 	new_challenge.php \
 	newclarification.php \
 	open_problem.php \
