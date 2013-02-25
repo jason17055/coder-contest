@@ -1,3 +1,4 @@
+* scoreboard: show time remaining in current round
 * config option for "Write Code" tab
    - let director disable the "Write Code" tab for all contestants
       (I am worried that if teams write code online in the editor
