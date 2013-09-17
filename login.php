@@ -101,6 +101,32 @@ if (isset($_REQUEST['logout']))
 	exit();
 }
 
+if (isset($_REQUEST['contest']) && $_SERVER['REQUEST_METHOD'] == "GET")
+{
+	$contest_id = $_REQUEST['contest'];
+	$sql = "SELECT auth_method FROM contest
+			WHERE contest_id=".db_quote($contest_id)."
+			AND enabled='Y'";
+	$query = mysql_query($sql);
+	$contest_info = mysql_fetch_assoc($query);
+	if (!$contest_info) {
+		die("Invalid contest id");
+	}
+
+	$auth_method = $contest_info['auth_method'];
+	if ($auth_method) {
+		if ($auth_method == 'CAS') {
+			$service_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+			$cas_url = CAS_URL . 'login?service='.urlencode($service_url);
+			header("Location: $cas_url");
+			exit();
+		}
+		else {
+			die("Invalid auth method for contest $contest_id");
+		}
+	}
+}
+
 
 begin_page("Login");
 
