@@ -204,7 +204,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 <?php
 	}
 	if ($count == 0) { ?><tr>
-<td colspan="2" height="32">
+<td colspan="3" height="32">
 <img src="images/minus.png" alt="" width='14' height='14'>
 <span style="color: red; font-weight: bold">No workers are online</span>
 <div><small><a href="worker/">Click here to find out how to start a worker</a></small></div></td>
