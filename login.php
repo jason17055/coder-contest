@@ -101,8 +101,9 @@ if (isset($_REQUEST['logout']))
 	exit();
 }
 
-function handle_login($contest_id, $uid)
+function handle_login($contest_info, $uid)
 {
+	$contest_id = $contest_info['contest_id'];
 	$sql = "SELECT team_number,is_judge,is_director,last_message_acked FROM team
 		WHERE contest=".db_quote($contest_id)."
 		AND user=".db_quote($uid)."
@@ -136,6 +137,34 @@ function handle_login($contest_id, $uid)
 		header("Location: $url");
 		exit();
 	}
+	else if ($contest_info['auto_register_cas'] == 'Y') {
+		$sql = "INSERT INTO team (team_name,contest,user,is_contestant)
+			VALUES (
+				".db_quote($uid).",
+				".db_quote($contest_id).",
+				".db_quote($uid).",
+				'Y')";
+		mysql_query($sql)
+			or die("SQL error 1/$contest_id: ".mysql_error());
+
+		$user_id = mysql_insert_id();
+		$_SESSION['is_team'] = $user_id;
+		unset($_SESSION['is_judge']);
+		unset($_SESSION['is_director']);
+		unset($_SESSION['is_sysadmin']);
+		$_SESSION['uid'] = "$contest_id/$uid";
+		$_SESSION['username'] = $uid;
+		$_SESSION['user_id'] = $user_id;
+		$_SESSION['last_message'] = null;
+
+		$url = $_REQUEST['next_url'];
+		if (!$url)
+		{
+			$url = ".";
+		}
+		header("Location: $url");
+		exit();
+	}
 	else {
 		die("Oops, user $uid is not defined for contest $contest_id");
 	}
@@ -144,7 +173,7 @@ function handle_login($contest_id, $uid)
 if (isset($_REQUEST['contest']) && $_SERVER['REQUEST_METHOD'] == "GET")
 {
 	$contest_id = $_REQUEST['contest'];
-	$sql = "SELECT auth_method FROM contest
+	$sql = "SELECT contest_id, auth_method, auto_register_cas FROM contest
 			WHERE contest_id=".db_quote($contest_id)."
 			AND enabled='Y'";
 	$query = mysql_query($sql);
@@ -166,7 +195,7 @@ if (isset($_REQUEST['contest']) && $_SERVER['REQUEST_METHOD'] == "GET")
 				$result = file_get_contents($cas_url);
 				$result_parts = explode("\n", $result);
 				if (chop($result_parts[0]) == 'yes') {
-					handle_login($contest_id, chop($result_parts[1]));
+					handle_login($contest_info, chop($result_parts[1]));
 				}
 				die("CAS validation failed");
 			}
