@@ -11,6 +11,7 @@ CREATE TABLE contest (
 	subtitle  VARCHAR(200),
 	logo      VARCHAR(200),
 	shortname VARCHAR(20),
+	auth_method VARCHAR(20),
 	director  VARCHAR(200),
 	director_password VARCHAR(200),
 	scoreboard        CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N

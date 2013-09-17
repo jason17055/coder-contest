@@ -60,9 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		$updates[] = "director_password=SHA1(".db_quote($_REQUEST['director_password']).")";
 	}
 
-	if (isset($_REQUEST['enabled']) && is_sysadmin())
+	if (is_sysadmin())
 	{
-		$updates[] = "enabled=".db_quote($_REQUEST['enabled']);
+		if (isset($_REQUEST['auth_method'])) {
+			$updates[] = "auth_method=".db_quote($_REQUEST['auth_method']);
+		}
+		if (isset($_REQUEST['enabled'])) {
+			$updates[] = "enabled=".db_quote($_REQUEST['enabled']);
+		}
 	}
 
 	for ($i = 1; $i <= 4; $i++)
@@ -188,6 +193,11 @@ Change Password: <input type="text" name="director_password" value="">
 <td>Enabled:</td>
 <td><?php select_option_widget('enabled',
 		array("Y|Enabled","N|Disabled"), $row['enabled'])?></td>
+</tr>
+<tr>
+<td>Auth method:</td>
+<td><?php select_option_widget('auth_method',
+		array("|Internal", "CAS|CAS"), $row['auth_method'])?></td>
 </tr>
 <?php } /* end if sysadmin */ ?>
 <tr>
