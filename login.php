@@ -101,6 +101,46 @@ if (isset($_REQUEST['logout']))
 	exit();
 }
 
+function handle_login($contest_id, $uid)
+{
+	$sql = "SELECT team_number,is_judge,is_director,last_message_acked FROM team
+		WHERE contest=".db_quote($contest_id)."
+		AND user=".db_quote($uid)."
+		";
+	$result = mysql_query($sql);
+	if ($user_info = mysql_fetch_assoc($result))
+	{
+		// found team login
+		$_SESSION['is_team'] = $user_info['team_number'];
+		if ($user_info['is_judge']=='Y') {
+			$_SESSION['is_judge'] = $user_info['team_number'];
+		} else {
+			unset($_SESSION['is_judge']);
+		}
+		if ($user_info['is_director']=='Y') {
+			$_SESSION['is_director'] = $contest_id;
+		} else {
+			unset($_SESSION['is_director']);
+		}
+		unset($_SESSION['is_sysadmin']);
+		$_SESSION['uid'] = "$contest_id/$uid";
+		$_SESSION['username'] = $uid;
+		$_SESSION['user_id'] = $user_info['team_number'];
+		$_SESSION['last_message'] = $user_info['last_message_acked'];
+
+		$url = $_REQUEST['next_url'];
+		if (!$url)
+		{
+			$url = ".";
+		}
+		header("Location: $url");
+		exit();
+	}
+	else {
+		die("Oops, user $uid is not defined for contest $contest_id");
+	}
+}
+
 if (isset($_REQUEST['contest']) && $_SERVER['REQUEST_METHOD'] == "GET")
 {
 	$contest_id = $_REQUEST['contest'];
@@ -117,6 +157,20 @@ if (isset($_REQUEST['contest']) && $_SERVER['REQUEST_METHOD'] == "GET")
 	if ($auth_method) {
 		if ($auth_method == 'CAS') {
 			$service_url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+
+			if (isset($_REQUEST['ticket']))
+			{
+				$service_url = preg_replace('/&ticket=.*$/', '', $service_url);
+				$cas_url = CAS_URL . 'validate?service='.urlencode($service_url).'&ticket='.$_REQUEST['ticket'];
+
+				$result = file_get_contents($cas_url);
+				$result_parts = explode("\n", $result);
+				if (chop($result_parts[0]) == 'yes') {
+					handle_login($contest_id, chop($result_parts[1]));
+				}
+				die("CAS validation failed");
+			}
+
 			$cas_url = CAS_URL . 'login?service='.urlencode($service_url);
 			header("Location: $cas_url");
 			exit();
