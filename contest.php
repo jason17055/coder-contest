@@ -22,6 +22,7 @@ else
 		"scoreboard_popups" => "Y",
 		"scoreboard_order" => 'n',
 		"scoreboard_fanfare" => 'Y',
+		"auto_register_cas" => 'N',
 		"started" => strftime('%Y-%m-%d %H:%M:%S', $timestamp),
 		);
 }
@@ -67,6 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 		if (isset($_REQUEST['enabled'])) {
 			$updates[] = "enabled=".db_quote($_REQUEST['enabled']);
+		}
+		if ($_REQUEST['auto_register_cas']) {
+			$updates[] = "auto_register_cas='Y'";
+		}
+		else {
+			$updates[] = "auto_register_cas='N'";
 		}
 	}
 
@@ -197,7 +204,12 @@ Change Password: <input type="text" name="director_password" value="">
 <tr>
 <td>Auth method:</td>
 <td><?php select_option_widget('auth_method',
-		array("|Internal", "CAS|CAS"), $row['auth_method'])?></td>
+		array("|Internal", "CAS|CAS"), $row['auth_method'])?>
+
+		<label><input type="checkbox" name="auto_register_cas"<?php
+				echo($row['auto_register_cas'] == 'Y' ? ' checked="checked"' : '')
+				?>>Auto-register CAS users</label>
+		</td>
 </tr>
 <?php } /* end if sysadmin */ ?>
 <tr>

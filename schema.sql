@@ -12,6 +12,7 @@ CREATE TABLE contest (
 	logo      VARCHAR(200),
 	shortname VARCHAR(20),
 	auth_method VARCHAR(20),
+	auto_register_cas CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
 	director  VARCHAR(200),
 	director_password VARCHAR(200),
 	scoreboard        CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N
