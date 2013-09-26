@@ -21,6 +21,13 @@ function show_challenge_status($challenge_id)
 ?>
 <p>During the challenge phase, you can click on another contestant's
 solution to view or challenge the correctness of it.</p>
+<?php
+
+if (is_judge_of($contest_id)) {
+	$judges_view = true;
+}
+
+?>
 <div id="all_solutions_table_container">
 <table id="all_solutions_table">
 <tr>
@@ -31,18 +38,20 @@ solution to view or challenge the correctness of it.</p>
 <th>Total Contest Score</th>
 </tr>
 <?php
-	if ($problem_info['solution_visible'] == 'Y') {
+	if ($problem_info['solution_file'] && ($problem_info['solution_visible'] == 'Y' || $judges_view)) {
 ?>
 <tr class="solution_row" solution-file="<?php echo htmlspecialchars("file.php/$problem_info[solution_file]/$problem_info[solution_name]")?>" solution-language="<?php echo get_language_from_name($problem_info['solution_name'])?>">
 <td>-</td>
 <td><em>Judge's solution</em></td>
-<td><?php echo htmlspecialchars($problem_info['solution_name'])?></td>
+<td><?php echo htmlspecialchars($problem_info['solution_name']);
+	if ($problem_info['solution_visible'] != 'Y') { echo '(judges only)'; }
+	?></td>
 <td>-</td>
 <td>-</td>
 </tr>
 <?php
 	}
-	if ($problem_info['read_opponent'] == 'Y') {
+	if ($judges_view || $problem_info['read_opponent'] == 'Y') {
 
 	global $contest_id;
 	$sql = "
@@ -98,7 +107,9 @@ solution to view or challenge the correctness of it.</p>
 						? ' challenge-link="'.htmlspecialchars("new_challenge.php?submission=".urlencode($row['submission'])).'"' : '')?>>
 			<td><?php echo htmlspecialchars($place)?></td>
 			<td><?php echo htmlspecialchars($row['team_name'])?></td>
-			<td><?php echo htmlspecialchars($row['source_name'])?></td>
+			<td><?php echo htmlspecialchars($row['source_name']);
+	if ($problem_info['read_opponent'] != 'Y') { echo '(judges only)'; }
+			?></td>
 			<td><?php
 			if ($row['problem_score']) {
 				echo format_score($row['problem_score'],$row['problem_score_alt']);
