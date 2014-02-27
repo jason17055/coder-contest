@@ -128,7 +128,8 @@ $count = 0;
 while ($row = mysql_fetch_assoc($result))
 {
 	$count++;
-	$edit_team_url = "user.php?id=".urlencode($row['team_number']);
+	$edit_team_url = "user.php?id=".urlencode($row['team_number']).
+		"&next_url=".urlencode($_SERVER['REQUEST_URI']);
 	?><tr>
 <td><a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo htmlspecialchars($row['user'])?></a>
 <?php if ($row['visible'] == 'N') {
