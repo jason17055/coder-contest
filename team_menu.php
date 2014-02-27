@@ -38,6 +38,13 @@ if ($team_info['is_contestant'] == 'Y')
 
 <h3>Actions</h3>
 <div>
+<?php
+if (is_director($contest_id)) {
+	$url = "controller.php?contest=".urlencode($contest_id);
+	?><a href="<?php echo htmlspecialchars($url)?>">Controller</a> |
+<?php
+}
+?>
 <a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_blank">Scoreboard</a>
 <?php
 if ($team_info['is_judge'] == 'Y' || $team_info['is_director'] == 'Y') {
