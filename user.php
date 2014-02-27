@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		//teams are allowed to change their name/description here
 
 		$updates = array();
-		if ($can_change_ordinal && $_REQUEST['ordinal'])
+		if ($can_change_ordinal && isset($_REQUEST['ordinal']))
 		{
 			$updates[] = "ordinal=".db_quote($_REQUEST['ordinal']);
 		}
