@@ -128,11 +128,11 @@ foreach ($filters as $f)
 $filter_sql = "2>1";
 if ($_REQUEST['filter'] == "Judged")
 {
-	$filter_sql = "(s.status IS NOT NULL AND s.status <> '')";
+	$filter_sql = "(s.status IS NOT NULL AND s.status <> '' AND s.status NOT IN ('Accepted'))";
 }
 else if ($_REQUEST['filter'] == "Unjudged")
 {
-	$filter_sql = "(s.status IS NULL OR s.status = '')";
+	$filter_sql = "(s.status IS NULL OR s.status = '' OR s.status IN ('Accepted'))";
 }
 
 if (!is_director($contest_id))
