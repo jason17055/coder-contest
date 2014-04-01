@@ -18,13 +18,20 @@ function show_challenge_status($challenge_id)
 	}
 }
 
+if (is_judge_of($contest_id)) {
+	$judges_view = true;
+?>
+<p>As a judge, you can click on any contestant's
+solution to view it.</p>
+<?php
+
+}
+else {
 ?>
 <p>During the challenge phase, you can click on another contestant's
 solution to view or challenge the correctness of it.</p>
 <?php
 
-if (is_judge_of($contest_id)) {
-	$judges_view = true;
 }
 
 ?>
@@ -44,7 +51,7 @@ if (is_judge_of($contest_id)) {
 <td>-</td>
 <td><em>Judge's solution</em></td>
 <td><?php echo htmlspecialchars($problem_info['solution_name']);
-	if ($problem_info['solution_visible'] != 'Y') { echo '(judges only)'; }
+	if ($problem_info['solution_visible'] != 'Y') { echo '*'; }
 	?></td>
 <td>-</td>
 <td>-</td>
@@ -87,6 +94,7 @@ if (is_judge_of($contest_id)) {
 			AND r.problem_number=".db_quote($_REQUEST['problem'])."
 		WHERE t.contest=".db_quote($contest_id)."
 		AND t.visible='Y'
+		AND t.is_contestant='Y'
 			) x
 		LEFT JOIN submission ss
 			ON ss.id=x.most_recent_submission
@@ -108,7 +116,7 @@ if (is_judge_of($contest_id)) {
 			<td><?php echo htmlspecialchars($place)?></td>
 			<td><?php echo htmlspecialchars($row['team_name'])?></td>
 			<td><?php echo htmlspecialchars($row['source_name']);
-	if ($problem_info['read_opponent'] != 'Y') { echo '(judges only)'; }
+	if ($row['source_name'] && $problem_info['read_opponent'] != 'Y') { echo '*'; }
 			?></td>
 			<td><?php
 			if ($row['problem_score']) {
