@@ -4,17 +4,14 @@ require_once('config.php');
 require_once('includes/skin.php');
 require_once('includes/auth.php');
 require_once('includes/notify.php');
+require_once('includes/functions.php');
 
 require_auth();
 is_judge_of($_REQUEST['contest'])
 	or die("Error: not authorized");
 
 $contest_id = $_REQUEST['contest'];
-$sql = "SELECT * FROM contest
-	WHERE contest_id=" . db_quote($contest_id);
-$result = mysql_query($sql);
-$contest_info = mysql_fetch_assoc($result)
-	or die("Error: contest $contest_id not found");
+$contest_info = get_basic_contest_info($contest_id);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
