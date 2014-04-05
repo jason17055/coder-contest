@@ -21,6 +21,7 @@
    - unique icon for scoreboard
    - unique image for congratulations popup
    - specify runtime limit
+   - specify that output file should be treated as text
 * worker:
    - implement memory limit
    - implement output file size limit
@@ -35,3 +36,5 @@
 * schema fixups
    - rename 'team' table to 'user'
    - rename team.team_number column to 'user_id'
+* listsubmissions:
+   - auto-refresh on new submissions

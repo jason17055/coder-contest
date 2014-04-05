@@ -21,9 +21,14 @@ $problems_list = array();
 
 begin_page($contest_info['title']);
 $edit_contest_url = "contest.php?contest=".urlencode($contest_id);
+
+$sort_by_team_url = "controller.php?contest=".urlencode($contest_id)."&sort=team";
+$sort_by_score_url = "controller.php?contest=".urlencode($contest_id)."&sort=score";
 ?>
 
-<table id="controller_teams_table" class="realtable"><tr><th>Contestant</th>
+<table id="controller_teams_table" class="realtable">
+<tr>
+<th>Contestant [<a href="<?php echo htmlspecialchars($sort_by_team_url)?>">^</a>]</th>
 <?php
 $sql = "SELECT * FROM problem
 	WHERE contest=" . db_quote($contest_id) . "
@@ -38,16 +43,22 @@ while ($problem = mysql_fetch_assoc($result)) {
 	?><th><a href="<?php echo htmlspecialchars($problem_url) ?>"><?php echo htmlspecialchars($problem['problem_name'])?></a></th>
 <?php
 } //end loop through each problem
+
 ?>
-<th>Totals</th></tr>
+<th>Totals [<a href="<?php echo htmlspecialchars($sort_by_score_url)?>">^</a>]</th></tr>
 <?php
+
+$orderby = "ordinal ASC,team_name ASC";
+if ($_GET['sort'] == 'score') {
+	$orderby = "score DESC, score_alt DESC, ordinal ASC, team_name ASC";
+}
 
 $sql = "SELECT *,
 	CASE WHEN last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT.") THEN 'N' ELSE 'Y' END AS online
 	FROM team
 	WHERE contest=" . db_quote($contest_id) . "
 	AND is_contestant='Y'
-	ORDER BY ordinal,team_name ASC";
+	ORDER BY $orderby";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 
