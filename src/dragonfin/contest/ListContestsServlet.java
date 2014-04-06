@@ -18,11 +18,11 @@ public class ListContestsServlet extends CoreServlet
 		Query q = new Query("Contest");
 		PreparedQuery pq = ds.prepare(q);
 
-		ArrayList<ContestBean> list = new ArrayList<ContestBean>();
+		ArrayList<ContestInfo> list = new ArrayList<ContestInfo>();
 		for (Entity ent : pq.asIterable()) {
 			String contestId = ent.getKey().getName();
 			String creator = (String) ent.getProperty("createdBy");
-			ContestBean c = new ContestBean();
+			ContestInfo c = new ContestInfo();
 			c.id = contestId;
 			c.createdBy = creator;
 			list.add(c);

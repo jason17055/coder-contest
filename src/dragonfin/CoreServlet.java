@@ -8,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.templates.*;
 import dragonfin.contest.DataHelper;
+import dragonfin.contest.TemplateGlobals;
 import dragonfin.contest.model.*;
 
 public class CoreServlet extends HttpServlet
@@ -147,7 +148,7 @@ public class CoreServlet extends HttpServlet
 		{
 			ctx.put("s", new SessionAdapter(s));
 			final String contestId = (String) s.getAttribute("contest");
-			ContestBean contest = DataHelper.loadContest(contestId);
+			ContestInfo contest = DataHelper.loadContest(contestId);
 			ctx.put("contest", contest);
 
 			final String userId = (String) s.getAttribute("username");

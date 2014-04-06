@@ -5,7 +5,7 @@ import dragonfin.contest.model.*;
 
 public class DataHelper
 {
-	public static ContestBean loadContest(String contestId)
+	public static ContestInfo loadContest(String contestId)
 		throws NotFound
 	{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -13,7 +13,7 @@ public class DataHelper
 
 		try {
 		Entity ent = ds.get(contestKey);
-		ContestBean rv = new ContestBean();
+		ContestInfo rv = new ContestInfo();
 
 		rv.id = contestId;
 		rv.title = ent.hasProperty("title") ?
