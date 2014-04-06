@@ -73,7 +73,7 @@ public class LoginServlet extends CoreServlet
 			// login ok
 			HttpSession s = req.getSession(true);
 			s.setAttribute("contest", contestId);
-			s.setAttribute("uid", userId);
+			s.setAttribute("username", userId);
 
 			s.setAttribute("isDirector", ent.getProperty("isDirector"));
 			s.setAttribute("isContestant", ent.getProperty("isContestant"));

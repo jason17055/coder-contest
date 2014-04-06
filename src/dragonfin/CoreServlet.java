@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.templates.*;
+import dragonfin.contest.DataHelper;
 import dragonfin.contest.model.*;
 
 public class CoreServlet extends HttpServlet
@@ -145,18 +146,16 @@ public class CoreServlet extends HttpServlet
 		if (s != null)
 		{
 			ctx.put("s", new SessionAdapter(s));
-			String contestId = (String) s.getAttribute("contest");
-			if (contestId != null)
-			{
-				ContestInfo contest = ContestInfo.load(contestId);
-				ctx.put("contest", contest);
-			}
-			final String userId = (String) s.getAttribute("uidnumber");
+			final String contestId = (String) s.getAttribute("contest");
+			ContestBean contest = DataHelper.loadContest(contestId);
+			ctx.put("contest", contest);
+
+			final String userId = (String) s.getAttribute("username");
 			Callable<UserInfo> userC = new Callable<UserInfo>()
 			{
 			public UserInfo call() throws Exception
 			{
-				return UserInfo.loadById(userId);
+				return DataHelper.loadUser(contestId, userId);
 			}
 
 			};
@@ -197,7 +196,7 @@ public class CoreServlet extends HttpServlet
 		renderTemplate(req, resp, templateName, null);
 	}
 
-	void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
+	protected void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
 		String newUrl = req.getContextPath()+"/login?next=" + escapeUrl(req.getRequestURI());
