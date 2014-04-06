@@ -6,16 +6,13 @@
 <p class="error">[% message |html %]</p>
 [% END %]
 
+<div>[% r.uri %]</div>
+
 <form method="post" action="[% r.uri |html %]">
 <table>
 <tr>
 <td>Contest:</td>
-<td><select name="contest">[% FOREACH c IN g.contests %]
-<option value="[% c.id |html %]"[% ' selected="selected"' IF r.contest == c.id %]>[% c.title |html %]</option>
-[% END %]
-<option value="">(system administration)</option>
-</select>
-</td>
+<td>[% r.contest |html %]</td>
 </tr>
 <tr>
 <td>Username:</td>

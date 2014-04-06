@@ -2,14 +2,17 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.sql.*;
 import dragonfin.*;
 import dragonfin.contest.model.*;
+import com.google.appengine.api.datastore.*;
 
 public class LoginServlet extends CoreServlet
 {
+	private static final Logger log = Logger.getLogger(LoginServlet.class.getName());
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -24,7 +27,7 @@ public class LoginServlet extends CoreServlet
 			return;
 		}
 
-		renderTemplate(req, resp, "login.vm");
+		renderTemplate(req, resp, "login.tt");
 	}
 
 	private void sendUserOnTheirWay(HttpServletRequest req,
@@ -42,56 +45,46 @@ public class LoginServlet extends CoreServlet
 	private boolean checkUserLogin(HttpServletRequest req, HttpServletResponse resp)
 		throws Exception
 	{
-		Connection db = Database.getConnection();
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try
-		{
+		String contestId = req.getParameter("contest");
+		String userId = req.getParameter("username");
+		String password = req.getParameter("password");
 
-		stmt = db.prepareStatement(
-			"SELECT team_number,is_contestant,is_judge,is_director"
-			+" FROM team"
-			+" WHERE contest=?"
-			+" AND user=?"
-			+" AND password=SHA1(?)"
-			);
-		stmt.setString(1, req.getParameter("contest"));
-		stmt.setString(2, req.getParameter("username"));
-		stmt.setString(3, req.getParameter("password"));
-		rs = stmt.executeQuery();
-		if (rs.next())
-		{
-			// found team login
+		if (contestId == null || contestId.equals("")) {
+			return false;
+		}
+		if (userId == null || userId.equals("")) {
+			return false;
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key userKey = KeyFactory.createKey(contestKey,
+					"User", userId);
+		Entity ent;
+		try {
+			ent = ds.get(userKey);
+		}
+		catch (EntityNotFoundException e) {
+			log.info("Login failure (User "+contestId+"/"+userId+" not found)");
+			return false;
+		}
+
+		if (checkPassword(password, (String) ent.getProperty("password"))) {
+			// login ok
 			HttpSession s = req.getSession(true);
-			s.setAttribute("uidnumber", rs.getString(1));
-			s.setAttribute("contest", req.getParameter("contest"));
-			if (rs.getString(2).equals("Y"))
-				s.setAttribute("is_contestant", Boolean.TRUE);
-			else
-				s.removeAttribute("is_contestant");
-			if (rs.getString(3).equals("Y"))
-				s.setAttribute("is_judge", Boolean.TRUE);
-			else
-				s.removeAttribute("is_judge");
-			if (rs.getString(4).equals("Y"))
-				s.setAttribute("is_director", Boolean.TRUE);
-			else
-				s.removeAttribute("is_director");
-			s.setAttribute("uid", req.getParameter("contest")+"/"+req.getParameter("username"));
-			s.setAttribute("username", req.getParameter("username"));
+			s.setAttribute("contest", contestId);
+			s.setAttribute("uid", userId);
+
+			s.setAttribute("isDirector", ent.getProperty("isDirector"));
+			s.setAttribute("isContestant", ent.getProperty("isContestant"));
+			s.setAttribute("isJudge", ent.getProperty("isJudge"));
+
+			log.info("Login success (User "+contestId+"/"+userId+")");
 			return true;
 		}
-		return false;
 
-		}
-		finally
-		{
-			if (rs != null)
-				rs.close();
-			if (stmt != null)
-				stmt.close();
-			db.close();
-		}
+		log.info("Login failure (User "+contestId+"/"+userId+" wrong password)");
+		return false;
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -107,12 +100,17 @@ public class LoginServlet extends CoreServlet
 			{
 				HashMap<String,Object> args = new HashMap<String,Object>();
 				args.put("message", "Error: invalid username/password");
-				renderTemplate(req, resp, "login.vm", args);
+				renderTemplate(req, resp, "login.tt", args);
 			}
 		}
 		catch (Exception e)
 		{
 			throw new ServletException(e);
 		}
+	}
+
+	static boolean checkPassword(String givenPassword, String actualPassword)
+	{
+		return givenPassword.equals(actualPassword);
 	}
 }

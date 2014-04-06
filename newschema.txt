@@ -1,0 +1,7 @@
+Contest [ id ]
+	title         String
+	created       Date
+	createdBy     String
+
+User [ Contest.id / username ]
+	password      String
