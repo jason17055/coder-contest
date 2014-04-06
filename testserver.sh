@@ -1,7 +1,6 @@
 #!/bin/sh
 
-rm -rf war
-mkdir war
+test -d war || mkdir war
 (
 cd war
 jar -xvf ../falcon-contest.war
