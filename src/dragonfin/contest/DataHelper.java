@@ -48,6 +48,15 @@ public class DataHelper
 		rv.ordinal = ent.hasProperty("ordinal") ?
 			((Integer) ent.getProperty("ordinal")).intValue() :
 			0;
+		rv.isDirector = ent.hasProperty("isDirector") ?
+			((Boolean) ent.getProperty("isDirector")).booleanValue() :
+			false;
+		rv.isJudge = ent.hasProperty("isJudge") ?
+			((Boolean) ent.getProperty("isJudge")).booleanValue() :
+			false;
+		rv.isContestant = ent.hasProperty("isContestant") ?
+			((Boolean) ent.getProperty("isContestant")).booleanValue() :
+			false;
 
 		return rv;
 

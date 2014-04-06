@@ -5,3 +5,6 @@ Contest [ id ]
 
 User [ Contest.id / username ]
 	password      String
+	isDirector    Boolean
+	isJudge       Boolean
+	isContestant  Boolean

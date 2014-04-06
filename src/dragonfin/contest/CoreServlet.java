@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.script.Bindings;
+import javax.script.SimpleBindings;
 import dragonfin.templates.*;
 import dragonfin.contest.model.*;
 
@@ -140,11 +142,11 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
-	protected Map<String,Object> makeVars(HttpServletRequest req,
+	protected Bindings makeVars(HttpServletRequest req,
 			Map<String,Object> args)
 		throws Exception
 	{
-		HashMap<String,Object> ctx = new HashMap<String,Object>();
+		SimpleBindings ctx = new SimpleBindings();
 		ctx.put("resources_prefix",req.getContextPath());
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
@@ -153,9 +155,11 @@ public class CoreServlet extends HttpServlet
 		if (s != null)
 		{
 			ctx.put("s", new SessionAdapter(s));
+
 			final String contestId = (String) s.getAttribute("contest");
-			ContestInfo contest = DataHelper.loadContest(contestId);
-			ctx.put("contest", contest);
+			if (contestId != null) {
+				makeContestVars(contestId, ctx);
+			}
 
 			final String userId = (String) s.getAttribute("username");
 			Callable<UserInfo> userC = new Callable<UserInfo>()
@@ -164,14 +168,28 @@ public class CoreServlet extends HttpServlet
 			{
 				return DataHelper.loadUser(contestId, userId);
 			}
+		};
+		ctx.put("user", userC);
 
-			};
-			ctx.put("user", userC);
 		}
 
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
+	}
+
+	void makeContestVars(String contestId, Map<String,Object> ctx)
+		throws DataHelper.NotFound
+	{
+		ContestInfo contest = DataHelper.loadContest(contestId);
+		ctx.put("contest", contest);
+
+		Map<String,String> links = new HashMap<String,String>();
+		links.put("controller", makeContestUrl(contestId, "controller", null));
+		links.put("submissions_list", makeContestUrl(contestId, "submissions", null));
+		links.put("edit_self", makeContestUrl(contestId, "edit_self", null));
+		links.put("scoreboard", makeContestUrl(contestId, "scoreboard", null));
+		ctx.put("contest_links", links);
 	}
 
 	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
@@ -180,7 +198,7 @@ public class CoreServlet extends HttpServlet
 	{
 		try
 		{
-		Map<String, Object> vars = makeVars(req, args);
+		Bindings vars = makeVars(req, args);
 		Writer out = resp.getWriter();
 		engine.process(templateName, vars, out);
 		out.close();
@@ -203,14 +221,26 @@ public class CoreServlet extends HttpServlet
 		renderTemplate(req, resp, templateName, null);
 	}
 
+	String getMyUrl(HttpServletRequest req)
+	{
+		String u = req.getRequestURI();
+		String q = req.getQueryString();
+		if (q != null) {
+			u = u + "?" + q;
+		}
+		return fixUrl(req, u);
+	}
+
 	protected void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
+		String myUrl = getMyUrl(req);
 		String newUrl = makeContestUrl(
 			req.getParameter("contest"),
 			"login",
-			"next=" + escapeUrl(req.getRequestURI())
+			"next=" + escapeUrl(myUrl)
 			);
+
 		resp.sendRedirect(newUrl);
 	}
 
