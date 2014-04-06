@@ -53,6 +53,14 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	String makeContestUrl(String contestId, String page, String args)
+	{
+		return getServletContext().getContextPath() +
+			"/" + contestId + "/" +
+			page +
+			(args != null && args.length() != 0 ? ("?"+args) : "");
+	}
+
 	static String fixUrl(HttpServletRequest req, String url)
 	{
 		String queryString;
@@ -198,14 +206,22 @@ public class CoreServlet extends HttpServlet
 	protected void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
-		String newUrl = req.getContextPath()+"/login?next=" + escapeUrl(req.getRequestURI());
+		String newUrl = makeContestUrl(
+			req.getParameter("contest"),
+			"login",
+			"next=" + escapeUrl(req.getRequestURI())
+			);
 		resp.sendRedirect(newUrl);
 	}
 
 	protected boolean notLoggedIn(HttpServletRequest req)
 	{
 		HttpSession s = req.getSession(false);
-		return (s == null || s.getAttribute("uid") == null);
+		return !(
+			s != null &&
+			s.getAttribute("contest") != null &&
+			s.getAttribute("username") != null
+			);
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)

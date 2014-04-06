@@ -36,7 +36,8 @@ public class LoginServlet extends CoreServlet
 		String u = req.getParameter("next");
 		if (u == null)
 		{
-			u = ".";
+			String contestId = req.getParameter("contest");
+			u = makeContestUrl(contestId, "", null);
 		}
 		resp.sendRedirect(u);
 	}
