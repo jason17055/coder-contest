@@ -10,6 +10,15 @@
 	<res-auth>Container</res-auth>
 </resource-ref>
 
+<filter>
+ <filter-name>urlContestFilter</filter-name>
+ <filter-class>dragonfin.contest.UrlContestFilter</filter-class>
+</filter>
+<filter-mapping>
+ <filter-name>urlContestFilter</filter-name>
+ <url-pattern>/*</url-pattern>
+</filter-mapping>
+
 <servlet>
  <servlet-name>config</servlet-name>
  <servlet-class>dragonfin.ConfigServlet</servlet-class>
@@ -43,6 +52,11 @@
 <servlet-mapping>
  <servlet-name>login</servlet-name>
  <url-pattern>/login</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>login</servlet-name>
+ <url-pattern>/_p/login</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>
