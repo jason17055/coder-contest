@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 			" . db_quote($_REQUEST['problem']) . ",
 			" . db_quote($row['test_number']) . ",
 			" . db_quote($_REQUEST['input_file']) . ",
-			" . db_quote($_REQUEST['input_name']) . ",
+			" . db_quote($_REQUEST['input_name'] ?: 'input.txt') . ",
 			" . db_quote($_REQUEST['expected_file']) . ")";
 		mysql_query($sql)
 			or die("SQL error: " . mysql_error());

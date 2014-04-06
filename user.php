@@ -35,6 +35,7 @@ if (is_director($team_info['contest']))
 	$can_change_username = true;
 	$can_change_password = true;
 	$can_change_visibility = true;
+	$can_change_roles = true;
 }
 else
 {
@@ -45,6 +46,7 @@ else
 	$can_change_username = false;
 	$can_change_password = $contest_info['teams_can_change_password'];
 	$can_change_visibility = false;
+	$can_change_roles = false;
 
 	$_SESSION['is_team'] == $team_info['team_number']
 		or die("Error: not authorized");
@@ -55,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
 	$next_url = $_REQUEST['next_url'] ? $_REQUEST['next_url'] :
 		($_SESSION['is_team'] ? "team_menu.php"
-		: "teams.php?contest=".urlencode($team_info['contest']));
+		: "users.php?contest=".urlencode($team_info['contest']));
 
 	if (isset($_POST['action:cancel']))
 	{
@@ -97,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		mysql_query($sql)
 			or die("SQL error: " . mysql_error());
 
-		$url = "teams.php?contest=".urlencode($contest_id);
+		$url = "users.php?contest=".urlencode($contest_id);
 		header("Location: $next_url");
 		exit();
 	}
@@ -106,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		//teams are allowed to change their name/description here
 
 		$updates = array();
-		if ($can_change_ordinal && $_REQUEST['ordinal'])
+		if ($can_change_ordinal && isset($_REQUEST['ordinal']))
 		{
 			$updates[] = "ordinal=".db_quote($_REQUEST['ordinal']);
 		}
@@ -129,6 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		if ($can_change_visibility && $_REQUEST['visible'])
 		{
 			$updates[] = "visible=".db_quote($_REQUEST['visible']);
+		}
+		if ($can_change_roles)
+		{
+			foreach (array("is_contestant","is_judge","is_director") as $k)
+			{
+				$v = $_REQUEST[$k];
+				$updates[] = "$k=".($v?"'Y'":"'N'");
+			}
 		}
 
 		if (count($updates))
@@ -167,6 +177,16 @@ begin_page("Edit Contestant");
 </select></td>
 </tr>
 <?php } // endif can change visibility ?>
+<?php if ($can_change_roles) { ?>
+<tr>
+<td>Roles:</td>
+<td>
+<label><input type="checkbox" name="is_contestant"<?php echo ($team_info['is_contestant'] == 'Y' ? ' checked="checked"' : '')?>>Contestant</label>
+<label><input type="checkbox" name="is_judge"<?php echo ($team_info['is_judge'] == 'Y' ? ' checked="checked"' : '')?>>Judge</label>
+<label><input type="checkbox" name="is_director"<?php echo ($team_info['is_director'] == 'Y' ? ' checked="checked"' : '')?>>Director</label>
+</td>
+</tr>
+<?php } // endif can change roles ?>
 <tr>
 <td>Display Name:</td>
 <td><input type="text" name="team_name" value="<?php echo htmlspecialchars($team_info['team_name'])?>"<?php echo($can_change_name ? '' : ' disabled="disabled"')?>></td>

@@ -12,50 +12,42 @@ $contest_id = 0;
 $targets = array();
 $targets[] = db_quote('*');
 $targets[] = db_quote($_SESSION['username']);
+
+if ($_REQUEST['after'])
+{
+	if (!$_SESSION['last_message'] || $_SESSION['last_message'] < $_REQUEST['after']) {
+		$_SESSION['last_message'] = $_REQUEST['after'];
+	}
+}
+
+if (!$_SESSION['last_message']) {
+	$_SESSION['last_message'] = 0;
+}
+
 if ($team_info = is_a_team())
 {
-	$targets[] = db_quote('teams');
+	if ($team_info['is_contestant'] == 'Y') {
+		$targets[] = db_quote('teams');
+	}
+	if ($team_info['is_judge'] == 'Y') {
+		$targets[] = db_quote("judges");
+	}
+	if ($team_info['is_director'] == 'Y') {
+	}
 	$contest_id = $team_info['contest'];
 
 	$updates = array();
 	$updates[] = "last_refreshed=NOW()";
-	if ($_REQUEST['after'])
-	{
-		$updates[] = "last_message_acked=".db_quote($_REQUEST['after']);
-	}
+	$updates[] = "last_message_acked=GREATEST(last_message_acked,".db_quote($_REQUEST['after']).")";
 
 	$sql = "UPDATE team SET ".join(',',$updates)."
 		WHERE contest=".db_quote($contest_id)."
 		AND team_number=".db_quote($team_info['team_number']);
 	mysql_query($sql);
 
-	if ($team_info['online'] == 'N')
+	if ($team_info['online'] == 'N') {
 		wakeup_listeners();
-}
-else if ($director_info = is_a_director())
-{
-	$targets[] = db_quote('judges');
-	$contest_id = $director_info['contest'];
-}
-else if ($judge_info = is_a_judge())
-{
-	$targets[] = db_quote('judges');
-	$contest_id = $judge_info['contest'];
-
-	$updates = array();
-	$updates[] = "last_refreshed=NOW()";
-	if ($_REQUEST['after'])
-	{
-		$updates[] = "last_message_acked=".db_quote($_REQUEST['after']);
 	}
-
-	$sql = "UPDATE judge SET ".join(',',$updates)."
-		WHERE contest=".db_quote($contest_id)."
-		AND judge_id=".db_quote($judge_info['judge_id']);
-	mysql_query($sql);
-
-	if ($judge_info['online'] == 'N')
-		wakeup_listeners();
 }
 else if ($_REQUEST['contest'])
 {
@@ -63,7 +55,7 @@ else if ($_REQUEST['contest'])
 	$contest_id = $_REQUEST['contest'];
 }
 
-$sql = "SELECT * FROM $schema.contest
+$sql = "SELECT * FROM contest
 		WHERE contest_id=" . db_quote($contest_id);
 $result = mysql_query($sql);
 $contest_info = mysql_fetch_assoc($result);
@@ -91,7 +83,7 @@ function check_for_message()
 
 	$sql = "SELECT * FROM announcement
 		WHERE contest=".db_quote($contest_id) . "
-		AND id>".db_quote($_REQUEST['after']) . "
+		AND id>".db_quote($_SESSION['last_message']) . "
 		AND NOW()<expires
 		AND (recipient IS NULL OR recipient IN ($targets_sql))
 		$other_sql
@@ -128,12 +120,10 @@ function check_for_online_status_change()
 {
 	$teams_on = array();
 	$teams_off = array();
-	$judges_on = array();
-	$judges_off = array();
 
 	foreach (explode(',', $_REQUEST['onlinestatuschange']) as $statcode)
 	{
-		if (preg_match('/^(team|judge)_(\d+)_(Y|N)$/', $statcode, $matches))
+		if (preg_match('/^(team)_(\d+)_(Y|N)$/', $statcode, $matches))
 		{
 			if ($matches[1] == 'team')
 			{
@@ -141,13 +131,6 @@ function check_for_online_status_change()
 					$teams_on[] = $matches[2];
 				else
 					$teams_off[] = $matches[2];
-			}
-			else if ($matches[1] == 'judge')
-			{
-				if ($matches[3] == 'Y')
-					$judges_on[] = $matches[2];
-				else
-					$judges_off[] = $matches[2];
 			}
 		}
 		
@@ -164,18 +147,6 @@ function check_for_online_status_change()
 	{
 		$sql_stmts[] = "SELECT COUNT(*) FROM team
 		WHERE team_number IN (" . join(',',$teams_on) . ")
-			AND (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT."))";
-	}
-	if (count($judges_off))
-	{
-		$sql_stmts[] = "SELECT COUNT(*) FROM judge
-		WHERE judge_id IN (" . join(',',$judges_off) . ")
-			AND NOT (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(), INTERVAL ".USER_ONLINE_TIMEOUT."))";
-	}
-	if (count($judges_on))
-	{
-		$sql_stmts[] = "SELECT COUNT(*) FROM judge
-		WHERE judge_id IN (" . join(',',$judges_on) . ")
 			AND (last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT."))";
 	}
 
@@ -227,23 +198,39 @@ function check_for_job_completion()
 
 function check_for_new_submission()
 {
+	$submissions_list = array();
+	$clarifications_list = array();
+	foreach (explode(',', $_REQUEST['newsubmissionsafter']) as $it)
+	{
+		if (preg_match('/submission(\d+)/', $it, $m))
+		{
+			$submissions_list[] = db_quote($m[1]);
+		}
+		if (preg_match('/clarification(\d+)/', $it, $m))
+		{
+			$clarifications_list[] = db_quote($m[1]);
+		}
+	}
+
+	// set up query filter
 	$submission_limit = array();
-	if (preg_match('/submission(\d+)/', $_REQUEST['newsubmissionsafter'], $m))
-	{
-		$submission_limit[] = "id>".$m[1];
-	}
-
 	$clarification_limit = array();
-	if (preg_match('/clarification(\d+)/', $_REQUEST['newsubmissionsafter'], $m))
-	{
-		$clarification_limit[] = "id>".$m[1];
+
+	// limit to submissions that aren't already seen
+	if (count($submissions_list)) {
+		$submission_limit[] = "id NOT IN (".join(',',$submissions_list).")";
+	}
+	if (count($clarifications_list)) {
+		$clarification_limit[] = "id NOT IN (".join(',',$clarifications_list).")";
 	}
 
+	// limit to submissions that are targetted to this user
 	global $targets;
 	$targets_sql = implode(", ", $targets);
+	$submission_limit[] = "j.user IN ($targets_sql)";
+	$clarification_limit[] = "j.user IN ($targets_sql)";
 
-	$submission_limit[] = "judge_user IN ($targets_sql)";
-	$clarification_limit[] = "judge_user IN ($targets_sql)";
+	// limit to submissions that are not yet judged
 	$submission_limit[] = "(s.status IS NULL OR s.status='')";
 	$clarification_limit[] = "(s.status IS NULL OR s.status='')";
 
@@ -253,7 +240,7 @@ function check_for_new_submission()
 	FROM submission s
 	JOIN team t ON s.team=t.team_number
 	JOIN problem p ON s.problem=p.problem_number AND t.contest=p.contest
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND ".join(' AND ',$submission_limit)."
 	UNION
@@ -261,7 +248,7 @@ function check_for_new_submission()
 	FROM clarification s
 	JOIN team t ON t.team_number=s.team
 	JOIN problem p ON p.contest=t.contest AND p.problem_number=s.problem_number
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE s.contest=".db_quote($contest_id)."
 	AND ".join(' AND ',$clarification_limit)."
 	ORDER BY id ASC";

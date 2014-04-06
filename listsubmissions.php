@@ -3,18 +3,80 @@
 require_once('config.php');
 require_once('includes/skin.php');
 require_once('includes/auth.php');
+require_once('includes/notify.php');
+require_once('includes/functions.php');
 
 require_auth();
 is_judge_of($_REQUEST['contest'])
 	or die("Error: not authorized");
 
 $contest_id = $_REQUEST['contest'];
-$sql = "SELECT * FROM contest
-	WHERE contest_id=" . db_quote($contest_id);
-$result = mysql_query($sql);
-$contest_info = mysql_fetch_assoc($result)
-	or die("Error: contest $contest_id not found");
+$contest_info = get_basic_contest_info($contest_id);
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+	if (isset($_REQUEST['action:assign']))
+	{
+		is_director($contest_id)
+			or die("Only director can reassign work.");
+
+		$clarifications = array();
+		$submissions = array();
+		foreach ($_POST as $k => $v)
+		{
+			if (preg_match('/^clarification(\d+)$/', $k, $m))
+			{
+				$clarifications[] = db_quote($m[1]);
+			}
+			else if (preg_match('/^submission(\d+)$/', $k, $m))
+			{
+				$submissions[] = db_quote($m[1]);
+			}
+		}
+
+		$target = $_REQUEST['assign_to'];
+
+		// check that target is a judge of this contest
+		if ($target != '') {
+			$sql = "SELECT 1 FROM team
+				WHERE team_number=".db_quote($target)."
+				AND contest=".db_quote($contest_id)."
+				AND is_judge='Y'";
+			$result = mysql_query($sql);
+			$is_valid = mysql_fetch_assoc($result)
+				or die("Error: specified judge $target not found");
+		}
+
+		if (count($clarifications))
+		{
+			$sql = "UPDATE clarification
+					SET judge=".db_quote($target)."
+					WHERE id IN (".join(',',$clarifications).")
+					AND contest=".db_quote($contest_id);
+			mysql_query($sql);
+		}
+		if (count($submissions))
+		{
+			$sql = "UPDATE submission
+					SET judge=".db_quote($target)."
+					WHERE id IN (".join(',',$submissions).")
+					AND team IN (SELECT team_number FROM team
+						WHERE contest=".db_quote($contest_id)."
+						)";
+			mysql_query($sql);
+		}
+
+		wakeup_listeners();
+
+		$next_url = $_SERVER['REQUEST_URI'];
+		header("Location: $next_url");
+		exit();
+	}
+	else
+	{
+		die("Not implemented");
+	}
+}
 
 $filters = array();
 $filters[] = array(name => "Judged");
@@ -47,9 +109,10 @@ foreach ($filters as $f)
 ?>
 </p>
 
-<table border="1"<?php
-if ($_REQUEST['filter'] == 'Unjudged') { echo ' id="submissions_table"'; }?>>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
+<table class="realtable">
 <tr>
+<th>&nbsp;</th>
 <th>Submitted</th>
 <th>Problem</th>
 <th>Type</th>
@@ -57,44 +120,36 @@ if ($_REQUEST['filter'] == 'Unjudged') { echo ' id="submissions_table"'; }?>>
 <th>Judge</th>
 <th>Status</th>
 </tr>
-<tr class="aTemplate">
-<td class="submitted_column"></td>
-<td class="problem_column"></td>
-<td class="type_column"></td>
-<td class="team_column"></td>
-<td class="judge_column"></td>
-<td class="status_column"></td>
-</tr>
 <?php
 
 $filter_sql = "2>1";
 if ($_REQUEST['filter'] == "Judged")
 {
-	$filter_sql = "(s.status IS NOT NULL AND s.status <> '')";
+	$filter_sql = "(s.status IS NOT NULL AND s.status <> '' AND s.status NOT IN ('Accepted'))";
 }
 else if ($_REQUEST['filter'] == "Unjudged")
 {
-	$filter_sql = "(s.status IS NULL OR s.status = '')";
+	$filter_sql = "(s.status IS NULL OR s.status = '' OR s.status IN ('Accepted'))";
 }
 
 if (!is_director($contest_id))
 {
-	$filter_sql = $filter_sql . " AND (judge_id IS NULL OR judge_id=".db_quote($_SESSION['is_judge']).")";
+	$filter_sql = $filter_sql . " AND (j.team_number IS NULL OR j.team_number=".db_quote($_SESSION['is_judge']).")";
 }
 
-$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+$sql = "SELECT 'submission' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,j.user AS judge_user,status
 	FROM submission s
 	JOIN team t ON s.team=t.team_number
 	JOIN problem p ON s.problem=p.problem_number AND t.contest=p.contest
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE t.contest=" . db_quote($contest_id) . "
 	AND $filter_sql
 	UNION
-	SELECT 'clarification' AS type,id,submitted,team AS team_id,team_name,problem_name,judge_user,status
+	SELECT 'clarification' AS type,id,submitted,team AS team_id,t.team_name AS team_name,problem_name,j.user AS judge_user,status
 	FROM clarification s
 	JOIN team t ON t.team_number=s.team
 	JOIN problem p ON p.contest=t.contest AND p.problem_number=s.problem_number
-	LEFT JOIN judge j ON j.judge_id=s.judge
+	LEFT JOIN team j ON j.team_number=s.judge
 	WHERE s.contest=".db_quote($contest_id)."
 	AND $filter_sql
 	ORDER BY submitted ASC, id ASC";
@@ -106,10 +161,11 @@ while ($submission = mysql_fetch_assoc($result))
 	$count++;
 	$edit_url = $submission['type'] == 'submission' ?
 		"submission.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']) :
-		"answer_clarification.php?id=".urlencode($submission['id']);
+		"answer_clarification.php?id=".urlencode($submission['id'])."&next_url=".urlencode($_SERVER['REQUEST_URI']);
 ?><tr id="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>">
+<td><input type="checkbox" name="<?php echo htmlspecialchars("$submission[type]$submission[id]")?>"></td>
 <td><a href="<?php echo htmlspecialchars($edit_url)?>">
-<?php echo htmlspecialchars($submission['submitted'])?></a></td>
+<?php echo format_sqldatetime($submission['submitted'])?></a></td>
 <td><?php echo htmlspecialchars($submission['problem_name'])?></td>
 <td>
 <img src="images/<?php echo htmlspecialchars($submission['type'])?>.png" alt="">
@@ -122,12 +178,32 @@ while ($submission = mysql_fetch_assoc($result))
 } //end for each submission/clarification
 if ($count == 0) { ?>
 <tr>
-<td colspan="6" class="none_at_this_time" valign="top">None at this time.</td>
+<td colspan="7" class="none_at_this_time" valign="top">None at this time.</td>
 </tr>
 <?php
 } //endif count == 0
 ?>
 </table>
+<p>
+Assign selected submissions to:
+<select name="assign_to">
+<option value="">--nobody--</option>
+<?php
+	$sql = "SELECT team_number,team_name
+		FROM team
+		WHERE contest=".db_quote($contest_id)."
+		AND is_judge='Y'
+		ORDER BY ordinal,team_name";
+	$query = mysql_query($sql)
+		or die("SQL error: ".mysql_error());
+	while ($row = mysql_fetch_assoc($query)) {
+		?><option value="<?php echo htmlspecialchars($row['team_number'])?>"><?php echo htmlspecialchars($row['team_name'])?></option>
+		<?php
+	} ?></select>
+	<button name="action:assign">Go</button>
+</p>
+
+</form>
 <?php
 
 $controller_url = "controller.php?contest=".urlencode($contest_id);
@@ -138,6 +214,8 @@ $scoreboard_url = "scoreboard.php?contest=" . urlencode($contest_id);
 <p>
 <?php if (is_director($_REQUEST['contest'])) { ?>
 <a href="<?php echo htmlspecialchars($controller_url)?>">Controller</a> |
+<?php } else { ?>
+<a href=".">Home</a> |
 <?php } /* endif is_director */?>
 <a href="<?php echo htmlspecialchars($problems_url)?>">Define Problems</a> |
 <a href="<?php echo htmlspecialchars($scoreboard_url)?>" target="_new">Live Scoreboard</a>

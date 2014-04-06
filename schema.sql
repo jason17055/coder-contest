@@ -1,6 +1,7 @@
 CREATE TABLE passwd (
 	username VARCHAR(200) NOT NULL PRIMARY KEY,
-	password VARCHAR(200) NOT NULL
+	password VARCHAR(200) NOT NULL,
+	is_sysadmin CHAR(1) NOT NULL DEFAULT 'N'
 	);
 
 --FOREIGN KEY (director) REFERENCES passwd (username)
@@ -10,6 +11,8 @@ CREATE TABLE contest (
 	subtitle  VARCHAR(200),
 	logo      VARCHAR(200),
 	shortname VARCHAR(20),
+	auth_method VARCHAR(20),
+	auto_register_cas CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
 	director  VARCHAR(200),
 	director_password VARCHAR(200),
 	scoreboard        CHAR(1) NOT NULL DEFAULT 'Y',            -- Y/N
@@ -22,6 +25,7 @@ CREATE TABLE contest (
 	teams_can_change_name CHAR(1) NOT NULL DEFAULT 'N',        -- Y/N
 	teams_can_change_description CHAR(1) NOT NULL DEFAULT 'N', -- Y/N
 	teams_can_change_password CHAR(1) NOT NULL DEFAULT 'Y',    -- Y/N
+	teams_can_write_code      CHAR(1) NOT NULL DEFAULT 'Y',    -- Y/N
 	score_system      CHAR(1) NOT NULL DEFAULT 'A', -- A=ACM, T=Topcoder
 	collaboration     CHAR(1) NOT NULL DEFAULT 'N',            -- Y/N
 	handout_html      TEXT,
@@ -78,6 +82,9 @@ CREATE TABLE team (
 	last_refreshed DATETIME,
 	last_message_acked INT,
 	visible     CHAR(1) NOT NULL DEFAULT 'Y',
+	is_contestant CHAR(1) NOT NULL DEFAULT 'Y',
+	is_judge      CHAR(1) NOT NULL DEFAULT 'N',
+	is_director   CHAR(1) NOT NULL DEFAULT 'N',
 	UNIQUE INDEX (contest, ordinal),
 	UNIQUE INDEX (contest, user)
 	);
@@ -217,7 +224,7 @@ CREATE TABLE test_result (
 
 --FOREIGN KEY (team)           REFERENCES team (team_number),
 --FOREIGN KEY (problem_number) REFERENCES problem (problem_number),
---FOREIGN KEY (judge)          REFERENCES judge (judge_id)
+--FOREIGN KEY (judge)          REFERENCES team (team_number)
 --status one of:
 --  'reply-all':
 --  others

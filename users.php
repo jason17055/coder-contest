@@ -12,8 +12,8 @@ is_director($contest_id)
 	or die("Error: not authorized");
 
 $contest_info = get_basic_contest_info($contest_id, "
-	, (SELECT COUNT(*) FROM team WHERE contest=contest_id) AS contestant_count
-	, (SELECT COUNT(*) FROM judge WHERE contest=contest_id) AS judge_count
+	, (SELECT COUNT(*) FROM team WHERE contest=contest_id AND is_contestant='Y') AS contestant_count
+	, (SELECT COUNT(*) FROM team WHERE contest=contest_id AND is_contestant='N') AS judge_count
 		");
 
 $contestant_count = $contest_info['contestant_count'];
@@ -25,12 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	{
 		for ($i = 1; $i <= $_REQUEST['count']; $i++)
 		{
-			$sql = "INSERT INTO team (team_name,contest,user,ordinal)
-				SELECT 'team$i',".db_quote($_REQUEST['contest']).",
-				'team$i',
-				$i
+			$name = "team$i";
+			$sql = "INSERT INTO team (team_name,contest,user,ordinal,is_contestant)
+				SELECT ".db_quote($name).",
+				".db_quote($_REQUEST['contest']).",
+				".db_quote($name).",
+				$i,
+				'Y'
 				FROM dual
-				WHERE NOT EXISTS (SELECT 1 FROM team WHERE contest=".db_quote($_REQUEST['contest'])." AND ordinal=$i)
+				WHERE NOT EXISTS (SELECT 1 FROM team WHERE contest=".db_quote($_REQUEST['contest'])." AND user=".db_quote($name).")
 				";
 			mysql_query($sql)
 				or die("SQL error: " . mysql_error());
@@ -45,11 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	{
 		for ($i = 1; $i <= $_REQUEST['jcount']; $i++)
 		{
-			$sql = "INSERT INTO judge (judge_user,contest)
-				SELECT 'judge$i',
-				".db_quote($_REQUEST['contest'])."
+			$name = "judge$i";
+			$sql = "INSERT INTO team (team_name,description,contest,user,ordinal,is_contestant,is_judge)
+				SELECT ".db_quote($name).",
+				'Contest Judge',
+				".db_quote($_REQUEST['contest']).",
+				".db_quote($name).",
+				$i,
+				'N','Y'
 				FROM dual
-				WHERE NOT EXISTS (SELECT 1 FROM judge WHERE contest=".db_quote($_REQUEST['contest'])." AND judge_user='judge$i')
+				WHERE NOT EXISTS (SELECT 1 FROM team WHERE contest=".db_quote($_REQUEST['contest'])." AND user=".db_quote($name).")
 				";
 			mysql_query($sql)
 				or die("SQL error: " . mysql_error());
@@ -57,9 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 
 		for ($i = $_REQUEST['jcount'] + 1; $i <= $judge_count; $i++)
 		{
-			$sql = "DELETE FROM judge
+			$name = "judge$i";
+			$sql = "DELETE FROM team
 				WHERE contest=".db_quote($_REQUEST['contest'])."
-				AND judge_user='judge$i'";
+				AND user=".db_quote($name)."
+				AND is_contestant='N' AND is_director='N'";
 			mysql_query($sql)
 				or die("SQL error: " . mysql_error());
 		}
@@ -86,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		}
 	}
 	
-	header("Location: teams.php?contest=" . urlencode($_REQUEST['contest']));
+	header("Location: users.php?contest=" . urlencode($_REQUEST['contest']));
 	exit();
 }
 
@@ -101,7 +111,7 @@ Number of contestants:
 <input type="text" name="count" value="<?php echo $contestant_count?>" size="3">
 <button type="submit" name="action:autocreate">Go</button>
 </p>
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Contestant ID</th>
 <th>Display Name</th>
@@ -111,13 +121,15 @@ Number of contestants:
 
 $sql = "SELECT * FROM team
 	WHERE contest=".db_quote($_REQUEST['contest'])."
+	AND is_contestant='Y'
 	ORDER BY ordinal,team_name";
 $result = mysql_query($sql);
 $count = 0;
 while ($row = mysql_fetch_assoc($result))
 {
 	$count++;
-	$edit_team_url = "team.php?id=".urlencode($row['team_number']);
+	$edit_team_url = "user.php?id=".urlencode($row['team_number']).
+		"&next_url=".urlencode($_SERVER['REQUEST_URI']);
 	?><tr>
 <td><a href="<?php echo htmlspecialchars($edit_team_url)?>"><?php echo htmlspecialchars($row['user'])?></a>
 <?php if ($row['visible'] == 'N') {
@@ -130,7 +142,7 @@ while ($row = mysql_fetch_assoc($result))
 <?php
 }
 
-$new_team_url = "team.php?contest=".urlencode($_REQUEST['contest']);
+$new_team_url = "user.php?contest=".urlencode($_REQUEST['contest']);
 $issue_creds_url = "issue_credentials.php?contest=".urlencode($_REQUEST['contest']);
 $controller_url = "controller.php?contest=".urlencode($_REQUEST['contest']);
 ?>
@@ -144,28 +156,29 @@ Number of judges:
 <button type="submit" name="action:autocreate_judge">Go</button>
 </p>
 
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Judge ID</th>
 </tr>
 <?php
 
-$sql = "SELECT * FROM judge
+$sql = "SELECT * FROM team
 	WHERE contest=".db_quote($_REQUEST['contest'])."
-	ORDER BY judge_user";
+	AND is_contestant='N'
+	ORDER BY ordinal,team_name";
 $result = mysql_query($sql);
 $count = 0;
 while ($row = mysql_fetch_assoc($result))
 {
 	$count++;
-	$edit_judge_url = "judge.php?id=".urlencode($row['judge_id']);
+	$edit_judge_url = "user.php?id=".urlencode($row['team_number']);
 	?><tr>
-<td><?php echo htmlspecialchars($row['judge_user'])?></td>
+<td><a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($row['user'])?></a></td>
 </tr>
 <?php
 }
 
-$new_team_url = "team.php?contest=".urlencode($_REQUEST['contest']);
+$new_team_url = "user.php?contest=".urlencode($_REQUEST['contest']);
 $issue_creds_url = "issue_credentials.php?contest=".urlencode($_REQUEST['contest']);
 $controller_url = "controller.php?contest=".urlencode($_REQUEST['contest']);
 ?>

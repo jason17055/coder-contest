@@ -26,7 +26,7 @@ begin_page("Define Problems");
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'])?>">
 
-<table border="1">
+<table class="realtable">
 <tr>
 <th>Problem Name</th>
 <th>Scored</th>
@@ -76,6 +76,7 @@ while ($row = mysql_fetch_assoc($result))
 
 $new_problem_url = "problem.php?contest=".urlencode($_REQUEST['contest']);
 $controller_url = "controller.php?contest=".urlencode($_REQUEST['contest']);
+$download_all_url = "make_contest_archive.php?contest=".urlencode($_REQUEST['contest']);
 $submissions_url = "listsubmissions.php?contest=".urlencode($_REQUEST['contest']);
 $scoreboard_url = "scoreboard.php?contest=".urlencode($_REQUEST['contest']);
 ?>
@@ -86,6 +87,7 @@ $scoreboard_url = "scoreboard.php?contest=".urlencode($_REQUEST['contest']);
 <?php if (is_director($_REQUEST['contest'])) { ?>
 <p>
 <a href="<?php echo htmlspecialchars($new_problem_url)?>">New Problem</a> |
+<a href="<?php echo htmlspecialchars($download_all_url)?>">Download As Zip</a> |
 <a href="<?php echo htmlspecialchars($controller_url)?>">Controller</a>
 </p>
 <?php } else { ?>

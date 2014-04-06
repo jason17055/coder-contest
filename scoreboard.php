@@ -74,7 +74,7 @@ function displayAnnouncement(data)
 
 	if (data.messagetype == 'S')
 	{
-<?php if (!$_REQUEST['nosound']) { ?>
+<?php if ($_REQUEST['sound'] != '0') { ?>
 		if (data.fanfare)
 			document.getElementById('announcementAudio').play();
 <?php } ?>
@@ -276,14 +276,14 @@ function display_result($row)
 			$css_class = "attempted";
 		}
 	}
-	else if ($row['source_file'])
-	{
-		$result_str = '<img src="scoreboard_images/pencil.png" alt="Writing" width="24" height="24">';
-	}
-	else if ($row['opened'])
-	{
-		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
-	}
+//	else if ($row['source_file'])
+//	{
+//		$result_str = '<img src="scoreboard_images/pencil.png" alt="Writing" width="24" height="24">';
+//	}
+//	else if ($row['opened'])
+//	{
+//		$result_str = '<img src="scoreboard_images/eye4.png" alt="Opened" width="24" height="24">';
+//	}
 
 	for ($i = 0; $i < $row['good_challenges']; $i++)
 	{
@@ -301,6 +301,7 @@ $orderby = $contest['scoreboard_order'] == 'n' ? "team_name ASC, ordinal ASC" :
 $query = "SELECT * FROM team
 	WHERE contest=" . db_quote($contest_id) . "
 	AND visible='Y'
+	AND is_contestant='Y'
 	ORDER BY $orderby";
 $result = mysql_query($query);
 

@@ -74,22 +74,38 @@ function begin_page($page_title, $options)
 function problem_actions_tabnav($show_mode)
 {
 	global $problem_info;
+	global $team_info;
+	global $contest_info;
 
 	$problem_number = $_REQUEST['problem'];
 	$purl = "open_problem.php?problem=".urlencode($problem_number);
 
+	$show_problem_tab = ($problem_info && $problem_info['spec_file']);
+	$show_write_tab = ($team_info['is_contestant'] == 'Y' && $contest_info['teams_can_write_code'] == 'Y');
+	$show_test_tab = 1;
+	$show_submit_tab = ($team_info['is_contestant'] == 'Y');
+	$show_solutions_tab = ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y' || $team_info['is_judge'] == 'Y'));
+
 ?>
 <div id="problem_action_buttons_bar">
 <ul class="tabnav">
+<?php if ($show_problem_tab) { ?>
 <li<?php if ($show_mode=='problem') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("$purl&show=problem")?>">Problem</a></li>
+<?php } ?>
 <li<?php if ($show_mode=='clarifications') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=clarifications')?>">Clarifications<?php
 		if ($problem_info['clarification_count']) {
 			echo htmlspecialchars(" ($problem_info[clarification_count])");
 		}?></a></li>
+<?php if ($show_write_tab) { ?>
 <li<?php if ($show_mode=='write') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=write')?>">Write Code</a></li>
+<?php } ?>
+<?php if ($show_test_tab) { ?>
 <li<?php if ($show_mode=='test') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars("submit_test.php?problem=".urlencode($problem_number))?>">Test</a></li>
+<?php } ?>
+<?php if ($show_submit_tab) { ?>
 <li<?php if ($show_mode=='submit') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=submit')?>">Submit</a></li>
-<?php if ($problem_info && ($problem_info['read_opponent'] == 'Y' || $problem_info['read_solution'] == 'Y')) { ?>
+<?php } ?>
+<?php if ($show_solutions_tab) { ?>
 <li<?php if ($show_mode=='solutions') { echo ' class="selected"'; }?>><a href="<?php echo htmlspecialchars($purl.'&show=solutions')?>">Solutions</a></li>
 <?php } ?>
 </ul>
@@ -162,12 +178,29 @@ function countdown_clock($contest_info)
 <?php
 }
 
+function format_sqldatetime($timestr)
+{
+	$date = DateTime::createFromFormat('Y-m-d H:i:s', $timestr);
+	$date_t = $date->getTimestamp();
+	$age = time() - $date_t;
+
+	if (abs($age) < 8*60*60) { //less than six hours off
+		return $date->format('g:ia');
+	}
+	else if (abs($age) < 3*86400) { // less than three days off
+		return $date->format('D g:ia');
+	}
+	else {
+		return $date->format('D n M g:ia');
+	}
+}
+
 function format_score($score, $score_alt)
 {
 	if ($score_alt > 0)
 		return htmlspecialchars("$score (+$score_alt)");
 	else if ($score_alt != 0)
-		return htmlspecialchars("$score ($score_alt)");
+		return htmlspecialchars("$score (".(-$score_alt).")");
 	else
 		return htmlspecialchars($score);
 }

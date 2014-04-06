@@ -390,7 +390,7 @@ function handle_upload_file($name)
 	else if (isset($_REQUEST[$name."_content"]))
 	{
 		$x = str_replace("\r", "", $_REQUEST[$name.'_content']);
-		if (substr($x, -1) != "\n")
+		if (strlen($x) != 0 && substr($x, -1) != "\n")
 		{
 			$x .= "\n";
 		}
@@ -448,7 +448,7 @@ function choose_judge($contest_id, $team_ordinal, $problem_number)
 		return "judges";
 
 	$judges_array = explode(',',$row[0]);
-	$i = ($team_ordinal-1) % count($judges_array);
+	$i = abs($team_ordinal-1) % count($judges_array);
 	return $judges_array[$i];
 }
 
@@ -534,7 +534,8 @@ function get_basic_contest_info($contest_id, $extra = '')
 			phase1_name, phase1_ends,
 			phase2_name, phase2_ends,
 			phase3_name, phase3_ends,
-			phase4_name, phase4_ends
+			phase4_name, phase4_ends,
+			teams_can_write_code
 			$extra
 		FROM contest
 		WHERE contest_id=".db_quote($contest_id);

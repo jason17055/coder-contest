@@ -21,9 +21,14 @@ $problems_list = array();
 
 begin_page($contest_info['title']);
 $edit_contest_url = "contest.php?contest=".urlencode($contest_id);
+
+$sort_by_team_url = "controller.php?contest=".urlencode($contest_id)."&sort=team";
+$sort_by_score_url = "controller.php?contest=".urlencode($contest_id)."&sort=score";
 ?>
 
-<table id="controller_teams_table" border="1"><tr><th>Contestant</th>
+<table id="controller_teams_table" class="realtable">
+<tr>
+<th>Contestant [<a href="<?php echo htmlspecialchars($sort_by_team_url)?>">^</a>]</th>
 <?php
 $sql = "SELECT * FROM problem
 	WHERE contest=" . db_quote($contest_id) . "
@@ -32,27 +37,34 @@ $sql = "SELECT * FROM problem
 $result = mysql_query($sql);
 
 while ($problem = mysql_fetch_assoc($result)) {
-	$problem_url = "problem.php?id=" . urlencode($problem['problem_number']) . "&contest=" . urlencode($contest_id);
+	$problem_url = "open_problem.php?problem=" . urlencode($problem['problem_number']) . "&contest=".urlencode($contest_id);
 	$problems_list[] = $problem['problem_number'];
 
 	?><th><a href="<?php echo htmlspecialchars($problem_url) ?>"><?php echo htmlspecialchars($problem['problem_name'])?></a></th>
 <?php
 } //end loop through each problem
+
 ?>
-<th>Totals</th></tr>
+<th>Totals [<a href="<?php echo htmlspecialchars($sort_by_score_url)?>">^</a>]</th></tr>
 <?php
+
+$orderby = "ordinal ASC,team_name ASC";
+if ($_GET['sort'] == 'score') {
+	$orderby = "score DESC, score_alt DESC, ordinal ASC, team_name ASC";
+}
 
 $sql = "SELECT *,
 	CASE WHEN last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(),INTERVAL ".USER_ONLINE_TIMEOUT.") THEN 'N' ELSE 'Y' END AS online
 	FROM team
 	WHERE contest=" . db_quote($contest_id) . "
-	ORDER BY ordinal,team_name ASC";
+	AND is_contestant='Y'
+	ORDER BY $orderby";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 
 while ($team = mysql_fetch_assoc($result)) {
 	if ($team['team_name']=="") { $team['team_name'] = "(no name)"; }
-	$team_url = "team.php?id=" . urlencode($team['team_number'])
+	$team_url = "user.php?id=" . urlencode($team['team_number'])
 		. "&next_url=" . urlencode($_SERVER['REQUEST_URI']);
 
 	?><tr><td height="32">
@@ -106,7 +118,7 @@ while ($team = mysql_fetch_assoc($result)) {
 <td><?php echo format_score($team['score'], $team['score_alt'])?></td>
 </tr><?php
 }
-$teams_url = "teams.php?contest=" . urlencode($contest_id);
+$teams_url = "users.php?contest=" . urlencode($contest_id);
 $problems_url = "problems.php?contest=" . urlencode($contest_id);
 $list_submissions_url = "listsubmissions.php?contest=".urlencode($contest_id);
 $scoreboard_url = "scoreboard.php?contest=" . urlencode($contest_id);
@@ -117,39 +129,41 @@ $test_url = 'submit_test.php?next_url=' . urlencode($_SERVER['REQUEST_URI']);
 </table>
 
 <?php
-$sql = "SELECT judge_user,judge_id,
+$sql = "SELECT user,team_number AS judge_id,
 		CASE WHEN last_refreshed IS NULL OR last_refreshed < DATE_SUB(NOW(), INTERVAL ".USER_ONLINE_TIMEOUT.") THEN 'N' ELSE 'Y' END AS online,
-		(SELECT COUNT(*) FROM submission WHERE judge=judge_id
+		(SELECT COUNT(*) FROM submission WHERE judge=team_number
 			AND (status IS NULL OR status='')) AS submissions_pending,
-		(SELECT COUNT(*) FROM submission WHERE judge=judge_id
+		(SELECT COUNT(*) FROM submission WHERE judge=team_number
 			) AS submissions_total,
-		(SELECT COUNT(*) FROM clarification WHERE judge=judge_id
+		(SELECT COUNT(*) FROM clarification WHERE judge=team_number
 			AND (status IS NULL OR status='')) AS clarifications_pending,
-		(SELECT COUNT(*) FROM clarification WHERE judge=judge_id
+		(SELECT COUNT(*) FROM clarification WHERE judge=team_number
 			) AS clarifications_total
-	FROM judge
+	FROM team
 	WHERE contest=".db_quote($_REQUEST['contest'])."
-	ORDER BY judge_user";
+	AND is_contestant='N'
+	ORDER BY ordinal,team_name ASC";
 $result = mysql_query($sql)
 	or die("SQL error: ".mysql_error());
 if (mysql_num_rows($result)) {
 ?>
-<table id="controller_judges_table" border="1">
+<table id="controller_judges_table" class="realtable">
 <tr>
 <th>Judge Name</th>
 <th>Totals</th>
 <?php
 while ($judge_info = mysql_fetch_assoc($result))
 {
-	$edit_judge_url = "judge.php?id=".urlencode($judge_info['judge_id']);
+	$edit_judge_url = "user.php?id=".urlencode($judge_info['judge_id'])
+			. "&next_url=".urlencode($_SERVER['REQUEST_URI']);
 	$online = $judge_info['online'];
 	$online_img = $online == 'Y' ? "images/plus.png" : "images/minus.png";
 	$online_lbl = $online == 'Y' ? '[Online]' : '[Offline]';
 	$judge_info['submissions_done'] = $judge_info['submissions_total'] - $judge_info['submissions_pending'];
 	$judge_info['clarifications_done'] = $judge_info['clarifications_total'] - $judge_info['clarifications_pending'];
 	?><tr>
-<td height="32"><img class="online-indicator" id="ind_online_judge_<?php echo htmlspecialchars($judge_info['judge_id'] . "_" . $online)?>" src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width='14' height='14'>
-<a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($judge_info['judge_user'])?></a>
+<td height="32"><img class="online-indicator" id="ind_online_team_<?php echo htmlspecialchars($judge_info['judge_id'] . "_" . $online)?>" src="<?php echo $online_img?>" alt="<?php echo $online_lbl?>" width='14' height='14'>
+<a href="<?php echo htmlspecialchars($edit_judge_url)?>"><?php echo htmlspecialchars($judge_info['user'])?></a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
 <img src="images/clarification.png" alt="Clarifications:"
@@ -169,7 +183,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 <?php } //end if any judges for this contest
 ?>
 
-<table id="controller_workers_table" border="1">
+<table id="controller_workers_table" class="realtable">
 <tr>
 <th>Worker</th>
 <th>Supported File Types</th>
@@ -201,7 +215,7 @@ while ($judge_info = mysql_fetch_assoc($result))
 <?php
 	}
 	if ($count == 0) { ?><tr>
-<td colspan="2" height="32">
+<td colspan="3" height="32">
 <img src="images/minus.png" alt="" width='14' height='14'>
 <span style="color: red; font-weight: bold">No workers are online</span>
 <div><small><a href="worker/">Click here to find out how to start a worker</a></small></div></td>

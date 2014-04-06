@@ -30,8 +30,11 @@ else
 }
 print "Detected operating system: $operating_system\n";
 
+my %language_details;
+
 my $java_version = `javac -version 2>&1`;
 if ($? == 0) {
+	$language_details{"language:java"} = "$java_version ($operating_system)";
 	print "Found Java: $java_version\n";
 } else {
 	print "Did not find Java\n";
@@ -40,6 +43,7 @@ if ($? == 0) {
 
 my ($cpp_version) = `g++ --version`;
 if ($? == 0) {
+	$language_details{"language:cpp"} = "$cpp_version ($operating_system)";
 	print "Found G++: $cpp_version\n";
 } else {
 	print "Did not find G++\n";
@@ -48,6 +52,7 @@ if ($? == 0) {
 
 my ($py_version) = `python -V 2>&1`;
 if ($? == 0) {
+	$language_details{"language:py"} = "$py_version ($operating_system)";
 	print "Found Python: $py_version\n";
 } else {
 	print "Did not find Python\n";
@@ -56,6 +61,7 @@ if ($? == 0) {
 
 my ($perl_version) = `perl -e 'print $^V' 2>&1`;
 if ($? == 0) {
+	$language_details{"language:pl"} = "$perl_version ($operating_system)";
 	print "Found Perl: $perl_version\n";
 } else {
 	print "Did not find Perl\n";
@@ -64,6 +70,7 @@ if ($? == 0) {
 
 my ($ruby_version) = `ruby -v 2>&1`;
 if ($? == 0) {
+	$language_details{"language:rb"} = "$ruby_version ($operating_system)";
 	print "Found Ruby: $ruby_version\n";
 } else {
 	print "Did not find Ruby\n";
@@ -72,6 +79,7 @@ if ($? == 0) {
 
 my ($csharp_version) = `csc 2>&1`;
 if ($? == 0) {
+	$language_details{"language:cs"} = $csharp_version;
 	print "Found C-Sharp: $csharp_version\n";
 } else {
 	print "Did not find C-Sharp\n";
@@ -93,6 +101,8 @@ my $resp = $ua->post($feed_url,
 		[
 		"action:register" => 1,
 		"languages" => join(',',keys %accepted_languages),
+		%language_details,
+		"system" => $operating_system,
 		"description" => $operating_system . $java_version . $cpp_version,
 		],
 		"Accepted-Languages" => join(',',keys %accepted_languages),
@@ -332,6 +342,10 @@ sub run_command
 	my ($cmdline, $input_file, $output_file) = @_;
 
 	use IPC::Open3;
+
+	if ($^O ne "MSWin32") {
+		unshift @$cmdline, "nice";
+	}
 
 	$input_file ||= ($^O eq "MSWin32" ? "NUL" : "/dev/null");
 	open INPUT_FILE, "<", $input_file

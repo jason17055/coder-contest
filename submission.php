@@ -45,9 +45,13 @@ $contest_info = get_basic_contest_info($contest_id);
 
 if ($_SERVER['REQUEST_METHOD'] == "POST")
 {
+	$def_next_url = is_director($contest_id) ?
+			"result.php?team=".urlencode($_REQUEST['team'])."&problem=".urlencode($_REQUEST['problem']) :
+			".";
+
 	if (isset($_REQUEST['action:cancel']))
 	{
-		$url = $_REQUEST['next_url'] ?: "result.php?team=".urlencode($_REQUEST['team'])."&problem=".urlencode($_REQUEST['problem']);
+		$url = $_REQUEST['next_url'] ?: $def_next_url;
 		header("Location: $url");
 		exit();
 	}
@@ -221,10 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		{
 			generate_tests($_REQUEST['id']);
 		}
-		$def_url = is_director($contest_id) ?
-			"result.php?team=".urlencode($_REQUEST['team'])."&problem=".urlencode($_REQUEST['problem']) :
-			"listsubmissions.php?contest=".urlencode($contest_id);
-		$url = $_REQUEST['next_url'] ?: $def_url;
+		$url = $_REQUEST['next_url'] ?: $def_next_url;
 		header("Location: $url");
 		exit();
 	}

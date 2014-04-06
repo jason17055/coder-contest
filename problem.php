@@ -182,7 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 			or die("SQL error: " . mysql_error());
 
 		if ($_REQUEST['difficulty'] != $row['difficulty'] ||
-			$_REQUEST['allocated_minutes'] != $row['allocated_minutes'])
+			$_REQUEST['allocated_minutes'] != $row['allocated_minutes'] ||
+			$_REQUEST['visible'] != $row['visible'])
 		{
 			update_results_for_problem($contest_id, $_REQUEST['id']);
 		}

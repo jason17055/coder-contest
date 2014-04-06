@@ -37,9 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	$judge_id = null;
 	if ($judge_user)
 	{
-		$sql = "SELECT judge_id FROM judge
+		$sql = "SELECT team_number
+			FROM team
 			WHERE contest=".db_quote($contest_id)."
-			AND judge_user=".db_quote($judge_user);
+			AND user=".db_quote($judge_user)."
+			AND is_judge='Y'";
 		$query = mysql_query($sql)
 			or die("SQL error: ".mysql_error());
 		$row = mysql_fetch_row($query);

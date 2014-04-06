@@ -16,8 +16,7 @@ else if ($director_info = is_a_director())
 }
 else if ($judge_info = is_a_judge())
 {
-	$judge_url = "listsubmissions.php?contest=".urlencode($judge_info['contest']);
-	header("Location: $judge_url");
+	header("Location: team_menu.php");
 }
 else if (is_a_team())
 {

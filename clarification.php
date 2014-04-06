@@ -14,7 +14,7 @@ $sql = "SELECT problem_name,request,response,status,team_number,team_name,c.cont
 	JOIN problem p
 		ON p.contest=c.contest
 		AND p.problem_number=c.problem_number
-	JOIN team t
+	LEFT JOIN team t
 		ON t.team_number=c.team
 	WHERE id=".db_quote($_REQUEST['id']);
 $result = mysql_query($sql);
@@ -42,6 +42,9 @@ begin_page("Clarification");
 <td>Problem:</td>
 <td><?php echo htmlspecialchars($clarification_info['problem_name'])?></td>
 </tr>
+<?php
+	if (strlen($clarification_info['request'])) {
+	?>
 <tr>
 <td valign="top">Message:</td>
 <td>
@@ -51,6 +54,7 @@ begin_page("Clarification");
 		echo htmlspecialchars($clarification_info['request'])
 	?></textarea></td>
 </tr>
+<?php } ?>
 <tr valign="top">
 <td>Response:</td>
 <td><div>

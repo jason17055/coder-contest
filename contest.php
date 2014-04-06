@@ -22,6 +22,7 @@ else
 		"scoreboard_popups" => "Y",
 		"scoreboard_order" => 'n',
 		"scoreboard_fanfare" => 'Y',
+		"auto_register_cas" => 'N',
 		"started" => strftime('%Y-%m-%d %H:%M:%S', $timestamp),
 		);
 }
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 	$checkboxes = array('scoreboard_images', 'scoreboard_popups',
 		'scoreboard_fanfare',
 		'teams_can_change_name', 'teams_can_change_description',
-		'teams_can_change_password');
+		'teams_can_change_password', 'teams_can_write_code');
 	$updates = array();
 	foreach ($checkboxes as $c) {
 		if ($_REQUEST[$c]) {
@@ -60,9 +61,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST")
 		$updates[] = "director_password=SHA1(".db_quote($_REQUEST['director_password']).")";
 	}
 
-	if (isset($_REQUEST['enabled']) && is_sysadmin())
+	if (is_sysadmin())
 	{
-		$updates[] = "enabled=".db_quote($_REQUEST['enabled']);
+		if (isset($_REQUEST['auth_method'])) {
+			$updates[] = "auth_method=".db_quote($_REQUEST['auth_method']);
+		}
+		if (isset($_REQUEST['enabled'])) {
+			$updates[] = "enabled=".db_quote($_REQUEST['enabled']);
+		}
+		if ($_REQUEST['auto_register_cas']) {
+			$updates[] = "auto_register_cas='Y'";
+		}
+		else {
+			$updates[] = "auto_register_cas='N'";
+		}
 	}
 
 	for ($i = 1; $i <= 4; $i++)
@@ -189,14 +201,25 @@ Change Password: <input type="text" name="director_password" value="">
 <td><?php select_option_widget('enabled',
 		array("Y|Enabled","N|Disabled"), $row['enabled'])?></td>
 </tr>
+<tr>
+<td>Auth method:</td>
+<td><?php select_option_widget('auth_method',
+		array("|Internal", "CAS|CAS"), $row['auth_method'])?>
+
+		<label><input type="checkbox" name="auto_register_cas"<?php
+				echo($row['auto_register_cas'] == 'Y' ? ' checked="checked"' : '')
+				?>>Auto-register CAS users</label>
+		</td>
+</tr>
 <?php } /* end if sysadmin */ ?>
 <tr>
-<td>Team options:</td>
+<td>Contestant options:</td>
 <td><?php
 	foreach (array(
 		"teams_can_change_name|Change name",
 		"teams_can_change_description|Change description",
 		"teams_can_change_password|Change password",
+		"teams_can_write_code|Write code"
 		) as $option_info)
 	{
 		list($name,$label) = explode("|", $option_info);

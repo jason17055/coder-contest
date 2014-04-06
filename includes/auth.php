@@ -63,7 +63,7 @@ function is_sysadmin()
 
 function get_team_identity()
 {
-	$sql = "SELECT team_number,team_name,contest,ordinal
+	$sql = "SELECT team_number,team_name,contest,ordinal,is_contestant,is_judge
 		FROM team
 		WHERE team_number=".db_quote($_SESSION['is_team']);
 	$result = mysql_query($sql)
@@ -88,7 +88,8 @@ function is_in_a_contest()
 function is_a_team()
 {
 	$sql = "SELECT team_number,contest,
-		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online
+		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online,
+		is_contestant,is_judge,is_director
 		FROM team
 		WHERE team_number=".db_quote($_SESSION['is_team']);
 	$result = mysql_query($sql)
@@ -99,10 +100,10 @@ function is_a_team()
 
 function is_a_judge()
 {
-	$sql = "SELECT judge_id,contest,
+	$sql = "SELECT team_number AS judge_id,contest,
 		CASE WHEN last_refreshed IS NULL OR last_refreshed<DATE_SUB(NOW(),INTERVAL 2 MINUTE) THEN 'N' ELSE 'Y' END AS online
-		FROM judge
-		WHERE judge_id=".db_quote($_SESSION['is_judge']);
+		FROM team
+		WHERE team_number=".db_quote($_SESSION['is_judge']);
 	$result = mysql_query($sql)
 		or die("SQL error: ".mysql_error());
 	$judge_info = mysql_fetch_assoc($result);

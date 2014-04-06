@@ -64,7 +64,7 @@ function dismissAnnouncement()
 	}
 
 	var andThen = checkForAnnouncement;
-	if ($('[page-reload-safe]').length)
+	if ($('form').length == 0)
 	{
 		andThen = function() { window.location.reload(); };
 	}
@@ -163,21 +163,22 @@ function checkForAnnouncement()
 		xtra += "&onlinestatuschange=" + escape(online_indicators.join(","));
 	}
 
-	$('#submissions_table').each(function(el)
+	var process_submissions_table = function(el) {
+		var items = [];
+		$('[data-submission-id]', $(el)).each(function(i,el2)
+			{
+				var it = $(el2).attr('data-submission-id');
+				items.push(it);
+			});
+		xtra += '&newsubmissionsafter='+escape(items.join(','));
+	};
+
+	$('.auto_reload_trigger').each(function(xx)
 	{
-		var lastSubmission = null;
-		var lastClarification = null;
-		$('tr', this).each(function(i,el2)
-		{
-			if (el2.id && el2.id.match(/clarification/))
-				lastClarification = el2.id;
-			else if (el2.id && el2.id.match(/submission/))
-				lastSubmission = el2.id;
-		});
-		var p = new Array();
-		if (lastSubmission) { p.push(lastSubmission); }
-		if (lastClarification) { p.push(lastClarification); }
-		xtra += '&newsubmissionsafter='+escape(p.join(','));
+		var typ = $(this).attr('data-auto-reload-type');
+		if (typ == 'submissions_table') {
+			process_submissions_table(this);
+		}
 	});
 
 	var url = "checkmessage-js.php?timeout=60&type=N&after=" + escape(last_message_id) + xtra;
