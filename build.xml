@@ -45,7 +45,7 @@
 	<fileset dir="webapp" />
 	<fileset dir="build/resources" />
 	<classes dir="build/classes" />
-	<webinf dir="." includes="templates/*" />
+	<webinf dir="." includes="templates/* templates/admin/*" />
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
 

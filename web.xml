@@ -39,6 +39,15 @@
  <servlet-class>dragonfin.MenuServlet</servlet-class>
 </servlet>
 
+<servlet>
+ <servlet-name>DefineContest</servlet-name>
+ <servlet-class>dragonfin.contest.DefineContestServlet</servlet-class>
+</servlet>
+<servlet>
+ <servlet-name>ListContests</servlet-name>
+ <servlet-class>dragonfin.contest.ListContestsServlet</servlet-class>
+</servlet>
+
 <servlet-mapping>
  <servlet-name>config</servlet-name>
  <url-pattern>/config</url-pattern>
@@ -64,4 +73,12 @@
  <url-pattern>/menu</url-pattern>
 </servlet-mapping>
 
+<servlet-mapping>
+ <servlet-name>DefineContest</servlet-name>
+ <url-pattern>/_admin/define_contest</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ListContests</servlet-name>
+ <url-pattern>/_admin/contests</url-pattern>
+</servlet-mapping>
 </web-app>

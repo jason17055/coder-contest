@@ -1,0 +1,28 @@
+[% WRAPPER 'common.inc'
+	page_title = 'Define Contests'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<table border="1">
+<tr>
+<th>Contest</th>
+<th>Created By</th>
+</tr>
+
+[% FOREACH c IN all_contests %]
+<tr>
+<td>[% c.id |html %]</td>
+<td>[% c.createdBy |html %]</td>
+</tr>
+[% END %]
+
+</table>
+
+<div>
+<a href="define_contest">New Contest</a>
+</div>
+
+[% END #wrapper %]

@@ -1,0 +1,38 @@
+[% WRAPPER 'common.inc'
+	page_title = 'New Contest'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<form method="post" action="[% r.uri |html %]">
+<table>
+[% IF contest %]
+<tr>
+<td><label>Contest ID:</label></td>
+<td>[% contest.id |html %]</td>
+</tr>
+[% ELSE %]
+<tr>
+<td><label for="contest_entry">Contest ID:</label></td>
+<td><input type="text" name="contest" id="contest_entry" value="[% r.contest |html %]"></td>
+</tr>
+[% END %]
+<tr>
+<td><label for="password_entry">Director Password:</label></td>
+<td><input type="text" name="password" id="password_entry" value="[% r.password |html %]"></td>
+</tr>
+</table>
+<div>
+[% IF contest %]
+<button type="submit" name="action:update_contest">Save Changes</button>
+<button type="submit" name="action:delete_contest">Delete Contest</button>
+[% ELSE %]
+<button type="submit" name="action:create_contest">Create Contest</button>
+[% END %]
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+</form>
+
+[% END #wrapper %]
