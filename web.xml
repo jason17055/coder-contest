@@ -31,7 +31,7 @@
 
 <servlet>
  <servlet-name>login</servlet-name>
- <servlet-class>dragonfin.LoginServlet</servlet-class>
+ <servlet-class>dragonfin.contest.LoginServlet</servlet-class>
 </servlet>
 
 <servlet>

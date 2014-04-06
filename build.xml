@@ -41,7 +41,6 @@
 </target>
 
 <target name="build" depends="copy-resources,compile">
-<copy file="context.xml" tofile="build/resources/META-INF/context.xml" />
 <war destfile="${warfile}" webxml="web.xml">
 	<fileset dir="webapp" />
 	<fileset dir="build/resources" />
