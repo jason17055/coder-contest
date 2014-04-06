@@ -5,7 +5,6 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
-import dragonfin.CoreServlet;
 import dragonfin.contest.model.*;
 
 public class MenuServlet extends CoreServlet

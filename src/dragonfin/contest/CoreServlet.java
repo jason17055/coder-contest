@@ -1,4 +1,4 @@
-package dragonfin;
+package dragonfin.contest;
 
 import java.io.*;
 import java.sql.*;
@@ -7,8 +7,6 @@ import java.util.concurrent.Callable;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.templates.*;
-import dragonfin.contest.DataHelper;
-import dragonfin.contest.TemplateGlobals;
 import dragonfin.contest.model.*;
 
 public class CoreServlet extends HttpServlet
