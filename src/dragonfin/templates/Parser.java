@@ -39,7 +39,10 @@ class Parser
 		DOUBLE_QUOTE_STRING,
 		NUMBER,
 	//keywords
+		AND,
+		BLOCK,
 		DEFAULT,
+		DIV,
 		ELSE,
 		ELSIF,
 		END,
@@ -50,19 +53,36 @@ class Parser
 		IN,
 		INCLUDE,
 		INSERT,
+		MOD,
+		NOT,
+		OR,
 		SET,
 		UNLESS,
 		WRAPPER,
 	//punctuation and operators
+		ASSIGN,
 		COMMA,
+		DIVIDE,
 		DOT,
 		EQUAL,
 		NOT_EQUAL,
-		ASSIGN,
+		GT,
+		GE,
+		LT,
+		LE,
+		MULTIPLY,
 		OPEN_BRACKET,
 		CLOSE_BRACKET,
 		OPEN_PAREN,
 		CLOSE_PAREN,
+		OPEN_BRACE,
+		CLOSE_BRACE,
+		QUESTION,
+		COLON,
+		PLUS,
+		MINUS,
+		PERCENT,
+		UNDERSCORE,
 	//other
 		IDENTIFIER,
 		EOF;
@@ -80,21 +100,43 @@ class Parser
 		}
 	}
 
+	static final Token AND       = new Token(TokenType.AND, "&&");
 	static final Token ASSIGN    = new Token(TokenType.ASSIGN, "=");
+	static final Token DIVIDE    = new Token(TokenType.DIVIDE, "/");
 	static final Token DOT       = new Token(TokenType.DOT, ".");
 	static final Token EQUAL     = new Token(TokenType.EQUAL, "==");
 	static final Token FILTER    = new Token(TokenType.FILTER, "|");
+	static final Token MULTIPLY  = new Token(TokenType.MULTIPLY, "*");
+	static final Token NOT       = new Token(TokenType.NOT, "!");
 	static final Token NOT_EQUAL = new Token(TokenType.NOT_EQUAL, "!=");
+	static final Token GT        = new Token(TokenType.GT, ">");
+	static final Token LT        = new Token(TokenType.LT, "<");
+	static final Token GE        = new Token(TokenType.GE, ">=");
+	static final Token LE        = new Token(TokenType.LE, "<=");
 	static final Token OPEN_PAREN = new Token(TokenType.OPEN_PAREN, "(");
+	static final Token OR         = new Token(TokenType.OR, "||");
 	static final Token CLOSE_PAREN= new Token(TokenType.CLOSE_PAREN, ")");
 	static final Token OPEN_BRACKET = new Token(TokenType.OPEN_BRACKET, "[");
 	static final Token CLOSE_BRACKET= new Token(TokenType.CLOSE_BRACKET, "]");
+	static final Token OPEN_BRACE = new Token(TokenType.OPEN_BRACE, "{");
+	static final Token CLOSE_BRACE= new Token(TokenType.CLOSE_BRACE, "}");
 	static final Token COMMA = new Token(TokenType.COMMA, ",");
+	static final Token PERCENT = new Token(TokenType.PERCENT, "%");
+	static final Token QUESTION = new Token(TokenType.QUESTION, "?");
+	static final Token COLON = new Token(TokenType.COLON, ":");
+	static final Token PLUS = new Token(TokenType.PLUS, "+");
+	static final Token MINUS = new Token(TokenType.MINUS, "-");
 
 	private Token makeIdentifier(String s)
 	{
-		if (s.equals("DEFAULT"))
+		if (s.equals("AND"))
+			return new Token(TokenType.AND, s);
+		else if (s.equals("BLOCK"))
+			return new Token(TokenType.BLOCK, s);
+		else if (s.equals("DEFAULT"))
 			return new Token(TokenType.DEFAULT, s);
+		else if (s.equals("DIV"))
+			return new Token(TokenType.DIV, s);
 		else if (s.equals("END"))
 			return new Token(TokenType.END, s);
 		else if (s.equals("ELSE"))
@@ -115,12 +157,20 @@ class Parser
 			return new Token(TokenType.INCLUDE, s);
 		else if (s.equals("INSERT"))
 			return new Token(TokenType.INSERT, s);
+		else if (s.equals("MOD"))
+			return new Token(TokenType.MOD, s);
+		else if (s.equals("NOT"))
+			return new Token(TokenType.NOT, s);
+		else if (s.equals("OR"))
+			return new Token(TokenType.OR, s);
 		else if (s.equals("SET"))
 			return new Token(TokenType.SET, s);
 		else if (s.equals("UNLESS"))
 			return new Token(TokenType.UNLESS, s);
 		else if (s.equals("WRAPPER"))
 			return new Token(TokenType.WRAPPER, s);
+		else if (s.equals("_"))
+			return new Token(TokenType.UNDERSCORE, s);
 		else
 			return new Token(TokenType.IDENTIFIER, s);
 	}
@@ -216,28 +266,54 @@ class Parser
 				}
 				break;
 			case 2:
-				if (c == '%') {
+				if (c == '!') {
+					st = 14;
+				} else if (c == '"') {
+					st = 9;
+				} else if (c == '#') {
+					st = 7;
+				} else if (c == '%') {
 					st = 3;
-				} else if (c == '.') {
-					return DOT;
-				} else if (c == '[') {
-					return OPEN_BRACKET;
-				} else if (c == ']') {
-					return CLOSE_BRACKET;
+				} else if (c == '&') {
+					st = 12;
+				} else if (c == '\'') {
+					st = 6;
 				} else if (c == '(') {
 					return OPEN_PAREN;
 				} else if (c == ')') {
 					return CLOSE_PAREN;
+				} else if (c == '*') {
+					return MULTIPLY;
+				} else if (c == '+') {
+					return PLUS;
 				} else if (c == ',') {
 					return COMMA;
+				} else if (c == '-') {
+					return MINUS;
+				} else if (c == '.') {
+					return DOT;
+				} else if (c == '/') {
+					return DIVIDE;
+				} else if (c == ':') {
+					return COLON;
+				} else if (c == '<') {
+					st = 15;
 				} else if (c == '=') {
 					st = 5;
+				} else if (c == '>') {
+					st = 16;
+				} else if (c == '?') {
+					return QUESTION;
+				} else if (c == '[') {
+					return OPEN_BRACKET;
+				} else if (c == ']') {
+					return CLOSE_BRACKET;
+				} else if (c == '{') {
+					return OPEN_BRACE;
 				} else if (c == '|') {
-					return FILTER;
-				} else if (c == '\'') {
-					st = 6;
-				} else if (c == '"') {
-					st = 9;
+					st = 13;
+				} else if (c == '}') {
+					return CLOSE_BRACE;
 				} else if (Character.isJavaIdentifierStart(c)) {
 					cur.append((char)c);
 					st = 4;
@@ -246,8 +322,6 @@ class Parser
 					st = 11;
 				} else if (Character.isWhitespace(c)) {
 					//do nothing
-				} else if (c == '#') {
-					st = 7;
 				} else if (c == -1) {
 					st = -1;
 					return null;
@@ -256,15 +330,15 @@ class Parser
 				}
 				break;
 			case 3: // token beginning with "%"
-				if (c == -1) {
-					throw unexpectedEof();
-				} else if (c == ']') {
+				if (c == ']') {
 					assert cur.length() == 0;
 					st = 0;
 				} else {
-					throw unexpectedCharacter(c);
+					st = 2;
+					return PERCENT;
 				}
 				break;
+
 			case 4: // token beginning with [A-Za-z]
 				if (Character.isJavaIdentifierPart(c))
 				{
@@ -409,6 +483,61 @@ class Parser
 				}
 				break;
 
+			case 12: //token beginning with &
+				if (c == '&') {
+					st = 2;
+					return AND;
+				}
+				throw unexpectedCharacter(c);
+
+			case 13: //token beginning with |
+				if (c == '|') {
+					st = 2;
+					return OR;
+				}
+				else {
+					st = 2;
+					unread(c);
+					return FILTER;
+				}
+				//unreachable
+
+			case 14: //token beginning with !
+				if (c == '=') {
+					st = 2;
+					return NOT_EQUAL;
+				}
+				else {
+					st = 2;
+					unread(c);
+					return NOT;
+				}
+				//unreachable
+
+			case 15: //token beginning with <
+				if (c == '=') {
+					st = 2;
+					return LE;
+				}
+				else {
+					st = 2;
+					unread(c);
+					return LT;
+				}
+				//unreachable
+
+			case 16: //token beginning with >
+				if (c == '=') {
+					st = 2;
+					return GE;
+				}
+				else {
+					st = 2;
+					unread(c);
+					return GT;
+				}
+				//unreachable
+
 			default:
 				throw new Error("Should be unreachable");
 			}
@@ -450,7 +579,7 @@ class Parser
 
 		return new SyntaxException("Unexpected character ("+
 			(c >= 33 && c < 127 ? ((char)c) : "\\"+c)
-			+")");
+			+", st="+st+")");
 	}
 
 	private SyntaxException unexpectedEof()
@@ -809,13 +938,62 @@ class Parser
 		return t == TokenType.IDENTIFIER ||
 			t == TokenType.SINGLE_QUOTE_STRING ||
 			t == TokenType.DOUBLE_QUOTE_STRING ||
-			t == TokenType.NUMBER;
+			t == TokenType.NUMBER ||
+			t == TokenType.NOT ||
+			t == TokenType.OPEN_PAREN ||
+			t == TokenType.OPEN_BRACKET ||
+			t == TokenType.OPEN_BRACE ||
+			t == TokenType.BLOCK;
+	}
+
+	private Expression parseFactor()
+		throws IOException, TemplateSyntaxException
+	{
+		return parseChain();
+	}
+
+	private Expression parseTerm()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression e = parseFactor();
+		for (;;) {
+			TokenType t = peekToken();
+			if (t == TokenType.MULTIPLY ||
+				t == TokenType.DIVIDE ||
+				t == TokenType.PERCENT ||
+				t == TokenType.MOD ||
+				t == TokenType.DIV
+				) {
+				eatToken(t);
+				Expression rhs = parseFactor();
+				e = new Expressions.ArithmeticExpression(e, t, rhs);
+			}
+			else {
+				return e;
+			}
+		}
 	}
 
 	private Expression parseArith()
 		throws IOException, TemplateSyntaxException
 	{
-		return parseChain();
+		Expression lhs = parseTerm();
+		for (;;) {
+			TokenType t = peekToken();
+			if (t == TokenType.PLUS || t == TokenType.MINUS) {
+				eatToken(t);
+				Expression rhs = parseTerm();
+				lhs = new Expressions.ArithmeticExpression(lhs, t, rhs);
+			}
+			else if (t == TokenType.UNDERSCORE) {
+				eatToken(t);
+				Expression rhs = parseTerm();
+				lhs = new Concatenate(lhs, rhs);
+			}
+			else {
+				return lhs;
+			}
+		}
 	}
 
 	private Expression parseComparison()
@@ -823,7 +1001,12 @@ class Parser
 	{
 		Expression lhs = parseArith();
 		TokenType t = peekToken();
-		if (t == TokenType.EQUAL || t == TokenType.NOT_EQUAL)
+		if (t == TokenType.EQUAL ||
+			t == TokenType.NOT_EQUAL ||
+			t == TokenType.GT ||
+			t == TokenType.LT ||
+			t == TokenType.GE ||
+			t == TokenType.LE)
 		{
 			eatToken(t);
 			Expression rhs = parseArith();
@@ -832,11 +1015,45 @@ class Parser
 		return lhs;
 	}
 
+	public Expression parseConjunction()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression e = parseComparison();
+		while (peekToken() == TokenType.AND) {
+			eatToken(TokenType.AND);
+			Expression rhs = parseComparison();
+			e = new Expressions.AndExpression(e, rhs);
+		}
+		return e;
+	}
+
+	public Expression parseDisjunction()
+		throws IOException, TemplateSyntaxException
+	{
+		Expression e = parseConjunction();
+		while (peekToken() == TokenType.OR) {
+			eatToken(TokenType.OR);
+			Expression rhs = parseConjunction();
+			e = new Expressions.OrExpression(e, rhs);
+		}
+		return e;
+	}
+
 	public Expression parseExpression()
 		throws IOException, TemplateSyntaxException
 	{
 		assert isExpressionStart(peekToken());
-		Expression e = parseComparison();
+		Expression e = parseDisjunction();
+
+		TokenType t = peekToken();
+		if (t == TokenType.QUESTION)
+		{
+			eatToken(t);
+			Expression e1 = parseExpression();
+			eatToken(TokenType.COLON);
+			Expression e2 = parseExpression();
+			return new IfExpression(e, e1, e2);
+		}
 		return e;
 	}
 
@@ -867,17 +1084,42 @@ class Parser
 		return new Expressions.ArrayLiteral(parts);
 	}
 
+	private Expression parseHashLiteral()
+		throws IOException, TemplateSyntaxException
+	{
+		eatToken(TokenType.OPEN_BRACE);
+
+		List<SetDirective> parts;
+		if (isSetListStart(peekToken())) {
+			parts = parseSetList();
+		}
+		else {
+			parts = new ArrayList<SetDirective>();
+		}
+			
+		eatToken(TokenType.CLOSE_BRACE);
+
+		return new Expressions.HashLiteral(parts);
+	}
+
 	private Expression parseChain()
 		throws IOException, TemplateSyntaxException
 	{
 		TokenType t = peekToken();
 		if (t == TokenType.OPEN_PAREN)
 		{
-			throw new Error("TODO");
+			eatToken(TokenType.OPEN_PAREN);
+			Expression expr = parseExpression();
+			eatToken(TokenType.CLOSE_PAREN);
+			return expr;
 		}
 		else if (t == TokenType.OPEN_BRACKET)
 		{
 			return parseArrayLiteral();
+		}
+		else if (t == TokenType.OPEN_BRACE)
+		{
+			return parseHashLiteral();
 		}
 		else if (t == TokenType.SINGLE_QUOTE_STRING)
 		{
@@ -890,6 +1132,17 @@ class Parser
 		else if (t == TokenType.NUMBER)
 		{
 			return parseNumber(eatToken(t).text);
+		}
+		else if (t == TokenType.NOT)
+		{
+			eatToken(t);
+			return new Expressions.NotExpression(parseChain());
+		}
+		else if (t == TokenType.BLOCK)
+		{
+			eatToken(t);
+			Block content = parseBlock();
+			return new BlockExpression(content);
 		}
 
 		return parseIdentifier();
@@ -909,10 +1162,34 @@ class Parser
 		}
 	}
 
-	private List<Expression> parseArgs()
+	private boolean isArgStart(TokenType t)
+	{
+		return isExpressionStart(t);
+	}
+
+	private Argument parseArg()
 		throws IOException, TemplateSyntaxException
 	{
-		ArrayList<Expression> args = new ArrayList<Expression>();
+		
+		Expression lhs = parseExpression();
+
+		if (peekToken() == TokenType.ASSIGN &&
+			lhs instanceof Variable) {
+
+			eatToken(TokenType.ASSIGN);
+
+			String varName = ((Variable) lhs).variableName;
+			Expression rhs = parseExpression();
+			return new NamedArgument(varName, rhs);
+		}
+
+		return new SimpleArgument(lhs);
+	}
+
+	private List<Argument> parseArgs()
+		throws IOException, TemplateSyntaxException
+	{
+		ArrayList<Argument> args = new ArrayList<Argument>();
 		for (;;)
 		{
 			if (peekToken() == TokenType.COMMA)
@@ -920,13 +1197,10 @@ class Parser
 				eatToken(TokenType.COMMA);
 				continue;
 			}
-			else if (isExpressionStart(peekToken()))
+			else if (isArgStart(peekToken()))
 			{
-				Expression lhs = parseExpression();
-				//TODO- support named arguments
-
-				args.add(lhs);
-				continue;
+				Argument a = parseArg();
+				args.add(a);
 			}
 			else
 			{
@@ -943,7 +1217,7 @@ class Parser
 		if (peekToken() == TokenType.OPEN_PAREN)
 		{
 			eatToken(TokenType.OPEN_PAREN);
-			List<Expression> args = parseArgs();
+			List<Argument> args = parseArgs();
 			eatToken(TokenType.CLOSE_PAREN);
 			return new FunctionCall(itemName, args);
 		}
@@ -970,7 +1244,7 @@ class Parser
 			{
 				FunctionCall fc = (FunctionCall) rhs;
 				String methodName = fc.functionName;
-				List<Expression> args = fc.arguments;
+				List<Argument> args = fc.arguments;
 				lhs = new MethodCall(lhs, methodName, args);
 			}
 			else
@@ -986,25 +1260,6 @@ class Parser
 	{
 		Token t = eatToken(TokenType.IDENTIFIER);
 		return t.text;
-	}
-
-	static class FunctionCall extends Expression
-	{
-		String functionName;
-		List<Expression> arguments;
-
-		FunctionCall(String functionName, List<Expression> arguments)
-		{
-			this.functionName = functionName;
-			this.arguments = arguments;
-		}
-
-		@Override
-		Object evaluate(Context ctx)
-			throws TemplateRuntimeException
-		{
-			throw new TemplateRuntimeException("not implemented");
-		}
 	}
 
 	static class Variable extends Expression

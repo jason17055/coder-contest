@@ -1,13 +1,15 @@
 package dragonfin.templates;
 
 import java.util.*;
+import javax.script.Bindings;
 
 class Parameters extends AbstractMap<String,Object>
+	implements Bindings
 {
 	Map<String,?> params;
-	Map<String,?> parentScope;
+	Bindings parentScope;
 
-	public Parameters(Map<String,?> params, Map<String,?> parentScope)
+	public Parameters(Map<String,?> params, Bindings parentScope)
 	{
 		this.params = params;
 		this.parentScope = parentScope;

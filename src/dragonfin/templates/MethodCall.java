@@ -6,9 +6,9 @@ class MethodCall extends Expression
 {
 	Expression objectExpr;
 	String methodName;
-	List<Expression> arguments;
+	List<Argument> arguments;
 
-	MethodCall(Expression objectExpr, String methodName, List<Expression> arguments)
+	MethodCall(Expression objectExpr, String methodName, List<Argument> arguments)
 	{
 		this.objectExpr = objectExpr;
 		this.methodName = methodName;
@@ -23,7 +23,7 @@ class MethodCall extends Expression
 		Object [] args = new Object[arguments.size()];
 		for (int i = 0; i < args.length; i++)
 		{
-			args[i] = arguments.get(i).evaluate(ctx);
+			args[i] = arguments.get(i).expr.evaluate(ctx);
 		}
 		if (methodName.equals("substr") && args.length == 2)
 		{

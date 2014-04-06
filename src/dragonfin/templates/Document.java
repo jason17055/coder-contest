@@ -2,6 +2,7 @@ package dragonfin.templates;
 
 import java.io.*;
 import java.util.*;
+import javax.script.Bindings;
 
 public class Document extends Block
 {
@@ -15,7 +16,7 @@ public class Document extends Block
 	public void execute(Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
-		Map<String,?> oldMap = ctx.vars;
+		Bindings oldMap = ctx.vars;
 		ctx.vars = new ScopedVariables(oldMap);
 		try
 		{

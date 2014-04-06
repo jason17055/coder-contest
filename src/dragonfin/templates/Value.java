@@ -53,6 +53,23 @@ public class Value
 			return obj.toString();
 	}
 
+	public static int compare(Object a, Object b)
+	{
+		if (a == b)
+			return 0;
+		if (a instanceof Comparable) {
+			@SuppressWarnings("unchecked")
+			Comparable<Object> aa = (Comparable)a;
+			return aa.compareTo(b);
+		}
+		if (b instanceof Comparable) {
+			@SuppressWarnings("unchecked")
+			Comparable<Object> bb = (Comparable)b;
+			return -bb.compareTo(a);
+		}
+		throw new Error("Uncomparable objects");
+	}
+
 	public static boolean checkEquality(Object a, Object b)
 	{
 		if (a == b)

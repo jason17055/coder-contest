@@ -2,6 +2,8 @@ package dragonfin.templates;
 
 import java.io.*;
 import java.util.*;
+import javax.script.Bindings;
+import javax.script.SimpleBindings;
 
 class IncludeDirective implements Directive
 {
@@ -19,10 +21,10 @@ class IncludeDirective implements Directive
 		assignments.add(d);
 	}
 
-	protected HashMap<String,Object> makeArgs(Context ctx)
+	protected Bindings makeArgs(Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
-		HashMap<String,Object> args = new HashMap<String,Object>();
+		SimpleBindings args = new SimpleBindings();
 		for (SetDirective sd : assignments)
 		{
 			Parser.Variable var = (Parser.Variable) sd.lhs;
@@ -35,15 +37,15 @@ class IncludeDirective implements Directive
 	public void execute(Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
-		HashMap<String,Object> args = makeArgs(ctx);
+		Bindings args = makeArgs(ctx);
 		executeHelper(args, ctx);
 	}
 
-	protected void executeHelper(HashMap<String,Object> args, Context ctx)
+	protected void executeHelper(Bindings args, Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
 		String pathValue = Value.asString(pathExpr.evaluate(ctx));
-		Map<String,?> oldVars = ctx.vars;
+		Bindings oldVars = ctx.vars;
 		ctx.vars = new Parameters(args, oldVars);
 		try
 		{

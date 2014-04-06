@@ -33,6 +33,23 @@ class SetDirective implements Directive
 		}
 	}
 
+	void executeOnHash(Context ctx, Map<String,Object> hash)
+		throws TemplateRuntimeException
+	{
+		String k;
+		if (lhs instanceof Parser.Variable) {
+			Parser.Variable var = (Parser.Variable) lhs;
+			k = var.variableName;
+		}
+		else {
+			Object obj = lhs.evaluate(ctx);
+			k = Value.asString(obj);
+		}
+
+		Object v = rhs.evaluate(ctx);
+		hash.put(k, v);
+	}
+
 	private void setProperty(Expression subject, String propertyName, Context ctx)
 		throws IOException, TemplateRuntimeException
 	{
