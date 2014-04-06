@@ -53,6 +53,63 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	static String fixUrl(HttpServletRequest req, String url)
+	{
+		String queryString;
+		int qmark = url.indexOf('?');
+		if (qmark != -1) {
+			queryString = url.substring(qmark+1);
+			url = url.substring(0, qmark);
+		}
+		else {
+			queryString = "";
+		}
+
+		String servletPrefix = req.getContextPath();
+		String relUrl;
+		if (url.startsWith(servletPrefix)) {
+			relUrl = url.substring(servletPrefix.length());
+		}
+		else {
+			relUrl = url;
+			servletPrefix = "";
+		}
+
+		ArrayList<String> queryArgs = new ArrayList<String>(
+			Arrays.asList(queryString.split("&"))
+			);
+		boolean queryArgsChanged = false;
+
+		if (relUrl.startsWith("/_p/")) {
+			// find the contest query arg
+			String contestId = null;
+			for (Iterator<String> it = queryArgs.iterator(); it.hasNext(); )
+			{
+				String arg = it.next();
+				if (arg.startsWith("contest=")) {
+					contestId = arg.substring(8);
+					it.remove();
+					queryArgsChanged = true;
+				}
+			}
+			relUrl = "/"+contestId+relUrl.substring(3);
+		}
+
+		if (queryArgsChanged) {
+			StringBuilder sb = new StringBuilder();
+			for (String arg : queryArgs) {
+				if (sb.length() != 0) {
+					sb.append("&");
+				}
+				sb.append(arg);
+			}
+			queryString = sb.toString();
+		}
+
+		return servletPrefix+relUrl+
+			(queryString.length() != 0 ? ("?"+queryString) : "");
+	}
+
 	public static class RequestAdapter
 	{
 		HttpServletRequest request;
@@ -65,7 +122,8 @@ public class CoreServlet extends HttpServlet
 		{
 			String s = request.getRequestURI();
 			String q = request.getQueryString();
-			return s + (q != null ? "?"+q : "");
+			String u = s + (q != null ? "?"+q : "");
+			return fixUrl(request, u);
 		}
 
 		public String get(String param)
