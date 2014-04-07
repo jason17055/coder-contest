@@ -40,6 +40,11 @@
 </servlet>
 
 <servlet>
+ <servlet-name>controller</servlet-name>
+ <servlet-class>dragonfin.contest.ControllerServlet</servlet-class>
+</servlet>
+
+<servlet>
  <servlet-name>DefineContest</servlet-name>
  <servlet-class>dragonfin.contest.DefineContestServlet</servlet-class>
 </servlet>
@@ -71,6 +76,11 @@
 <servlet-mapping>
  <servlet-name>menu</servlet-name>
  <url-pattern>/_p/</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>controller</servlet-name>
+ <url-pattern>/_p/controller</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

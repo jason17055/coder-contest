@@ -1,0 +1,137 @@
+[% WRAPPER "common.inc"
+	page_title = contest.title
+%]
+
+<table id="controller_teams_table" class="realtable">
+<tr>
+<th>Contestant [<a href="[% sort_by_team_url |html %]">^</a>]</th>
+[% FOREACH prob IN contest.problems %]
+<th><a href="[% prob.url |html %]">[% prob.name |html %]</a></th>
+[% END #problem loop %]
+<th>Totals [<a href="[% sort_by_score_url |html %]">^</a>]</th>
+</tr>
+
+[% FOREACH team IN all_teams %]
+[% tname = team.name || "(no name)" %]
+<tr><td height="32">
+[% IF team.online %]
+[%	online_img = "images/plus.png" %]
+[%	online_lbl = "[Online]" %]
+[% ELSE %]
+[%	online_img = "images/minus.png" %]
+[%	online_lbl = "[Offline]" %]
+[% END %]
+<div>
+<img src="[% online_img |html %]" alt="[% online_lbl |html %]" width="14" height="14" class="online-indicator" id="ind_online_team_[% team.id |html %]_[% team.online ? "Y" : "N" %]">
+<a href="[% team.url |html %]">[% team.name |html %]</a>
+[% IF NOT team.visible %] (Invisible)[% END %]
+</div>
+</td>
+
+[% FOREACH prb IN all_problems %]
+[% prb_id = prb.id %]
+[% result = team.result_by_problem.$prb_id %]
+
+<td class="results_cell"><a href="[% result.url |html %]">
+[% IF result.score_html %]
+[% result.score_html %]
+[% ELSIF result.opened %]
+0
+[% ELSE %]
+-
+[% END %]
+</a></td>
+
+[% END # foreach prb this team %]
+
+<td>
+[% team.score_html %]
+</td>
+</tr>
+
+[% END #foreach team %]
+
+</table>
+
+[% IF all_judges.size %]
+
+<table id="controller_judges_table" class="realtable">
+<tr>
+<th>Judge Name</th>
+<th>Totals</th>
+</tr>
+
+[% FOREACH judge IN all_judges %]
+[% IF judge.online %]
+[%	online_img = "images/plus.png" %]
+[%	online_lbl = "[Online]" %]
+[% ELSE %]
+[%	online_img = "images/minus.png" %]
+[%	online_lbl = "[Offline]" %]
+[% END %]
+
+<tr>
+<td height="32"><img class="online-indicator" id="ind_online_team_[% judge.id |html %]_[% judge.online ? "Y" : "N" %]" src="[% online_img |html %]" alt="[% online_lbl %]" width="14" height="14">
+<a href="[% judge.edit_url |html %]">[% judge.name |html %]</a>
+</td>
+<td style="padding-left: 6pt; padding-right: 6pt">
+<img src="images/clarification.png" alt="Clarifications:"
+	class="task-count-indicator"
+	id="ind_clarificationcount_judge_[% judge.id |html %]_[% judge.clarifications_total |html %]">
+[% judge.clarifications_pending |html %]
+([% judge.clarifications_done |html %])
+
+<img style="margin-left: 1em" src="images/submission.png" alt="Submissions:"
+	class="task-count-indicator"
+	id="ind_submissioncount_judge_[% judge.id |html %]_[% judge.submissions_total |html %]">
+[% judge.submissions_pending |html %]
+([% judge.submissions_done |html %])
+</td>
+</tr>
+[% END #foreach judge %]
+</table>
+[% END #if any judges %]
+
+<table id="controller_workers_table" class="realtable">
+<tr>
+<th>Worker</th>
+<th>Supported File Types</th>
+<th>Details</th>
+</tr>
+
+[% FOREACH wkr IN all_workers %]
+
+<tr>
+<td height="32">
+<div><img src="images/plus.png" alt="[Online]" width="14" height="14">
+[% wkr.name |html %]</div>
+<div>[% wkr.busy ? "Busy" : "Idle" %]</div>
+<div>[% wkr.status |html %]</div>
+</td>
+<td>[% wkr.accepted_languages |html %]</td>
+<td>[% wkr.description |html %]</td>
+</tr>
+
+[% END #foreach wkr %]
+[% IF all_workers.size == 0 %]
+<tr>
+<td colspan="3" height="32">
+<img src="images/minus.png" alt="" width='14' height='14'>
+<span style="color: red; font-weight: bold">No workers are online</span>
+<div><small><a href="worker/">Click here to find out how to start a worker</a></small></div></td>
+</tr>
+[% END %]
+
+</table>
+
+<p style="clear:both">
+<a href="[% contest_links.edit_contest |html %]">Contest Options</a> |
+<a href="[% contest_links.problems_list |html %]">Define Problems</a> |
+<a href="[% contest_links.users_list |html %]">Define Users</a> |
+<a href="[% contest_links.send_message |html %]">Send Message</a> |
+<a href="[% contest_links.submissions_list |html %]">View Submissions</a> |
+<a href="[% contest_links.scoreboard |html %]">Live Scoreboard</a>
+| <a href="[% contest_links.test_solution |html %]">Test a Solution</a>
+</p>
+
+[% END #wrapper %]
