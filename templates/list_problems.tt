@@ -15,14 +15,14 @@
 <th>Difficulty</th>
 </tr>
 
-[% FOREACH prb IN contest.problems %]
+[% FOREACH prb IN all_problems %]
 <tr>
 <td>
 <img style="vertical-align: middle" src="[% prb.balloon_image |html %]" alt="">
 <a href="[% prb.edit_url |html %]">[% prb.name |html %]</a>
 </td>
-<td>[% prb.visible |html %]</td>
-<td>[% prb.allow_submissions |html %]</td>
+<td>[% prb.visible ? '&#x2713;' : '' %]</td>
+<td>[% prb.allow_submissions ? '&#x2713;' : '' %]</td>
 <td>[% prb.judged_by |html %]</td>
 <td align="center">
 [% IF prb.solution_file %]

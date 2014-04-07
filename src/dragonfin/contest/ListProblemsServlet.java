@@ -17,16 +17,23 @@ public class ListProblemsServlet extends CoreServlet
 		String contestId = req.getParameter("contest");
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Query q = new Query("Problem")
-			.setAncestor(contestKey);
+			.setAncestor(contestKey)
+		//	.addSort("ordinal")
+		//	.addSort("name")
+			;
 		PreparedQuery pq = ds.prepare(q);
 
 		ArrayList<ProblemInfo> list = new ArrayList<ProblemInfo>();
 		for (Entity ent : pq.asIterable()) {
-			String problemId = ent.getKey().getName();
-			String creator = (String) ent.getProperty("createdBy");
+			String problemId = Long.toString(ent.getKey().getId());
 			ProblemInfo p = new ProblemInfo();
 			p.id = problemId;
+			p.name = (String) ent.getProperty("name");
+			if (p.name == null || p.name.length() == 0) {
+				p.name = "(unnamed)";
+			}
 			p.contestId = contestId;
+			p.edit_url = makeContestUrl(contestId, "problem", "id="+p.id);
 			list.add(p);
 		}
 
