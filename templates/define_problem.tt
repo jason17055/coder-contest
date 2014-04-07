@@ -1,0 +1,61 @@
+[% WRAPPER 'common.inc'
+	page_title = 'Problem Definition'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label for="problem_name_entry">Name:</label></td>
+<td><input type="text" name="problem_name" id="problem_name_entry"
+	value="[% f.problem_name |html %]" size="40">
+</td>
+</tr>
+<tr>
+<td valign="top">Visible:</td>
+<td valign="top">
+<div><label><input type="checkbox" name="visible"[% f.visible ? ' checked="checked"' : '' %]>
+Counted as part of total score</label></div>
+<div><label><input type="checkbox" name="allow_submissions"[% f.allowSubmissions ? ' checked="checked"' : '' %]>
+Allow contestants to submit solutions</label></div>
+</td>
+</tr>
+<tr>
+<td><label for="judged_by_entry">Judged by:</label></td>
+<td><input type="text" name="judged_by" id="judged_by_entry" value="[% f.judged_by |html %]">
+<small>Comma-separated list of judges' usernames (e.g. judge1,judge2)</small>
+</td>
+</tr>
+<tr>
+<td><label for="difficulty_entry">Difficulty value:</label></td>
+<td><input type="text" name="difficulty" id="difficulty_entry" value="[% f.difficulty |html %]"></td>
+</tr>
+<tr>
+<td><label for="allocated_minutes_entry">Allocated Minutes:</label></td>
+<td><input type="text" name="allocated_minutes" id="allocated_minutes_entry" value="[% f.allocated_minutes |html %]">
+<small>Used to calculate points in a topcoder-style contest.</small>
+</td>
+</tr>
+<tr>
+<td><label for="runtime_limit_entry">Run time limit:</label></td>
+<td><input type="text" name="runtime_limit" id="runtime_limit_entry" value="[% f.runtime_limit |html %]">
+<small>Time limit for submissions (seconds). (Not currently implemented.)</small>
+</td>
+</tr>
+</table>
+
+<div>
+[% IF f.id %]
+<button type="submit">Save Changes</button>
+<button type="submit" name="action:delete_problem" onclick="return confirm('Really delete this problem?')">Delete Problem</button>
+[% ELSE %]
+<button type="submit" name="action:create_problem">Create</button>
+[% END %]
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+</form>
+
+[% END #wrapper %]
