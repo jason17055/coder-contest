@@ -2,15 +2,15 @@ package dragonfin.contest.model;
 
 public class ProblemInfo
 {
-	String contestId;
-	int number;
-	String name;
-	String specFile;
-	String specName;
-	int difficulty;
-	int solutionTime;
-	int incorrectSubmissions;
-	String opened;
+	public String contestId;
+	public String id;
+	public String name;
+	public String specFile;
+	public String specName;
+	public int difficulty;
+	public int solutionTime;
+	public int incorrectSubmissions;
+	public String opened;
 
 	public int getSolution_time()
 	{
@@ -35,10 +35,5 @@ public class ProblemInfo
 	public String getName()
 	{
 		return name;
-	}
-
-	public int getNumber()
-	{
-		return number;
 	}
 }

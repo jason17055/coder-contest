@@ -1,0 +1,54 @@
+[% WRAPPER "common.inc"
+	page_title = contest.title
+%]
+
+<form method="post" action="[% r.uri |html %]">
+
+<table class="realtable">
+<tr>
+<th>Problem Name</th>
+<th>Scored</th>
+<th>Open</th>
+<th>Judged By</th>
+<th>Solution</th>
+<th>Test Files</th>
+<th>Difficulty</th>
+</tr>
+
+[% FOREACH prb IN contest.problems %]
+<tr>
+<td>
+<img style="vertical-align: middle" src="[% prb.balloon_image |html %]" alt="">
+<a href="[% prb.edit_url |html %]">[% prb.name |html %]</a>
+</td>
+<td>[% prb.visible |html %]</td>
+<td>[% prb.allow_submissions |html %]</td>
+<td>[% prb.judged_by |html %]</td>
+<td align="center">
+[% IF prb.solution_file %]
+    <img src="images/text_file.png" alt="On file">
+[% ELSE %]
+    -
+[% END %]
+</td>
+<td align="center">[% prb.system_test_count |html %]</td>
+<td align="center">[% prb.difficulty |html %]</td>
+</tr>
+
+[% END #foreach prb %]
+
+</table>
+</form>
+
+<p>
+[% IF s.isDirector %]
+<a href="[% contest_links.new_problem |html %]">New Problem</a> |
+<a href="[% contest_links.download_all_problems |html %]">Download as Zip</a> |
+<a href="[% contest_links.controller |html %]">Controller</a>
+[% ELSE %]
+<a href="[% contest_links.submissions |html %]">Submissions</a> |
+<a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
+[% END %]
+</p>
+
+[% END #wrapper %]
