@@ -19,7 +19,7 @@ public class DataHelper
 		rv.title = ent.hasProperty("title") ?
 			(String)ent.getProperty("title") :
 			contestId;
-		rv.createdBy = (String)ent.getProperty("createdBy");
+		rv.created_by = (String)ent.getProperty("created_by");
 
 		return rv;
 
@@ -48,14 +48,14 @@ public class DataHelper
 		rv.ordinal = ent.hasProperty("ordinal") ?
 			((Integer) ent.getProperty("ordinal")).intValue() :
 			0;
-		rv.isDirector = ent.hasProperty("isDirector") ?
-			((Boolean) ent.getProperty("isDirector")).booleanValue() :
+		rv.is_director = ent.hasProperty("is_director") ?
+			((Boolean) ent.getProperty("is_director")).booleanValue() :
 			false;
-		rv.isJudge = ent.hasProperty("isJudge") ?
-			((Boolean) ent.getProperty("isJudge")).booleanValue() :
+		rv.is_judge = ent.hasProperty("is_judge") ?
+			((Boolean) ent.getProperty("is_judge")).booleanValue() :
 			false;
-		rv.isContestant = ent.hasProperty("isContestant") ?
-			((Boolean) ent.getProperty("isContestant")).booleanValue() :
+		rv.is_contestant = ent.hasProperty("is_contestant") ?
+			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
 			false;
 
 		return rv;

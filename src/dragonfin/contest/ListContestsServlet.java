@@ -20,10 +20,10 @@ public class ListContestsServlet extends CoreServlet
 		ArrayList<ContestInfo> list = new ArrayList<ContestInfo>();
 		for (Entity ent : pq.asIterable()) {
 			String contestId = ent.getKey().getName();
-			String creator = (String) ent.getProperty("createdBy");
+			String creator = (String) ent.getProperty("created_by");
 			ContestInfo c = new ContestInfo();
 			c.id = contestId;
-			c.createdBy = creator;
+			c.created_by = creator;
 			list.add(c);
 		}
 

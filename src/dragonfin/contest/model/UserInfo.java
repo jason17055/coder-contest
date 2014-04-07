@@ -9,9 +9,9 @@ public class UserInfo implements java.io.Serializable
 	public String name;
 	public String contestId;
 	public int ordinal;
-	public boolean isDirector;
-	public boolean isContestant;
-	public boolean isJudge;
+	public boolean is_director;
+	public boolean is_contestant;
+	public boolean is_judge;
 
 	public String getId()
 	{
@@ -21,8 +21,8 @@ public class UserInfo implements java.io.Serializable
 	public String getName() { return name; }
 	public String getContestId() { return contestId; }
 	public int getOrdinal() { return ordinal; }
-	public boolean getIsDirector() { return isDirector; }
-	public boolean getIsJudge() { return isJudge; }
-	public boolean getIsContestant() { return isContestant; }
+	public boolean getIsDirector() { return is_director; }
+	public boolean getIsJudge() { return is_judge; }
+	public boolean getIsContestant() { return is_contestant; }
 }
 

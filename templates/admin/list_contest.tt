@@ -15,7 +15,7 @@
 [% FOREACH c IN all_contests %]
 <tr>
 <td>[% c.id |html %]</td>
-<td>[% c.createdBy |html %]</td>
+<td>[% c.created_by |html %]</td>
 </tr>
 [% END %]
 

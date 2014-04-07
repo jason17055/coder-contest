@@ -1,10 +1,19 @@
 Contest [ id ]
-	title         String
-	created       Date
-	createdBy     String
+	title             String
+	created           Date
+	created_by        String
 
 User [ Contest.id / username ]
-	password      String
-	isDirector    Boolean
-	isJudge       Boolean
-	isContestant  Boolean
+	password          String
+	is_director       Boolean
+	is_judge          Boolean
+	is_contestant     Boolean
+
+Problem [ Contest.id / id ]
+	name              String
+	visible           Boolean
+	judged_by         String
+	difficulty        Integer
+	start_time        Date
+	allocated_minutes Integer
+	runtime_limit     Integer
