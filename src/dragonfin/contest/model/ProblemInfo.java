@@ -5,6 +5,7 @@ public class ProblemInfo
 	public String contestId;
 	public String id;
 	public String name;
+	public int ordinal;
 	public String spec_file;
 	public String spec_name;
 	public int difficulty;

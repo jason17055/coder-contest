@@ -29,6 +29,34 @@ public class DataHelper
 		}
 	}
 
+	public static ProblemInfo loadProblem(String contestId, String id)
+		throws NotFound
+	{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key prbKey = KeyFactory.createKey(contestKey,
+				"Problem", Long.parseLong(id));
+
+		try {
+
+		Entity ent = ds.get(prbKey);
+		ProblemInfo rv = new ProblemInfo();
+
+		rv.id = id;
+		rv.contestId = contestId;
+		rv.name = (String) ent.getProperty("name");
+		rv.ordinal = ent.hasProperty("ordinal") ?
+			((Integer) ent.getProperty("ordinal")).intValue() :
+			0;
+
+		return rv;
+
+		}
+		catch (EntityNotFoundException e) {
+			throw new NotFound(e);
+		}
+	}
+
 	public static UserInfo loadUser(String contestId, String username)
 		throws NotFound
 	{

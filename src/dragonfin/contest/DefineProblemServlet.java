@@ -17,10 +17,40 @@ public class DefineProblemServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		renderTemplate(req, resp, TEMPLATE);
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("id");
+
+		requireDirector(req, resp);
+
+		Map<String,String> form = new HashMap<String,String>();
+		if (problemId != null) {
+			try {
+			ProblemInfo prb = DataHelper.loadProblem(contestId, problemId);
+			form.put("name", prb.name);
+			} catch (DataHelper.NotFound e) {
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+		}
+
+		Map<String,Object> args = new HashMap<String,Object>();
+		args.put("f", form);
+		renderTemplate(req, resp, TEMPLATE, args);
 	}
 
 	static final Charset UTF8 = Charset.forName("UTF-8");
+	static String readStream(InputStream in)
+		throws IOException
+	{
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		int nread;
+		byte[] buf = new byte[8192];
+		while ( (nread = in.read(buf)) != -1) {
+			bytes.write(buf, 0, nread);
+		}
+
+		return new String(bytes.toByteArray(), UTF8);
+	}
 
 	Map<String,String> processMultipartForm(HttpServletRequest req)
 		throws ServletException, IOException
@@ -33,18 +63,10 @@ public class DefineProblemServlet extends CoreServlet
 		FileItemIterator it = upload.getItemIterator(req);
 		while (it.hasNext()) {
 			FileItemStream item = it.next();
-			InputStream stream = item.openStream();
 
 			if (item.isFormField()) {
 				String name = item.getFieldName();
-				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-				int nread;
-				byte[] buf = new byte[8192];
-				while ( (nread = stream.read(buf)) != -1) {
-					bytes.write(buf, 0, nread);
-				}
-
-				String value = new String(bytes.toByteArray(), UTF8);
+				String value = readStream(item.openStream());
 				formFields.put(name, value);
 			}
 			else {
@@ -73,7 +95,7 @@ public class DefineProblemServlet extends CoreServlet
 			doCreateProblem(req, resp);
 		}
 		else {
-			throw new ServletException("invalid POST");
+			doUpdateProblem(req, resp);
 		}
 	}
 
@@ -93,7 +115,9 @@ public class DefineProblemServlet extends CoreServlet
 		String contestId = req.getParameter("contest");
 		requireDirector(req, resp);
 
-		String problemName = req.getParameter("problem_name");
+		@SuppressWarnings("unchecked")
+		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		String problemName = POST.get("name");
 
 		// TODO- check parameters
 
@@ -105,10 +129,10 @@ public class DefineProblemServlet extends CoreServlet
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
 			Entity contestEnt = ds.get(contestKey);
 
-			int problemId = contestEnt.hasProperty("last_problem_id") ?
-				((Integer)contestEnt.getProperty("last_problem_id")).intValue() : 0;
+			long problemId = contestEnt.hasProperty("last_problem_id") ?
+				((Long)contestEnt.getProperty("last_problem_id")).longValue() : 0;
 			problemId++;
-			contestEnt.setProperty("last_problem_id", new Integer(problemId));
+			contestEnt.setProperty("last_problem_id", new Long(problemId));
 			ds.put(contestEnt);
 
 			Key prbKey = KeyFactory.createKey(contestKey,
@@ -116,6 +140,45 @@ public class DefineProblemServlet extends CoreServlet
 			Entity ent1 = new Entity(prbKey);
 			ent1.setProperty("name", problemName);
 			ent1.setProperty("created", new Date());
+			ds.put(ent1);
+
+			txn.commit();
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("Invalid contest", e);
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		doCancel(req, resp);
+	}
+
+	void doUpdateProblem(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("id");
+		requireDirector(req, resp);
+
+		@SuppressWarnings("unchecked")
+		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		String problemName = POST.get("name");
+
+		// TODO- check parameters
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+
+		try {
+
+			Key contestKey = KeyFactory.createKey("Contest", contestId);
+			Key prbKey = KeyFactory.createKey(contestKey,
+				"Problem", Long.parseLong(problemId));
+			Entity ent1 = ds.get(prbKey);
+			ent1.setProperty("name", problemName);
 			ds.put(ent1);
 
 			txn.commit();

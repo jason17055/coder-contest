@@ -4,3 +4,4 @@ build
 extlib
 context.xml
 war
+*.swp
