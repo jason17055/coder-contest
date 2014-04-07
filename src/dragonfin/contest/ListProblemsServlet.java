@@ -19,7 +19,7 @@ public class ListProblemsServlet extends CoreServlet
 		Query q = new Query("Problem")
 			.setAncestor(contestKey)
 		//	.addSort("ordinal")
-		//	.addSort("name")
+			.addSort("name")
 			;
 		PreparedQuery pq = ds.prepare(q);
 
