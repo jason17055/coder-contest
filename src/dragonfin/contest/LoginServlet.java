@@ -75,9 +75,9 @@ public class LoginServlet extends CoreServlet
 			s.setAttribute("contest", contestId);
 			s.setAttribute("username", userId);
 
-			s.setAttribute("isDirector", ent.getProperty("isDirector"));
-			s.setAttribute("isContestant", ent.getProperty("isContestant"));
-			s.setAttribute("isJudge", ent.getProperty("isJudge"));
+			s.setAttribute("is_director", ent.getProperty("is_director"));
+			s.setAttribute("is_contestant", ent.getProperty("is_contestant"));
+			s.setAttribute("is_judge", ent.getProperty("is_judge"));
 
 			log.info("Login success (User "+contestId+"/"+userId+")");
 			return true;

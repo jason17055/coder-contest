@@ -1,3 +1,10 @@
+Session (managed by servlet container)
+	contest           String
+	username          String
+	is_director       Boolean
+	is_judge          Boolean
+	is_contestant     Boolean
+
 Contest [ id ]
 	title             String
 	created           Date
