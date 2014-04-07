@@ -9,6 +9,7 @@ Contest [ id ]
 	title             String
 	created           Date
 	created_by        String
+	last_problem_id   Integer
 
 User [ Contest.id / username ]
 	password          String
@@ -18,6 +19,7 @@ User [ Contest.id / username ]
 
 Problem [ Contest.id / id ]
 	name              String
+	created           Date
 	visible           Boolean
 	judged_by         String
 	difficulty        Integer

@@ -21,8 +21,8 @@ public class UserInfo implements java.io.Serializable
 	public String getName() { return name; }
 	public String getContestId() { return contestId; }
 	public int getOrdinal() { return ordinal; }
-	public boolean getIsDirector() { return is_director; }
-	public boolean getIsJudge() { return is_judge; }
-	public boolean getIsContestant() { return is_contestant; }
+	public boolean isDirector() { return is_director; }
+	public boolean isJudge() { return is_judge; }
+	public boolean isContestant() { return is_contestant; }
 }
 
