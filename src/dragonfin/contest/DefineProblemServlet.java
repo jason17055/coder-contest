@@ -20,7 +20,7 @@ public class DefineProblemServlet extends CoreServlet
 		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("id");
 
-		requireDirector(req, resp);
+		if (requireDirector(req, resp)) { return; }
 
 		Map<String,String> form = new HashMap<String,String>();
 		if (problemId != null) {
@@ -113,7 +113,7 @@ public class DefineProblemServlet extends CoreServlet
 		throws IOException, ServletException
 	{
 		String contestId = req.getParameter("contest");
-		requireDirector(req, resp);
+		if (requireDirector(req, resp)) { return; }
 
 		@SuppressWarnings("unchecked")
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
@@ -161,7 +161,7 @@ public class DefineProblemServlet extends CoreServlet
 	{
 		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("id");
-		requireDirector(req, resp);
+		if (requireDirector(req, resp)) { return; }
 
 		@SuppressWarnings("unchecked")
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
@@ -193,35 +193,5 @@ public class DefineProblemServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
-	}
-
-	void requireDirector(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException
-	{
-		String contestId = req.getParameter("contest");
-		HttpSession s = req.getSession(false);
-		if (s == null) {
-			throw new ServletException("Not logged in");
-		}
-
-		String sesContestId = (String) s.getAttribute("contest");
-		String username = (String) s.getAttribute("username");
-		if (sesContestId == null || username == null) {
-			throw new ServletException("Not logged in");
-		}
-
-		if (!sesContestId.equals(contestId)) {
-			throw new ServletException("Wrong contest");
-		}
-
-		try {
-		UserInfo user = DataHelper.loadUser(contestId, username);
-		if (!user.isDirector()) {
-			throw new ServletException("Not a director");
-		}
-		}
-		catch (DataHelper.NotFound e) {
-			throw new ServletException("Not a director");
-		}
 	}
 }

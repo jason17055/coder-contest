@@ -271,9 +271,48 @@ public class CoreServlet extends HttpServlet
 		renderTemplate(req, resp, "mytemplate.vm");
 	}
 
-	public static void main(String [] args)
-		throws Exception
+	/** @return true if response has been sent. */
+	boolean requireDirector(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException
 	{
+		String contestId = req.getParameter("contest");
+		HttpSession s = req.getSession(false);
+		if (s == null) {
+			// not logged in
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		String sesContestId = (String) s.getAttribute("contest");
+		String username = (String) s.getAttribute("username");
+		if (sesContestId == null || username == null) {
+			// not logged in
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		if (!sesContestId.equals(contestId)) {
+			// session is for a different contest
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		try {
+		UserInfo user = DataHelper.loadUser(contestId, username);
+		if (!user.isDirector()) {
+			// not a director
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"This page requires you to be contest director.");
+			return true;
+		}
+		}
+		catch (DataHelper.NotFound e) {
+			// not a director
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"This page requires you to be contest director.");
+			return true;
+		}
+		return false;
 	}
 }
 

@@ -12,6 +12,8 @@ public class ListProblemsServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
+		if (requireDirector(req, resp)) { return; }
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		String contestId = req.getParameter("contest");
