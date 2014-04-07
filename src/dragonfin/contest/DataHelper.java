@@ -29,6 +29,49 @@ public class DataHelper
 		}
 	}
 
+	static ProblemInfo problemFromEntity(Entity ent)
+	{
+		String problemId = Long.toString(ent.getKey().getId());
+		String contestId = ent.getKey().getParent().getName();
+
+		ProblemInfo rv = new ProblemInfo();
+
+		rv.id = problemId;
+		rv.contestId = contestId;
+		rv.name = (String) ent.getProperty("name");
+		if (rv.name == null || rv.name.length() == 0) {
+			rv.name = "(unnamed)";
+		}
+
+		rv.judged_by = (String) ent.getProperty("judged_by");
+
+		if (ent.hasProperty("visible")) {
+			rv.visible = ((Boolean) ent.getProperty("visible")).booleanValue();
+		}
+		if (ent.hasProperty("allow_submissions")) {
+			rv.allow_submissions = ((Boolean) ent.getProperty("allow_submissions")).booleanValue();
+		}
+
+		if (ent.hasProperty("ordinal")) {
+			rv.ordinal = (int)
+			((Long) ent.getProperty("ordinal")).longValue();
+		}
+		if (ent.hasProperty("difficulty")) {
+			rv.difficulty = (int)
+			((Long) ent.getProperty("difficulty")).longValue();
+		}
+		if (ent.hasProperty("allocated_minutes")) {
+			rv.allocated_minutes = (int)
+			((Long) ent.getProperty("allocated_minutes")).longValue();
+		}
+		if (ent.hasProperty("runtime_limit")) {
+			rv.runtime_limit = (int)
+			((Long) ent.getProperty("runtime_limit")).longValue();
+		}
+
+		return rv;
+	}
+
 	public static ProblemInfo loadProblem(String contestId, String id)
 		throws NotFound
 	{
@@ -40,15 +83,7 @@ public class DataHelper
 		try {
 
 		Entity ent = ds.get(prbKey);
-		ProblemInfo rv = new ProblemInfo();
-
-		rv.id = id;
-		rv.contestId = contestId;
-		rv.name = (String) ent.getProperty("name");
-		rv.ordinal = ent.hasProperty("ordinal") ?
-			((Integer) ent.getProperty("ordinal")).intValue() :
-			0;
-
+		ProblemInfo rv = problemFromEntity(ent);
 		return rv;
 
 		}

@@ -19,7 +19,7 @@
 <td valign="top">
 <div><label><input type="checkbox" name="visible"[% f.visible ? ' checked="checked"' : '' %]>
 Counted as part of total score</label></div>
-<div><label><input type="checkbox" name="allow_submissions"[% f.allowSubmissions ? ' checked="checked"' : '' %]>
+<div><label><input type="checkbox" name="allow_submissions"[% f.allow_submissions ? ' checked="checked"' : '' %]>
 Allow contestants to submit solutions</label></div>
 </td>
 </tr>
@@ -31,17 +31,17 @@ Allow contestants to submit solutions</label></div>
 </tr>
 <tr>
 <td><label for="difficulty_entry">Difficulty value:</label></td>
-<td><input type="text" name="difficulty" id="difficulty_entry" value="[% f.difficulty |html %]"></td>
+<td><input type="text" name="difficulty" id="difficulty_entry" value="[% f.difficulty || "" |html %]"></td>
 </tr>
 <tr>
 <td><label for="allocated_minutes_entry">Allocated Minutes:</label></td>
-<td><input type="text" name="allocated_minutes" id="allocated_minutes_entry" value="[% f.allocated_minutes |html %]">
+<td><input type="text" name="allocated_minutes" id="allocated_minutes_entry" value="[% f.allocated_minutes || "" |html %]">
 <small>Used to calculate points in a topcoder-style contest.</small>
 </td>
 </tr>
 <tr>
 <td><label for="runtime_limit_entry">Run time limit:</label></td>
-<td><input type="text" name="runtime_limit" id="runtime_limit_entry" value="[% f.runtime_limit |html %]">
+<td><input type="text" name="runtime_limit" id="runtime_limit_entry" value="[% f.runtime_limit || "" |html %]">
 <small>Time limit for submissions (seconds). (Not currently implemented.)</small>
 </td>
 </tr>

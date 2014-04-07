@@ -9,7 +9,6 @@ public class ProblemInfo
 	public String spec_file;
 	public String spec_name;
 	public int difficulty;
-	public int solution_time;
 	public int incorrect_submissions;
 	public String opened;
 	public String balloon_image;
@@ -19,6 +18,8 @@ public class ProblemInfo
 	public String solution_file;
 	public int system_test_count;
 	public String edit_url;
+	public int allocated_minutes;
+	public int runtime_limit;
 
 	public String getOpened()
 	{

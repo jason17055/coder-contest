@@ -28,13 +28,7 @@ public class ListProblemsServlet extends CoreServlet
 		ArrayList<ProblemInfo> list = new ArrayList<ProblemInfo>();
 		for (Entity ent : pq.asIterable()) {
 			String problemId = Long.toString(ent.getKey().getId());
-			ProblemInfo p = new ProblemInfo();
-			p.id = problemId;
-			p.name = (String) ent.getProperty("name");
-			if (p.name == null || p.name.length() == 0) {
-				p.name = "(unnamed)";
-			}
-			p.contestId = contestId;
+			ProblemInfo p = DataHelper.problemFromEntity(ent);
 			p.edit_url = makeContestUrl(contestId, "problem", "id="+p.id);
 			list.add(p);
 		}

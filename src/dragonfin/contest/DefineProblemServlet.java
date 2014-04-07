@@ -27,6 +27,13 @@ public class DefineProblemServlet extends CoreServlet
 			try {
 			ProblemInfo prb = DataHelper.loadProblem(contestId, problemId);
 			form.put("name", prb.name);
+			form.put("visible", prb.visible ? "1" : "");
+			form.put("allow_submissions", prb.allow_submissions ? "1" : "");
+			form.put("judged_by", prb.judged_by);
+			form.put("difficulty", Integer.toString(prb.difficulty));
+			form.put("allocated_minutes", Integer.toString(prb.allocated_minutes));
+			form.put("runtime_limit", Integer.toString(prb.runtime_limit));
+
 			} catch (DataHelper.NotFound e) {
 				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
@@ -138,8 +145,8 @@ public class DefineProblemServlet extends CoreServlet
 			Key prbKey = KeyFactory.createKey(contestKey,
 				"Problem", problemId);
 			Entity ent1 = new Entity(prbKey);
-			ent1.setProperty("name", problemName);
 			ent1.setProperty("created", new Date());
+			updateFromForm(ent1, POST);
 			ds.put(ent1);
 
 			txn.commit();
@@ -154,6 +161,31 @@ public class DefineProblemServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
+	}
+
+	void updateFromFormInt(Entity ent1, Map<String,String> POST, String propName)
+	{
+		if (POST.containsKey(propName)) {
+			try {
+			long x = Long.parseLong(POST.get(propName));
+			ent1.setProperty(propName, new Long(x));
+			}
+			catch (NumberFormatException e) {
+				ent1.removeProperty(propName);
+			}
+		}
+	}
+
+	void updateFromForm(Entity ent1, Map<String,String> POST)
+	{
+		ent1.setProperty("name", POST.get("name"));
+		ent1.setProperty("visible", POST.containsKey("visible") ? Boolean.TRUE : Boolean.FALSE);
+		ent1.setProperty("allow_submissions", POST.containsKey("allow_submissions") ? Boolean.TRUE : Boolean.FALSE);
+		ent1.setProperty("judged_by", POST.get("judged_by"));
+
+		updateFromFormInt(ent1, POST, "difficulty");
+		updateFromFormInt(ent1, POST, "allocated_minutes");
+		updateFromFormInt(ent1, POST, "runtime_limit");
 	}
 
 	void doUpdateProblem(HttpServletRequest req, HttpServletResponse resp)
@@ -178,7 +210,7 @@ public class DefineProblemServlet extends CoreServlet
 			Key prbKey = KeyFactory.createKey(contestKey,
 				"Problem", Long.parseLong(problemId));
 			Entity ent1 = ds.get(prbKey);
-			ent1.setProperty("name", problemName);
+			updateFromForm(ent1, POST);
 			ds.put(ent1);
 
 			txn.commit();
