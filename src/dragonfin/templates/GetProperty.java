@@ -71,6 +71,19 @@ class GetProperty extends Expression
 
 		try
 		{
+			Field f = obj.getClass().getField(propertyName);
+			Object rv = f.get(obj);
+			return rv;
+		}
+		catch (NoSuchFieldException e) {
+			// ignore
+		}
+		catch (IllegalAccessException e) {
+			// ignore
+		}
+
+		try
+		{
 			Method m = obj.getClass().getMethod("get",
 				new Class[] { String.class }
 				);
