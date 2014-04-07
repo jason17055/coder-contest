@@ -25,11 +25,6 @@
 </servlet>
 
 <servlet>
- <servlet-name>core</servlet-name>
- <servlet-class>dragonfin.CoreServlet</servlet-class>
-</servlet>
-
-<servlet>
  <servlet-name>login</servlet-name>
  <servlet-class>dragonfin.contest.LoginServlet</servlet-class>
 </servlet>
@@ -61,11 +56,6 @@
 <servlet-mapping>
  <servlet-name>config</servlet-name>
  <url-pattern>/config</url-pattern>
-</servlet-mapping>
-
-<servlet-mapping>
- <servlet-name>core</servlet-name>
- <url-pattern>/core</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>
