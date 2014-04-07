@@ -7,4 +7,5 @@ jar -xvf ../falcon-contest.war
 )
 cp -v appengine-web.xml war/WEB-INF/
 
-cmd.exe /c 'start C:\cygwin\home\jason\appengine-java-sdk-1.8.9\bin\dev_appserver.cmd war'
+appenginedir=$(cygpath -w -a ~/opt/appengine-java-sdk-1.9.2)
+cmd.exe /c "start $appenginedir"'\bin\dev_appserver.cmd war'
