@@ -150,6 +150,10 @@ public class FileUploadFormHelper
 
 			Key getRoot()
 			{
+				if (parent == null && chunks.size() == 1) {
+					return chunks.get(0);
+				}
+
 				Key myKey = uploadChunkIndex(this);
 				if (parent == null) {
 					return myKey;

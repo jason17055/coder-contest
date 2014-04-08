@@ -63,9 +63,9 @@ public class AdminFileChunksServlet extends CoreServlet
 			Key head = (Key)ent.getProperty("head_chunk");
 
 			out.println("<tr>");
-			out.println("<td><a href='"+url+"'>"+name+"</a></td>");
+			out.println("<td>"+name+"</td>");
 			out.println("<td>"+uploaded+"</td>");
-			out.println("<td>"+fileName+"</td>");
+			out.println("<td><a href='"+url+"'>"+fileName+"</a></td>");
 			out.println("<td>"+contentType+"</td>");
 			out.println("<td>"+head+"</td>");
 			out.println("</tr>");
