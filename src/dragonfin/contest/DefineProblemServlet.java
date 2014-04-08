@@ -9,6 +9,8 @@ import com.google.appengine.api.datastore.*;
 import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DefineProblemServlet extends CoreServlet
 {
@@ -22,7 +24,7 @@ public class DefineProblemServlet extends CoreServlet
 
 		if (requireDirector(req, resp)) { return; }
 
-		Map<String,String> form = new HashMap<String,String>();
+		Map<String,Object> form = new HashMap<String,Object>();
 		if (problemId != null) {
 			try {
 			ProblemInfo prb = DataHelper.loadProblem(contestId, problemId);
@@ -33,6 +35,11 @@ public class DefineProblemServlet extends CoreServlet
 			form.put("difficulty", Integer.toString(prb.difficulty));
 			form.put("allocated_minutes", Integer.toString(prb.allocated_minutes));
 			form.put("runtime_limit", Integer.toString(prb.runtime_limit));
+			form.put("spec", prb.spec);
+			form.put("solution", prb.solution);
+			form.put("scoreboard_image", prb.scoreboard_image);
+			form.put("score_by_access_time", prb.score_by_access_time ? "1" : "");
+			form.put("start_time", prb.start_time);
 
 			} catch (DataHelper.NotFound e) {
 				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -59,6 +66,58 @@ public class DefineProblemServlet extends CoreServlet
 		return new String(bytes.toByteArray(), UTF8);
 	}
 
+	static String byteArray2Hex(byte[] bytes)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			sb.append(String.format("%02x", bytes[i]));
+		}
+		return sb.toString();
+	}
+
+	String handleFileUpload(FileItemStream item)
+		throws ServletException, IOException
+	{
+		String fileName = item.getName();
+		String contentType = item.getContentType();
+
+		InputStream stream = item.openStream();
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw new Error("Unexpected "+e.getMessage(), e);
+		}
+
+		byte [] buf = new byte[16*1024];
+		int nread;
+		String sha1_hex = null;
+		while ( (nread = stream.read(buf)) != -1 ) {
+
+			// compute SHA-1 hash of bytes
+			md.update(buf, 0, nread);
+			byte[] hash = md.digest();
+			sha1_hex = byteArray2Hex(hash);
+
+			Key blobKey = KeyFactory.createKey("File", sha1_hex);
+			Entity ent = new Entity(blobKey);
+
+			byte [] bytes = Arrays.copyOfRange(buf, 0, nread);
+			ent.setProperty("data", bytes);
+			ent.setProperty("uploaded", new Date());
+			ent.setProperty("given_name", fileName);
+			ent.setProperty("content_type", contentType);
+			ent.setProperty("size", new Long(nread));
+
+			ds.put(ent);
+		}
+
+		return sha1_hex;
+	}
+
 	Map<String,String> processMultipartForm(HttpServletRequest req)
 		throws ServletException, IOException
 	{
@@ -77,8 +136,9 @@ public class DefineProblemServlet extends CoreServlet
 				formFields.put(name, value);
 			}
 			else {
-				//TODO
-				throw new ServletException("Unable to handle file upload at this time.");
+				String name = item.getFieldName();
+				String fileName = item.getName();
+				String blobId = handleFileUpload(item);
 			}
 		}
 
@@ -181,6 +241,7 @@ public class DefineProblemServlet extends CoreServlet
 		ent1.setProperty("name", POST.get("name"));
 		ent1.setProperty("visible", POST.containsKey("visible") ? Boolean.TRUE : Boolean.FALSE);
 		ent1.setProperty("allow_submissions", POST.containsKey("allow_submissions") ? Boolean.TRUE : Boolean.FALSE);
+		ent1.setProperty("score_by_access_time", "Y".equals(POST.get("score_by_access_time")) ? Boolean.TRUE : Boolean.FALSE);
 		ent1.setProperty("judged_by", POST.get("judged_by"));
 
 		updateFromFormInt(ent1, POST, "difficulty");

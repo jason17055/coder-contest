@@ -44,12 +44,16 @@ public class DataHelper
 		}
 
 		rv.judged_by = (String) ent.getProperty("judged_by");
+		rv.scoreboard_image = (String) ent.getProperty("scoreboard_image");
 
 		if (ent.hasProperty("visible")) {
 			rv.visible = ((Boolean) ent.getProperty("visible")).booleanValue();
 		}
 		if (ent.hasProperty("allow_submissions")) {
 			rv.allow_submissions = ((Boolean) ent.getProperty("allow_submissions")).booleanValue();
+		}
+		if (ent.hasProperty("score_by_access_time")) {
+			rv.score_by_access_time = ((Boolean) ent.getProperty("score_by_access_time")).booleanValue();
 		}
 
 		if (ent.hasProperty("ordinal")) {

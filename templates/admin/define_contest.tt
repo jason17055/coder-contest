@@ -8,24 +8,27 @@
 
 <form method="post" action="[% r.uri |html %]">
 <table>
-[% IF contest %]
+[% IF r.contest %]
 <tr>
 <td><label>Contest ID:</label></td>
-<td>[% contest.id |html %]</td>
+<td>[% f.id |html %]</td>
 </tr>
 [% ELSE %]
 <tr>
 <td><label for="contest_entry">Contest ID:</label></td>
-<td><input type="text" name="contest" id="contest_entry" value="[% r.contest |html %]"></td>
+<td><input type="text" name="contest" id="contest_entry" value="[% f.id |html %]">
+<small>Must consist of 3-20 alpha/numeric/underscore characters.
+First character must not be a number.</small>
+</td>
 </tr>
 [% END %]
 <tr>
 <td><label for="password_entry">Director Password:</label></td>
-<td><input type="text" name="password" id="password_entry" value="[% r.password |html %]"></td>
+<td><input type="text" name="password" id="password_entry" value="[% f.password |html %]"></td>
 </tr>
 </table>
 <div>
-[% IF contest %]
+[% IF r.contest %]
 <button type="submit" name="action:update_contest">Save Changes</button>
 <button type="submit" name="action:delete_contest">Delete Contest</button>
 [% ELSE %]
