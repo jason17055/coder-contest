@@ -1,0 +1,67 @@
+[% WRAPPER 'common.inc'
+	page_title = r.id ? 'Edit User' : 'New User'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<form method="post" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label>Contest:</label></td>
+<td>[% contest.title |html %]</td>
+</tr>
+<tr>
+<td><label for="ordinal_entry">Order:</label></td>
+<td><input type="text" name="ordinal" id="ordinal_entry" value="[% f.ordinal |html %]"></td>
+</tr>
+<tr>
+<td><label for="visible_cb">Visible:</label></td>
+<td><select name="visible" id="visible_cb">
+<option value="Y"[% f.visible ? ' selected="selected"' : '' %]>Yes</option>
+<option value="N"[% !f.visible ? ' selected="selected"' : '' %]>No</option>
+</select></td>
+</tr>
+[% IF s.is_director %]
+<tr>
+<td><label>Roles:</label></td>
+<td>
+<label><input type="checkbox" name="is_contestant"[% f.is_contestant ? ' checked="checked"' : '' %]>Contestant</label>
+<label><input type="checkbox" name="is_judge"[% f.is_judge ? ' checked="checked"' : '' %]>Judge</label>
+<label><input type="checkbox" name="is_director"[% f.is_director ? ' checked="checked"' : '' %]>Director</label>
+</td>
+</tr>
+[% END #if is_director %]
+<tr>
+<td><label for="name_entry">Display Name:</label></td>
+<td><input type="text" name="name" id="name_entry"
+	value="[% f.name |html %]">
+</td>
+</tr>
+<tr>
+<td><label for="username_entry">Username:</label></td>
+<td><input type="text" name="username" id="username_entry"
+	value="[% f.username |html %]">
+</td>
+</tr>
+<tr>
+<td><label for="password_entry">Password:</label></td>
+<td><input type="password" name="password" id="password_entry"
+	value="[% f.username |html %]">
+</td>
+</tr>
+</table>
+
+<div>
+[% IF r.id %]
+<button type="submit">Save Changes</button>
+<button type="submit" name="action:delete_user" onclick="return confirm('Really delete this user?')">Delete User</button>
+[% ELSE %]
+<button type="submit" name="action:create_user">Create</button>
+[% END %]
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+</form>
+
+[% END #wrapper %]

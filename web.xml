@@ -53,6 +53,10 @@
  <servlet-name>DefineProblem</servlet-name>
  <servlet-class>dragonfin.contest.DefineProblemServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>DefineUser</servlet-name>
+ <servlet-class>dragonfin.contest.DefineUserServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>DefineContest</servlet-name>
@@ -105,6 +109,11 @@
 <servlet-mapping>
  <servlet-name>DefineProblem</servlet-name>
  <url-pattern>/_p/problem</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>DefineUser</servlet-name>
+ <url-pattern>/_p/user</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

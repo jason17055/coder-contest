@@ -16,6 +16,9 @@ User [ Contest.id / username ]
 	is_director       Boolean
 	is_judge          Boolean
 	is_contestant     Boolean
+	name              String
+	description       String
+	ordinal           Integer
 
 Problem [ Contest.id / id ]
 	name              String
