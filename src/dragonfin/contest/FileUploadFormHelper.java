@@ -68,16 +68,25 @@ public class FileUploadFormHelper
 		FilePart nextChunk()
 			throws IOException
 		{
-			int nread = stream.read(buf);
-			if (nread == -1) {
+			int off = 0;
+			while (off < buf.length)
+			{
+				int nread = stream.read(buf, off, buf.length-off);
+				if (nread == -1) {
+					break;
+				}
+				off += nread;
+			}
+
+			if (off == 0) {
 				return null;
 			}
 
 			chunkCount++;
-			fileLen += nread;
+			fileLen += off;
 
 			FilePart p = new FilePart();
-			p.data = Arrays.copyOfRange(buf, 0, nread);
+			p.data = Arrays.copyOfRange(buf, 0, off);
 			makeDigest(p);
 			return p;
 		}
