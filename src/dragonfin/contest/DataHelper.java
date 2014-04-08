@@ -76,6 +76,30 @@ public class DataHelper
 		return rv;
 	}
 
+	static File handleFileProperty(Entity ent, String propName)
+	{
+		Key fileKey = (Key) ent.getProperty(propName);
+		if (fileKey == null)
+			return null;
+
+		try {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Entity fileEnt = ds.get(fileKey);
+
+		File f = new File();
+		f.id = fileKey.getName();
+		f.name = (String) fileEnt.getProperty("given_name");
+		return f;
+
+		}
+		catch (EntityNotFoundException e){
+			File f = new File();
+			f.id = "missing";
+			f.name = "missing";
+			return f;
+		}
+	}
+
 	public static ProblemInfo loadProblem(String contestId, String id)
 		throws NotFound
 	{
@@ -88,6 +112,10 @@ public class DataHelper
 
 		Entity ent = ds.get(prbKey);
 		ProblemInfo rv = problemFromEntity(ent);
+
+		rv.spec = handleFileProperty(ent, "spec");
+		rv.solution = handleFileProperty(ent, "solution");
+
 		return rv;
 
 		}

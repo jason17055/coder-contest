@@ -12,6 +12,14 @@ public class DefineProblemServlet extends CoreServlet
 {
 	static final String TEMPLATE = "define_problem.tt";
 
+	File checkFileUrl(File inFile)
+	{
+		if (inFile != null && inFile.id != null) {
+			inFile.url = getServletContext().getContextPath()+"/_f/"+inFile.id+"/"+inFile.name;
+		}
+		return inFile;
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -31,8 +39,8 @@ public class DefineProblemServlet extends CoreServlet
 			form.put("difficulty", Integer.toString(prb.difficulty));
 			form.put("allocated_minutes", Integer.toString(prb.allocated_minutes));
 			form.put("runtime_limit", Integer.toString(prb.runtime_limit));
-			form.put("spec", prb.spec);
-			form.put("solution", prb.solution);
+			form.put("spec", checkFileUrl(prb.spec));
+			form.put("solution", checkFileUrl(prb.solution));
 			form.put("scoreboard_image", prb.scoreboard_image);
 			form.put("score_by_access_time", prb.score_by_access_time ? "1" : "");
 			form.put("start_time", prb.start_time);
@@ -136,6 +144,21 @@ public class DefineProblemServlet extends CoreServlet
 		}
 	}
 
+	void updateFromForm_file(Entity ent1, Map<String,String> POST, String propName)
+	{
+		String fileHash = POST.get(propName+"_upload");
+		if (fileHash != null) {
+			Key fileKey = KeyFactory.createKey("File", fileHash);
+			ent1.setProperty(propName, fileKey);
+			return;
+		}
+
+		if (POST.containsKey(propName+"_replace")) {
+			// replace file with nothing
+			ent1.removeProperty(propName);
+		}
+	}
+
 	void updateFromForm(Entity ent1, Map<String,String> POST)
 	{
 		ent1.setProperty("name", POST.get("name"));
@@ -147,6 +170,9 @@ public class DefineProblemServlet extends CoreServlet
 		updateFromFormInt(ent1, POST, "difficulty");
 		updateFromFormInt(ent1, POST, "allocated_minutes");
 		updateFromFormInt(ent1, POST, "runtime_limit");
+
+		updateFromForm_file(ent1, POST, "spec");
+		updateFromForm_file(ent1, POST, "solution");
 	}
 
 	void doUpdateProblem(HttpServletRequest req, HttpServletResponse resp)

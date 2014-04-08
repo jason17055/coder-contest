@@ -27,3 +27,5 @@ Problem [ Contest.id / id ]
 	start_time        Date
 	allocated_minutes Integer
 	runtime_limit     Integer
+	spec              Key(File)
+	solution          Key(File)
