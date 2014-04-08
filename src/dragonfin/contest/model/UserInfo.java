@@ -5,21 +5,26 @@ import java.util.*;
 
 public class UserInfo implements java.io.Serializable
 {
-	public String id;
+	public String contest;
+	public String username;
+
 	public String name;
+	public String display_name;
+	public String description;
 	public String contestId;
 	public int ordinal;
 	public boolean is_director;
 	public boolean is_contestant;
 	public boolean is_judge;
+	public String edit_url;
 
 	public String getId()
 	{
-		return id;
+		return contest+"/"+username;
 	}
 
 	public String getName() { return name; }
-	public String getContestId() { return contestId; }
+	public String getContestId() { return contest; }
 	public int getOrdinal() { return ordinal; }
 	public boolean isDirector() { return is_director; }
 	public boolean isJudge() { return is_judge; }

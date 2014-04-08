@@ -1,0 +1,40 @@
+[% WRAPPER "common.inc"
+	page_title = "Define Users - " _ contest.title
+%]
+
+<form method="post" action="[% r.uri |html %]">
+
+<h3>Contestants</h3>
+
+<table class="realtable">
+<tr>
+<th>Contestant ID</th>
+<th>Display Name</th>
+<th>Description</th>
+</tr>
+
+[% FOREACH user IN all_users %]
+<tr>
+<td>
+<a href="[% user.edit_url |html %]">[% user.username |html %]</a>
+</td>
+<td>[% user.name |html %]</td>
+<td>[% user.description |html %]</td>
+</tr>
+
+[% END #foreach user %]
+
+</table>
+</form>
+
+<p>
+[% IF s.is_director %]
+<a href="[% contest_links.new_user |html %]">New User</a> |
+<a href="[% contest_links.controller |html %]">Controller</a>
+[% ELSE %]
+<a href="[% contest_links.submissions |html %]">Submissions</a> |
+<a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
+[% END %]
+</p>
+
+[% END #wrapper %]

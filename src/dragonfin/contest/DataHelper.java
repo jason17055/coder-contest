@@ -124,6 +124,38 @@ public class DataHelper
 		}
 	}
 
+	static UserInfo userFromEntity(Entity ent)
+	{
+		UserInfo rv = new UserInfo();
+
+		String uid = ent.getKey().getName();
+		if (uid.indexOf('/') != -1) {
+			rv.contest = uid.substring(0,uid.indexOf('/'));
+			rv.username = uid.substring(uid.indexOf('/')+1);
+		}
+		else {
+			rv.username = uid;
+		}
+
+		rv.name = (String) ent.getProperty("name");
+		rv.description = (String) ent.getProperty("description");
+
+		rv.ordinal = ent.hasProperty("ordinal") ?
+			(int)((Long) ent.getProperty("ordinal")).longValue() :
+			0;
+		rv.is_director = ent.hasProperty("is_director") ?
+			((Boolean) ent.getProperty("is_director")).booleanValue() :
+			false;
+		rv.is_judge = ent.hasProperty("is_judge") ?
+			((Boolean) ent.getProperty("is_judge")).booleanValue() :
+			false;
+		rv.is_contestant = ent.hasProperty("is_contestant") ?
+			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
+			false;
+
+		return rv;
+	}
+
 	public static UserInfo loadUser(String contestId, String username)
 		throws NotFound
 	{
@@ -135,23 +167,7 @@ public class DataHelper
 		try {
 
 		Entity ent = ds.get(userKey);
-		UserInfo rv = new UserInfo();
-
-		rv.id = username;
-		rv.contestId = contestId;
-		rv.name = (String) ent.getProperty("name");
-		rv.ordinal = ent.hasProperty("ordinal") ?
-			((Integer) ent.getProperty("ordinal")).intValue() :
-			0;
-		rv.is_director = ent.hasProperty("is_director") ?
-			((Boolean) ent.getProperty("is_director")).booleanValue() :
-			false;
-		rv.is_judge = ent.hasProperty("is_judge") ?
-			((Boolean) ent.getProperty("is_judge")).booleanValue() :
-			false;
-		rv.is_contestant = ent.hasProperty("is_contestant") ?
-			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
-			false;
+		UserInfo rv = userFromEntity(ent);
 
 		return rv;
 
