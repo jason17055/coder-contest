@@ -11,9 +11,13 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import com.google.appengine.api.datastore.*;
+import java.util.logging.Logger;
 
 public class FileUploadFormHelper
 {
+	private static final Logger log = Logger.getLogger(
+			FileUploadFormHelper.class.getName());
+
 	static final Charset UTF8 = Charset.forName("UTF-8");
 	static String readStream(InputStream in)
 		throws IOException
@@ -46,6 +50,9 @@ public class FileUploadFormHelper
 		InputStream stream;
 		byte [] buf = new byte[MAX_CHUNK_SIZE];
 
+		int chunkCount = 0;
+		long fileLen = 0;
+
 		static MessageDigest createDigestObject()
 		{
 			try {
@@ -65,6 +72,9 @@ public class FileUploadFormHelper
 			if (nread == -1) {
 				return null;
 			}
+
+			chunkCount++;
+			fileLen += nread;
 
 			FilePart p = new FilePart();
 			p.data = Arrays.copyOfRange(buf, 0, nread);
@@ -92,15 +102,18 @@ public class FileUploadFormHelper
 			FilePart p;
 			while ( (p = nextChunk()) != null )
 			{
+				log.info("leaf chunk of "+p.data.length+" bytes");
+
 				Key chunkKey = KeyFactory.createKey("FileChunk", p.digestHex);
 				Entity ent = new Entity(chunkKey);
 				ent.setProperty("last_touched", new Date());
-				ent.setProperty("data", p.data);
+				ent.setProperty("data", new Blob(p.data));
 				ds.put(ent);
 
 				leafs.add(chunkKey);
 			}
 
+			log.info("about to call getRoot for the first time");
 			return leafs.getRoot();
 		}
 
@@ -108,18 +121,29 @@ public class FileUploadFormHelper
 		{
 			ArrayList<Key> chunks = new ArrayList<Key>();
 			ChunkLayer parent;
+			int depth;
 
 			void add(Key chunk)
 			{
+				log.info("adding chunk at depth "+depth);
+
 				if (chunks.size() >= MAX_BRANCHES) {
+					log.info("hit maximum branch factor");
+					requireParent();
 					Key myKey = uploadChunkIndex(this);
-					if (parent == null) {
-						parent = new ChunkLayer();
-					}
 					parent.add(myKey);
 					chunks.clear();
 				}
 				chunks.add(chunk);
+			}
+
+			void requireParent()
+			{
+				if (parent == null) {
+					log.info("instantiating new layer at depth "+(depth+1));
+					parent = new ChunkLayer();
+					parent.depth = this.depth+1;
+				}
 			}
 
 			Key getRoot()
@@ -144,12 +168,13 @@ public class FileUploadFormHelper
 			byte [] digestBytes = md.digest();
 			String digestHex = byteArray2Hex(digestBytes);
 
-			Key idxKey = KeyFactory.createKey("FileChunk", "br-"+digestHex);
+			Key idxKey = KeyFactory.createKey("FileChunk", digestHex+"-idx-"+idx.depth+"-"+idx.chunks.size());
 			Entity ent = new Entity(idxKey);
 			ent.setProperty("last_touched", new Date());
 			ent.setProperty("parts", idx.chunks);
 			ds.put(ent);
 
+			log.info("created index chunk "+idxKey.getName());
 			return idxKey;
 		}
 	}
@@ -165,6 +190,10 @@ public class FileUploadFormHelper
 	{
 		String fileName = item.getName();
 		String contentType = item.getContentType();
+
+		if (fileName == null || fileName.equals("")) {
+			return null;
+		}
 
 		UploadHelper helper = new UploadHelper();
 		helper.ds = DatastoreServiceFactory.getDatastoreService();
@@ -220,7 +249,7 @@ public class FileUploadFormHelper
 				String name = item.getFieldName();
 				String fileName = item.getName();
 				File f = handleFileUpload(item);
-				formFields.put(name, f.name);
+				formFields.put(name, f != null ? f.name : null);
 			}
 		}
 

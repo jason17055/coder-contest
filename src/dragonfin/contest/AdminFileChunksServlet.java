@@ -47,6 +47,34 @@ public class AdminFileChunksServlet extends CoreServlet
 		out.println("<input type='text' name='chunk' size='40'>");
 		out.println("<button type='submit' name='action:delete_chunk'>Delete Chunk</button>");
 		out.println("</div>");
+
+		out.println("<h2>Files</h2>");
+		out.println("<table border='1'>");
+
+		Query q1 = new Query("File") ;
+		PreparedQuery pq1 = ds.prepare(q1);
+
+		for (Entity ent : pq1.asIterable()) {
+			String name = ent.getKey().getName();
+			Date uploaded = (Date) ent.getProperty("uploaded");
+			String fileName = (String)ent.getProperty("given_name");
+			String contentType = (String)ent.getProperty("content_type");
+			Key head = (Key)ent.getProperty("head_chunk");
+
+			out.println("<tr>");
+			out.println("<td>"+name+"</td>");
+			out.println("<td>"+uploaded+"</td>");
+			out.println("<td>"+fileName+"</td>");
+			out.println("<td>"+contentType+"</td>");
+			out.println("<td>"+head+"</td>");
+			out.println("</tr>");
+		}
+		out.println("</table>");
+		out.println("<div>");
+		out.println("<input type='text' name='file_id' size='40'>");
+		out.println("<button type='submit' name='action:delete_file'>Delete File</button>");
+		out.println("</div>");
+
 		out.println("</form>");
 		out.println("</body></html>");
 		out.close();
@@ -61,6 +89,15 @@ public class AdminFileChunksServlet extends CoreServlet
 			String chunkName = req.getParameter("chunk");
 			Key chunkKey = KeyFactory.createKey("FileChunk", chunkName);
 			ds.delete(chunkKey);
+
+			resp.sendRedirect("chunks");
+		}
+		else if (req.getParameter("action:delete_file") != null) {
+
+			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+			String fileName = req.getParameter("file_id");
+			Key fileKey = KeyFactory.createKey("File", fileName);
+			ds.delete(fileKey);
 
 			resp.sendRedirect("chunks");
 		}
