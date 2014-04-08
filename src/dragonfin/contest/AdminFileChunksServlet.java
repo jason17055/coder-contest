@@ -2,16 +2,36 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import java.text.DateFormat;
+import java.text.ParseException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
 public class AdminFileChunksServlet extends CoreServlet
 {
+	static DateFormat df = DateFormat.getDateTimeInstance();
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query("FileChunk");
+		if (req.getParameter("older_than") != null) {
+			try {
+			String tmpStr = req.getParameter("older_than");
+			Date d = df.parse(tmpStr);
+			q.setFilter(new Query.FilterPredicate(
+				"last_touched",
+				Query.FilterOperator.LESS_THAN,
+				d));
+			}
+			catch (ParseException e) {
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+					"older_than: " +e.getMessage());
+				return;
+			}
+		}
 
 		PrintWriter out = resp.getWriter();
 		out.println("<html><body>");
@@ -19,8 +39,6 @@ public class AdminFileChunksServlet extends CoreServlet
 		out.println("<form method='post' action='chunks'>");
 		out.println("<table border='1'>");
 
-		Query q = new Query("FileChunk")
-			;
 		PreparedQuery pq = ds.prepare(q);
 
 		for (Entity ent : pq.asIterable()) {
@@ -38,7 +56,7 @@ public class AdminFileChunksServlet extends CoreServlet
 
 			out.println("<tr>");
 			out.println("<td>"+name+"</td>");
-			out.println("<td>"+touched+"</td>");
+			out.println("<td>"+df.format(touched)+"</td>");
 			out.println("<td>"+content+"</td>");
 			out.println("</tr>");
 		}
@@ -46,6 +64,15 @@ public class AdminFileChunksServlet extends CoreServlet
 		out.println("<div>");
 		out.println("<input type='text' name='chunk' size='40'>");
 		out.println("<button type='submit' name='action:delete_chunk'>Delete Chunk</button>");
+		out.println("</div>");
+		out.println("<div>");
+		out.println("Date filter: <input type='text' name='date_filter' size='40'");
+		if (req.getParameter("older_than") != null) {
+			out.println("value='"+req.getParameter("older_than")+"'");
+		}
+		out.println(">");
+		out.println("<button type='submit' name='action:filter_chunks'>Preview</button>");
+		out.println("<button type='submit' name='action:delete_old_chunks'>Delete</button>");
 		out.println("</div>");
 
 		out.println("<h2>Files</h2>");
@@ -64,7 +91,7 @@ public class AdminFileChunksServlet extends CoreServlet
 
 			out.println("<tr>");
 			out.println("<td>"+name+"</td>");
-			out.println("<td>"+uploaded+"</td>");
+			out.println("<td>"+df.format(uploaded)+"</td>");
 			out.println("<td><a href='"+url+"'>"+fileName+"</a></td>");
 			out.println("<td>"+contentType+"</td>");
 			out.println("<td>"+head+"</td>");
@@ -102,8 +129,38 @@ public class AdminFileChunksServlet extends CoreServlet
 
 			resp.sendRedirect("chunks");
 		}
+		else if (req.getParameter("action:filter_chunks") != null) {
+			String x = req.getParameter("date_filter");
+			resp.sendRedirect("chunks?older_than="+x);
+		}
+		else if (req.getParameter("action:delete_old_chunks") != null) {
+			String x = req.getParameter("date_filter");
+			try {
+			Date d = df.parse(x);
+			doDeleteOldChunks(d);
+			resp.sendRedirect("chunks");
+			}
+			catch (ParseException e) {
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Date parse error: "+e.getMessage());
+			}
+		}
 		else {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+	void doDeleteOldChunks(Date date)
+	{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query("FileChunk");
+		q.setFilter(new Query.FilterPredicate(
+			"last_touched",
+			Query.FilterOperator.LESS_THAN,
+			date));
+		PreparedQuery pq = ds.prepare(q);
+
+		for (Entity ent : pq.asIterable()) {
+			ds.delete(ent.getKey());
 		}
 	}
 }
