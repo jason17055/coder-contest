@@ -111,8 +111,6 @@ public class FileUploadFormHelper
 			FilePart p;
 			while ( (p = nextChunk()) != null )
 			{
-				log.info("leaf chunk of "+p.data.length+" bytes");
-
 				Key chunkKey = KeyFactory.createKey("FileChunk", p.digestHex);
 				Entity ent = new Entity(chunkKey);
 				ent.setProperty("last_touched", new Date());
@@ -122,7 +120,6 @@ public class FileUploadFormHelper
 				leafs.add(chunkKey);
 			}
 
-			log.info("about to call getRoot for the first time");
 			return leafs.getRoot();
 		}
 
@@ -134,10 +131,7 @@ public class FileUploadFormHelper
 
 			void add(Key chunk)
 			{
-				log.info("adding chunk at depth "+depth);
-
 				if (chunks.size() >= MAX_BRANCHES) {
-					log.info("hit maximum branch factor");
 					requireParent();
 					Key myKey = uploadChunkIndex(this);
 					parent.add(myKey);
@@ -149,7 +143,6 @@ public class FileUploadFormHelper
 			void requireParent()
 			{
 				if (parent == null) {
-					log.info("instantiating new layer at depth "+(depth+1));
 					parent = new ChunkLayer();
 					parent.depth = this.depth+1;
 				}
@@ -177,13 +170,12 @@ public class FileUploadFormHelper
 			byte [] digestBytes = md.digest();
 			String digestHex = byteArray2Hex(digestBytes);
 
-			Key idxKey = KeyFactory.createKey("FileChunk", digestHex+"-idx-"+idx.depth+"-"+idx.chunks.size());
+			Key idxKey = KeyFactory.createKey("FileChunk", digestHex+"-idx-"+idx.depth);
 			Entity ent = new Entity(idxKey);
 			ent.setProperty("last_touched", new Date());
 			ent.setProperty("parts", idx.chunks);
 			ds.put(ent);
 
-			log.info("created index chunk "+idxKey.getName());
 			return idxKey;
 		}
 	}

@@ -59,10 +59,11 @@ public class AdminFileChunksServlet extends CoreServlet
 			Date uploaded = (Date) ent.getProperty("uploaded");
 			String fileName = (String)ent.getProperty("given_name");
 			String contentType = (String)ent.getProperty("content_type");
+			String url = req.getContextPath()+"/_f/"+name+"/"+fileName;
 			Key head = (Key)ent.getProperty("head_chunk");
 
 			out.println("<tr>");
-			out.println("<td>"+name+"</td>");
+			out.println("<td><a href='"+url+"'>"+name+"</a></td>");
 			out.println("<td>"+uploaded+"</td>");
 			out.println("<td>"+fileName+"</td>");
 			out.println("<td>"+contentType+"</td>");
