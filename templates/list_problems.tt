@@ -18,14 +18,14 @@
 [% FOREACH prb IN all_problems %]
 <tr>
 <td>
-<img style="vertical-align: middle" src="[% prb.balloon_image |html %]" alt="">
+<img style="vertical-align: middle" src="[% prb.scoreboard_image |html %]" alt="">
 <a href="[% prb.edit_url |html %]">[% prb.name |html %]</a>
 </td>
 <td align="center">[% prb.visible ? '&#x2713;' : '' %]</td>
 <td align="center">[% prb.allow_submissions ? '&#x2713;' : '' %]</td>
 <td>[% prb.judged_by |html %]</td>
 <td align="center">
-[% IF prb.solution_file %]
+[% IF prb.solution %]
     <img src="images/text_file.png" alt="On file">
 [% ELSE %]
     -
