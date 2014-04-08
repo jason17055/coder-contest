@@ -57,9 +57,8 @@ public class LoginServlet extends CoreServlet
 		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		Key userKey = KeyFactory.createKey(contestKey,
-					"User", userId);
+		Key userKey = KeyFactory.createKey("User",
+				contestId+"/"+userId);
 		Entity ent;
 		try {
 			ent = ds.get(userKey);

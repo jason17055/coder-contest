@@ -52,9 +52,11 @@ public class DefineContestServlet extends CoreServlet
 			ent1.setProperty("created_by", "*anonymous");
 			ds.put(ent1);
 
-			Key userKey = KeyFactory.createKey(contestKey,
-					"User", directorName);
+			Key userKey = KeyFactory.createKey(
+					"User", contestId+"/"+directorName);
 			Entity ent2 = new Entity(userKey);
+			ent2.setProperty("contest", contestId);
+			ent2.setProperty("name", directorName);
 			ent2.setProperty("password", directorPassword);
 			ent2.setProperty("is_director", Boolean.TRUE);
 			ds.put(ent2);

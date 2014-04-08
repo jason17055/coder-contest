@@ -160,9 +160,8 @@ public class DataHelper
 		throws NotFound
 	{
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		Key userKey = KeyFactory.createKey(contestKey,
-				"User", username);
+		Key userKey = KeyFactory.createKey("User",
+				contestId+"/"+username);
 
 		try {
 
