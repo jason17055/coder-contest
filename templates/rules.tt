@@ -15,7 +15,7 @@
 </td>
 </tr>
 <tr>
-<td><label for="subtitle_entry">Title:</label></td>
+<td><label for="subtitle_entry">Subtitle:</label></td>
 <td><input type="text" name="subtitle" id="subtitle_entry"
 	value="[% f.subtitle |html %]" size="40">
 </td>
@@ -114,6 +114,7 @@ Change password</label>
 	[% key1 = 'phase' _ ph _ '_name' %]
 	[% key2 = 'phase' _ ph _ '_ends' %]
 	<tr>
+	<td>[% ph |html %]</td>
 	<td><input type="text" name="[% key1 |html %]" value="[% f.$key1 |html %]"></td>
 	<td><input type="text" name="[% key2 |html %]" value="[% f.$key2 |html %]"></td>
 	</tr>
