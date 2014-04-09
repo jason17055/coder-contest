@@ -1,0 +1,132 @@
+[% WRAPPER 'common.inc'
+	page_title = 'Edit Contest Rules'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<form method="post" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label for="title_entry">Title:</label></td>
+<td><input type="text" name="title" id="title_entry"
+	value="[% f.title |html %]" size="40">
+</td>
+</tr>
+<tr>
+<td><label for="subtitle_entry">Title:</label></td>
+<td><input type="text" name="subtitle" id="subtitle_entry"
+	value="[% f.subtitle |html %]" size="40">
+</td>
+</tr>
+<tr>
+<td><label for="logo_entry">Logo:</label></td>
+<td><input type="text" name="logo" id="logo_entry"
+	value="[% f.logo |html %]">
+<small>URL to a 100x100 image to display on the scoreboard</small>
+</td>
+</tr>
+<tr>
+<td><label>Contestant options:</label></td>
+<td>
+<label><input type="checkbox" name="contestants_can_change_name"[% f.contestants_can_change_name ? ' selected="selected"' : '' %]>
+Change name</label>
+<label><input type="checkbox" name="contestants_can_change_description"[% f.contestants_can_change_description ? ' selected="selected"' : '' %]>
+Change description</label>
+<label><input type="checkbox" name="contestants_chan_change_password"[% f.contestants_can_change_password ? ' selected="selected"' : '' %]>
+Change password</label>
+<label><input type="checkbox" name="contestants_can_write_code"[% f.contestants_can_write_code ? ' selected="selected"' : '' %]>
+</td>
+</tr>
+<tr>
+<td><label>Judge options:</label></td>
+<td>
+<label><input type="checkbox" name="judges_can_change_name"[% f.judges_can_change_name ? ' selected="selected"' : '' %]>
+Change name</label>
+<label><input type="checkbox" name="judges_can_change_password"[% f.judges_can_change_password ? ' selected="selected"' : '' %]>
+Change password</label>
+</td>
+</tr>
+<tr>
+<td><label for="collaboration_cb">Collaboration:</label></td>
+<td><select name="collaboration" id="collaboration_cb">
+<option value="N"[% f.collaboration=='N' ? ' selected="selected"' : '' %]>None</option>
+<option value="Y"[% f.collaboration=='Y' ? ' selected="selected"' : '' %]>Ad hoc</option>
+</select>
+</td>
+</tr>
+<tr>
+<td><label for="score_system_cb">Score system:</label></td>
+<td><select name="score_system" id="score_system_cb">
+<option value="A"[% f.score_system=='A' ? ' selected="selected"' : '' %]>ACM</option>
+<option value="T"[% f.score_system=='T' ? ' selected="selected"' : '' %]>TopCoder</option>
+</select>
+</td>
+</tr>
+<tr>
+<td><label for="scoreboard_cb">Scoreboard:</label></td>
+<td><select name="scoreboard" id="scoreboard_cb">
+<option value="Y"[% f.scoreboard=='Y' ? ' selected="selected"' : '' %]>Enabled</option>
+<option value="N"[% f.scoreboard=='N' ? ' selected="selected"' : '' %]>Disabled</option>
+</select>
+</td>
+</tr>
+<tr>
+<td><label>Scoreboard options:</label></td>
+<td>
+<label><input type="checkbox" name="scoreboard_images"[% f.scoreboard_images ? ' checked="checked"' : '' %]>Show balloon/bug icons</label>
+<label><input type="checkbox" name="scoreboard_popups"[% f.scoreboard_popups ? ' checked="checked"' : '' %]>Show notifications on live scoreboard</label>
+</td>
+</tr>
+<tr>
+<td><label>Scoreboard sorting:</label></td>
+<td>
+<label><input type="radio" name="scoreboard_order" value="n"[% f.scoreboard_order=='n' ? ' checked="checked"' : '' %]>Team name</label>
+<label><input type="radio" name="scoreboard_order" value="o"[% f.scoreboard_order=='o' ? ' checked="checked"' : '' %]>Team ordinal</label>
+<label><input type="radio" name="scoreboard_order" value="s"[% f.scoreboard_order=='s' ? ' checked="checked"' : '' %]>Score</label>
+</td>
+</tr>
+<tr>
+<td><label>Scoreboard audio:</label></td>
+<td>
+<label><input type="checkbox" name="scoreboard_fanfare"[% f.scoreboard_fanfare ? ' checked="checked"' : '' %]>Play fanfare on accepted solution</label>
+</td>
+</tr>
+<tr>
+<td><label for="started_entry">Started:</label></td>
+<td><input type="type" name="started" id="started_entry" value="[% f.started |html %]">
+<small>Used to calculate penalty points for team submissions.</small>
+</td>
+</tr>
+<tr>
+<td valign="top"><label>Contest phases:</label></td>
+<td valign="top">
+	<table>
+	<tr><th>Phase</th><th>Display As</th><th>Ends (DATE TIME)</th>
+		<td rowspan="5" valign="middle" style="max-width: 200pt">
+		<small>Contest phases allow problems to be made available
+		at different times during a single contest,
+		and also facilitate the display of a contest clock.</small>
+		</td>
+	</tr>
+	[% FOREACH ph IN [1,2,3,4] %]
+	[% key1 = 'phase' _ ph _ '_name' %]
+	[% key2 = 'phase' _ ph _ '_ends' %]
+	<tr>
+	<td><input type="text" name="[% key1 |html %]" value="[% f.$key1 |html %]"></td>
+	<td><input type="text" name="[% key2 |html %]" value="[% f.$key2 |html %]"></td>
+	</tr>
+	[% END #foreach phase %]
+	</table>
+</td>
+</tr>
+</table>
+
+<div>
+<button type="submit">Save Changes</button>
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+</form>
+
+[% END #wrapper %]
