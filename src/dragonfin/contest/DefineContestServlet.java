@@ -42,7 +42,8 @@ public class DefineContestServlet extends CoreServlet
 		// TODO- check parameters
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = ds.beginTransaction();
+		TransactionOptions options = TransactionOptions.Builder.withXG(true);
+		Transaction txn = ds.beginTransaction(options);
 
 		try {
 
