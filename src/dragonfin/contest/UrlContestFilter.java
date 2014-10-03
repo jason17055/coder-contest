@@ -36,7 +36,7 @@ public class UrlContestFilter implements Filter
 			boolean hasQueryString = req.getQueryString() != null;
 			String newURI = "/_p/_problem/"+m.group(3)
 				+ "?" + (hasQueryString ? (req.getQueryString()+"&") : "")
-				+ "contest=" + m.group(1)
+				+ "contest=" + m.group(1) + "&"
 				+ "problem=" + m.group(2);
 			req.getRequestDispatcher(newURI).forward(sreq, resp);
 			return;

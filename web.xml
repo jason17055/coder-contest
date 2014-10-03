@@ -61,6 +61,14 @@
  <servlet-name>ContestRules</servlet-name>
  <servlet-class>dragonfin.contest.ContestRulesServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>StartProblem</servlet-name>
+ <servlet-class>dragonfin.contest.StartProblemServlet</servlet-class>
+</servlet>
+<servlet>
+ <servlet-name>ProblemDescription</servlet-name>
+ <servlet-class>dragonfin.contest.ProblemDescriptionServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>DefineContest</servlet-name>
@@ -123,6 +131,15 @@
 <servlet-mapping>
  <servlet-name>ContestRules</servlet-name>
  <url-pattern>/_p/rules</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>StartProblem</servlet-name>
+ <url-pattern>/_p/_problem/</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ProblemDescription</servlet-name>
+ <url-pattern>/_p/_problem/description</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

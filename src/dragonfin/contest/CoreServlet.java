@@ -55,6 +55,11 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	String makeContestUrl(String contestId, String page)
+	{
+		return makeContestUrl(contestId, page, null);
+	}
+
 	String makeContestUrl(String contestId, String page, String args)
 	{
 		return getServletContext().getContextPath() +
@@ -280,6 +285,35 @@ public class CoreServlet extends HttpServlet
 
 		String path = req.getPathInfo();
 		renderTemplate(req, resp, "mytemplate.vm");
+	}
+
+	/** @return true if response has been sent. */
+	boolean requireContest(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException
+	{
+		String contestId = req.getParameter("contest");
+		HttpSession s = req.getSession(false);
+		if (s == null) {
+			// not logged in
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		String sesContestId = (String) s.getAttribute("contest");
+		String username = (String) s.getAttribute("username");
+		if (sesContestId == null || username == null) {
+			// not logged in
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		if (!sesContestId.equals(contestId)) {
+			// session is for a different contest
+			showLoginPage(req, resp);
+			return true;
+		}
+
+		return false;
 	}
 
 	/** @return true if response has been sent. */
