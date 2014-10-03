@@ -73,6 +73,10 @@
  <servlet-name>ProblemCoder</servlet-name>
  <servlet-class>dragonfin.contest.ProblemCoderServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>ProblemSubmit</servlet-name>
+ <servlet-class>dragonfin.contest.ProblemSubmitServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>DefineContest</servlet-name>
@@ -148,6 +152,10 @@
 <servlet-mapping>
  <servlet-name>ProblemCoder</servlet-name>
  <url-pattern>/_p/_problem/write</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ProblemSubmit</servlet-name>
+ <url-pattern>/_p/_problem/submit</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

@@ -1,0 +1,57 @@
+[% WRAPPER 'common.inc'
+	page_title = problem.name,
+	notitle = 1
+%]
+
+[% INCLUDE 'problem_actions_tabnav.inc'
+	show_mode = 'submit'
+%]
+
+<h2>[% problem.name |html %]</h2>
+[% IF submission %]
+<div class="existing_submission">
+You submitted
+<a href="[% submission.source.url |html %]">[% submission.source.name |html %]</a>
+at <span class="minutes">[% submission.minutes |html %]</span> minutes.
+Its status is: <span class="status">[% submission.status |html %]</span>
+</div>
+[% END %]
+
+<p>
+Use this form to submit your solution to the selected problem.
+Please note it may take a few minutes for your solution to be judged.
+In the meantime, continue working on other problems.
+</p>
+
+<form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
+<table>
+<tr>
+<td valign="top">Source code:</td>
+<td valign="top">
+[% IF myproblem.source %]
+	<div>
+	<input type="hidden" name="source_name" value="[% myproblem.source.name |html %]">
+	<input type="hidden" name="source_file" value="[% myproblem.source.id |html %]">
+	Use existing source code file:
+	<a href="[% myproblem.source.url |html %]">[% myproblem.source.name |html %]</a>
+	</div>
+	<div>or upload a new file:
+[% ELSE %]
+	<div>Upload a file:
+[% END %]
+<input type="file" name="source_upload">
+</div>
+<div><small>Accepted file types:
+	[% INCLUDE 'accepted_file_types.inc' %]
+</small></div>
+</td>
+</tr>
+</table>
+
+<div>
+<button type="submit">Submit</button>
+</div>
+
+</form>
+
+[% END #wrapper %]
