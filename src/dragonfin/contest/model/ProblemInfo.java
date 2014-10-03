@@ -19,6 +19,7 @@ public class ProblemInfo
 	public boolean score_by_access_time;
 	public String judged_by;
 	public int system_test_count;
+	public String url;
 	public String edit_url;
 	public int allocated_minutes;
 	public int runtime_limit;

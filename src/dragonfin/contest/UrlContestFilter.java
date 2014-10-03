@@ -13,6 +13,7 @@ public class UrlContestFilter implements Filter
 	{
 	}
 
+	static Pattern CONTEST_PROBLEM_URL = Pattern.compile("^/([a-z0-9]{2,})/problem\\.([a-z0-9]{1,})/(.*)");
 	static Pattern CONTEST_URL = Pattern.compile("^/([a-z0-9]{2,})/(.*)");
 
 	@Override
@@ -29,7 +30,19 @@ public class UrlContestFilter implements Filter
 			throw new ServletException("invalid request ("+requestURI+") for context ("+req.getContextPath()+")");
 		}
 
-		Matcher m = CONTEST_URL.matcher(localPath);
+		Matcher m;
+		m = CONTEST_PROBLEM_URL.matcher(localPath);
+		if (m.matches()) {
+			boolean hasQueryString = req.getQueryString() != null;
+			String newURI = "/_p/_problem/"+m.group(3)
+				+ "?" + (hasQueryString ? (req.getQueryString()+"&") : "")
+				+ "contest=" + m.group(1)
+				+ "problem=" + m.group(2);
+			req.getRequestDispatcher(newURI).forward(sreq, resp);
+			return;
+		}
+
+		m = CONTEST_URL.matcher(localPath);
 		if (m.matches()) {
 			boolean hasQueryString = req.getQueryString() != null;
 			String newURI = "/_p/"+m.group(2)

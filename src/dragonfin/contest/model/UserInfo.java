@@ -21,6 +21,7 @@ public class UserInfo implements java.io.Serializable
 	public String url;
 	public boolean visible;
 	public String score_html;
+	public Map<String,ResultInfo> result_by_problem = new HashMap<String,ResultInfo>();
 
 	public String getId()
 	{
