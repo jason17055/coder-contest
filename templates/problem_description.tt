@@ -3,7 +3,9 @@
 	notitle = 1
 %]
 
-[% INCLUDE 'problem_actions_tabnav.inc' %]
+[% INCLUDE 'problem_actions_tabnav.inc'
+	show_mode = 'description'
+%]
 
 <h2>[% problem.name |html %]</h2>
 [% IF problem.spec %]

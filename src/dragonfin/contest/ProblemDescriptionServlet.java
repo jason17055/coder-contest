@@ -27,6 +27,7 @@ public class ProblemDescriptionServlet extends CoreServlet
 			ProblemInfo p = DataHelper.problemFromEntity(ent);
 
 			p.spec = checkFileUrl(DataHelper.addFileMetadata(ds, p.spec));
+			p.url = makeContestUrl(contestId, "problem."+problemId+"/");
 
 			HashMap<String,Object> args = new HashMap<String,Object>();
 			args.put("problem", p);
