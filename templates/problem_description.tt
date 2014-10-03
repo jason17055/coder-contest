@@ -1,5 +1,6 @@
 [% WRAPPER 'common.inc'
-	page_title = problem.name
+	page_title = problem.name,
+	notitle = 1
 %]
 
 [% INCLUDE 'problem_actions_tabnav.inc' %]
@@ -32,12 +33,15 @@ function adjustContentContainerSize(cEl)
 		$(cEl).css({height: desiredHeight+'px' });
 	}
 }
-adjustContentContainerSize( document.getElementById('main_content_container') );
+$(function() {
 
+adjustContentContainerSize( document.getElementById('main_content_container') );
 if ($('.CodeMirror-scroll').length != 0)
 {
 	adjustContentContainerSize( $('.CodeMirror-scroll').get(0) );
 }
+
+});
 
 //--></script>
 
