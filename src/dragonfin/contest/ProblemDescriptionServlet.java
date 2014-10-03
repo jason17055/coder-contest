@@ -26,6 +26,8 @@ public class ProblemDescriptionServlet extends CoreServlet
 			Entity ent = ds.get(problemKey);
 			ProblemInfo p = DataHelper.problemFromEntity(ent);
 
+			p.spec = checkFileUrl(DataHelper.addFileMetadata(ds, p.spec));
+
 			HashMap<String,Object> args = new HashMap<String,Object>();
 			args.put("problem", p);
 			renderTemplate(req, resp, "problem_description.tt", args);

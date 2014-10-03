@@ -5,6 +5,26 @@ import dragonfin.contest.model.*;
 
 public class DataHelper
 {
+	static File addFileMetadata(DatastoreService ds, File f)
+	{
+		if (f == null || f.id == null) { return null; }
+
+		try {
+
+		if (f.name == null) {
+			Key fKey = KeyFactory.createKey("File", f.id);
+			Entity ent = ds.get(fKey);
+			f.name = (String) ent.getProperty("given_name");
+		}
+
+		return f;
+
+		}
+		catch (EntityNotFoundException e) {
+			return null;
+		}
+	}
+
 	public static ContestInfo loadContest(String contestId)
 		throws NotFound
 	{
@@ -73,7 +93,23 @@ public class DataHelper
 			((Long) ent.getProperty("runtime_limit")).longValue();
 		}
 
+		if (ent.hasProperty("spec")) {
+			Key k = (Key) ent.getProperty("spec");
+			rv.spec = key2file(k);
+		}
+		if (ent.hasProperty("solution")) {
+			Key k = (Key) ent.getProperty("solution");
+			rv.solution = key2file(k);
+		}
+			
 		return rv;
+	}
+
+	static File key2file(Key k)
+	{
+		File f = new File();
+		f.id = k.getName();
+		return f;
 	}
 
 	static File handleFileProperty(Entity ent, String propName)

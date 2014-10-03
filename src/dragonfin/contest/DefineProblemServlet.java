@@ -12,14 +12,6 @@ public class DefineProblemServlet extends CoreServlet
 {
 	static final String TEMPLATE = "define_problem.tt";
 
-	File checkFileUrl(File inFile)
-	{
-		if (inFile != null && inFile.id != null) {
-			inFile.url = getServletContext().getContextPath()+"/_f/"+inFile.id+"/"+inFile.name;
-		}
-		return inFile;
-	}
-
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
