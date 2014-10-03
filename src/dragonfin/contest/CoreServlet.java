@@ -11,6 +11,7 @@ import javax.script.SimpleBindings;
 import dragonfin.templates.*;
 import dragonfin.contest.model.*;
 import dragonfin.contest.model.File;
+import com.google.appengine.api.datastore.*;
 
 public class CoreServlet extends HttpServlet
 {
@@ -323,6 +324,23 @@ public class CoreServlet extends HttpServlet
 		}
 
 		return false;
+	}
+
+	Key getLoggedInUserKey(HttpServletRequest req)
+	{
+		String contestId = req.getParameter("contest");
+		HttpSession s = req.getSession(false);
+		if (s == null) {
+			throw new Error("Unexpected: should be logged in");
+		}
+
+		String sesContestId = (String) s.getAttribute("contest");
+		String username = (String) s.getAttribute("username");
+		if (sesContestId == null || username == null) {
+			throw new Error("Unexpected: invalid session");
+		}
+
+		return KeyFactory.createKey("User", sesContestId + "/" + username);
 	}
 
 	/** @return true if response has been sent. */
