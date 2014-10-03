@@ -193,7 +193,7 @@ public class CoreServlet extends HttpServlet
 		return ctx;
 	}
 
-	void makeContestVars(String contestId, Map<String,Object> ctx)
+	void makeContestVars(final String contestId, Map<String,Object> ctx)
 		throws DataHelper.NotFound
 	{
 		ContestInfo contest = DataHelper.loadContest(contestId);
@@ -210,6 +210,35 @@ public class CoreServlet extends HttpServlet
 		links.put("new_problem", makeContestUrl(contestId, "problem", null));
 		links.put("new_user", makeContestUrl(contestId, "user", null));
 		ctx.put("contest_links", links);
+
+		Callable< ArrayList<ProblemInfo> > c1 = new Callable< ArrayList<ProblemInfo> >() {
+			public ArrayList<ProblemInfo> call() throws Exception
+			{
+				return makeVar_all_problems(contestId);
+			}
+		};
+		ctx.put("all_problems", c1);
+	}
+
+	ArrayList<ProblemInfo> makeVar_all_problems(String contestId)
+	{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Query q = new Query("Problem")
+			.setAncestor(contestKey)
+			.addSort("name");
+		PreparedQuery pq = ds.prepare(q);
+
+		ArrayList<ProblemInfo> list = new ArrayList<ProblemInfo>();
+		for (Entity ent : pq.asIterable()) {
+			ProblemInfo p = DataHelper.problemFromEntity(ent);
+			p.edit_url = makeContestUrl(contestId, "problem", "id="+p.id);
+			p.url = makeContestUrl(contestId, "problem."+p.id+"/", null);
+			list.add(p);
+		}
+
+		return list;
 	}
 
 	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
