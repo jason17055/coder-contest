@@ -70,4 +70,10 @@
 	/>
 </target>
 
+<target name="deploy-appengine" depends="build">
+<unzip src="${warfile}" dest="deploy.appengine"/>
+<copy file="appengine-web.xml" todir="deploy.appengine/WEB-INF"/>
+<copy file="datastore-indexes.xml" todir="deploy.appengine/WEB-INF"/>
+</target>
+
 </project>

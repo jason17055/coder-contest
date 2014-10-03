@@ -5,3 +5,4 @@ extlib
 context.xml
 war
 *.swp
+deploy.appengine
