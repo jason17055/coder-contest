@@ -50,7 +50,7 @@ public class DefineContestServlet extends CoreServlet
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
 			Entity ent1 = new Entity(contestKey);
 			ent1.setProperty("created", new Date());
-			ent1.setProperty("created_by", "*anonymous");
+			ent1.setProperty("created_by", req.getUserPrincipal().getName());
 			ds.put(ent1);
 
 			Key userKey = KeyFactory.createKey(
