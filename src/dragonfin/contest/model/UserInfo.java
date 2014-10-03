@@ -17,6 +17,10 @@ public class UserInfo implements java.io.Serializable
 	public boolean is_contestant;
 	public boolean is_judge;
 	public String edit_url;
+	public boolean online;
+	public String url;
+	public boolean visible;
+	public String score_html;
 
 	public String getId()
 	{
