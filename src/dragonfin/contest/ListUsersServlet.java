@@ -19,11 +19,11 @@ public class ListUsersServlet extends CoreServlet
 		String contestId = req.getParameter("contest");
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Query q = new Query("User")
-		//	.setFilter(
-		//	new Query.FilterPredicate(
-		//		"contest", Query.FilterOperator.EQUAL,
-		//		contestId)
-			;
+			.setFilter(
+			new Query.FilterPredicate(
+				"contest", Query.FilterOperator.EQUAL,
+				contestId)
+			);
 		PreparedQuery pq = ds.prepare(q);
 
 		ArrayList<UserInfo> list = new ArrayList<UserInfo>();
