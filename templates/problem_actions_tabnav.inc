@@ -13,4 +13,37 @@ function doClose() {
 	window.location.href = '..';
 }
 //--></script>
+<script type="text/javascript"><!--
+
+function adjustContentContainerSize(cEl)
+{
+	if (!cEl)
+		return;
+
+	var h = window.innerHeight;
+	var y = 0;
+	var el = cEl;
+	while (el.offsetParent)
+	{
+		y += el.offsetTop;
+		el = el.offsetParent;
+	}
+
+	var desiredHeight = h-y-17;
+	if (desiredHeight > 360)
+	{
+		$(cEl).css({height: desiredHeight+'px' });
+	}
+}
+$(function() {
+
+adjustContentContainerSize( document.getElementById('main_content_container') );
+if ($('.CodeMirror-scroll').length != 0)
+{
+	adjustContentContainerSize( $('.CodeMirror-scroll').get(0) );
+}
+
+});
+
+//--></script>
 </div>

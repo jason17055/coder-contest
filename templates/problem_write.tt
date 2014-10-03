@@ -1,0 +1,51 @@
+[% WRAPPER 'common.inc'
+	page_title = problem.name,
+	notitle = 1,
+	javascript_files = [
+		'CodeMirror-2.33/lib/codemirror.js',
+		'CodeMirror-2.33/mode/clike/clike.js',
+		'CodeMirror-2.33/mode/perl/perl.js',
+		'CodeMirror-2.33/mode/python/python.js',
+		'CodeMirror-2.33/mode/ruby/ruby.js'
+		]
+%]
+
+[% INCLUDE 'problem_actions_tabnav.inc'
+	show_mode = 'write'
+%]
+
+<h2>[% problem.name |html %]</h2>
+<form method="post" action="[% r.url |html %]">
+<div>
+<label>Filename:
+<input type="text" id="source_name_entry" name="source_name" value="[% f.source_name |html %]"></label>
+<button type="submit" name="action:save_code">Save</button>
+</div>
+<div>
+<textarea id="main_content_container" name="source_content" rows="10" cols="70">[%
+	f.source_content |html
+	%]</textarea>
+</div>
+</form>
+
+<script type="text/javascript"><!--
+
+var sourceName = document.getElementById("source_name_entry").value;
+var sourceType =
+	sourceName.match(/\\.c$/) ? 'text/x-csrc' :
+	sourceName.match(/\\.(cpp|cc)$/) ? 'text/x-c++src' :
+	sourceName.match(/\\.(cs)$/) ? 'text/x-csharp' :
+	sourceName.match(/\\.rb$/) ? 'text/x-ruby' :
+	sourceName.match(/\\.pl$/) ? 'text/x-perl' :
+	sourceName.match(/\\.py$/) ? 'text/x-python' : 'text/x-java';
+
+var myCM = CodeMirror.fromTextArea(
+	document.getElementById('main_content_container'),
+	{
+		mode: sourceType,
+		indentUnit: 4
+	});
+
+//--></script>
+
+[% END #wrapper %]
