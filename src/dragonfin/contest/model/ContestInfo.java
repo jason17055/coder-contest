@@ -8,6 +8,7 @@ public class ContestInfo implements java.io.Serializable
 	public String id;
 	public String title;
 	public String created_by;
+	public String url;
 	public List<ProblemInfo> problems;
 
 	public ContestInfo()

@@ -68,6 +68,7 @@ public class ListContestsServlet extends CoreServlet
 			ContestInfo c = new ContestInfo();
 			c.id = contestId;
 			c.created_by = creator;
+			c.url = "define_contest?contest="+contestId;
 			list.add(c);
 		}
 
