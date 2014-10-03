@@ -236,6 +236,16 @@ public class CoreServlet extends HttpServlet
 		return fixUrl(req, u);
 	}
 
+	String getBaseUrl(HttpServletRequest req)
+	{
+		String scheme = req.getScheme();
+		int port = req.getServerPort();
+		int defaultPort = scheme.equals("https") ? 443 : 80;
+
+		String myUrl = scheme + "://" + req.getServerName() + (port == defaultPort ? "" : ":"+port) + req.getContextPath();
+		return myUrl;
+	}
+
 	protected void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
