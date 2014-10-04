@@ -5,13 +5,13 @@ Session (managed by servlet container)
 	is_judge          Boolean
 	is_contestant     Boolean
 
-Contest [ id ]
+Contest [ "id" ]
 	title             String
 	created           Date
 	created_by        String
 	last_problem_id   Integer
 
-User [ Contest.id / username ]
+User [ "Contest.id" / "username" ]
 	password          String
 	is_director       Boolean
 	is_judge          Boolean
@@ -20,7 +20,7 @@ User [ Contest.id / username ]
 	description       String
 	ordinal           Integer
 
-Problem [ Contest.id / id ]
+Problem [ Contest / id ]
 	name              String
 	created           Date
 	visible           Boolean
@@ -32,3 +32,36 @@ Problem [ Contest.id / id ]
 	runtime_limit     Integer
 	spec              Key(File)
 	solution          Key(File)
+	last_system_test_id Integer
+	last_clarification_id Integer
+
+SystemTest [ Problem / id ]
+	input             Key(File)
+	expected          Key(File)
+	sample            Boolean
+	auto_judge        Boolean
+
+Clarification [ Problem / id ]
+	request           String
+	response          String
+	created           Date
+	created_by        Key(User)
+	submitted_by      Key(User)
+	status            String
+
+Result [ User / Problem.id ]
+	score             Integer
+	score_alt         Integer
+	minutes           Integer
+	incorrect_submissions Integer
+	problem           Key(Problem)
+	opened            Date
+	source            Key(File)
+
+Submission [ User / id* ]
+	created           Date
+	contest           String
+        problem           Key(Problem)
+	source            Key(File)
+	status            String
+	judge             Key(User)

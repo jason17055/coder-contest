@@ -1,0 +1,36 @@
+contest      - properties of the current contest
+.problems    - Problem[] problems visible to the current user
+.contestants - User[] contestants of this contest
+.judges      - User[] judges in this contest
+.id
+.title
+.current_phase_name
+.current_phase_timeleft
+
+problem      - properties of the currently-selected problem
+.name        - name of the problem
+.spec        - File the pdf description of the problem
+
+contest_links
+.controller
+.submissions_list
+.edit_self
+.scoreboard
+.edit_contest
+.problems_list
+.users_list
+.new_problem
+.new_user
+
+my_results    - Result[] current user's results
+
+all_submissions - Submission[]
+
+submission    - the currently-selected submission
+.problem      - Problem
+.submitted    - when this submission was made
+.submitter    - User
+.judge        - User
+.status
+.type         - either 'submission' or 'clarification'
+.edit_url     - takes user to submission edit page
