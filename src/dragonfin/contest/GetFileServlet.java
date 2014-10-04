@@ -38,6 +38,9 @@ public class GetFileServlet extends CoreServlet
 		}
 
 		String contentType = (String)fileEnt.getProperty("content_type");
+		if ("text".equals(req.getParameter("type"))) {
+			contentType = "text/plain";
+		}
 		resp.setHeader("Content-Type", contentType);
 
 		OutputStream out = resp.getOutputStream();

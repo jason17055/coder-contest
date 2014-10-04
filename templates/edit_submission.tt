@@ -25,8 +25,10 @@
 <td><input type="text" name="created" value="[% submission.created |html %]"></td>
 </tr>
 <tr>
-<td><label>Source code:</label></td>
-<td></td>
+<td valign="top"><label>Source code:</label></td>
+<td valign="top">
+<div>[% INCLUDE 'select_file_widget.inc' name = 'source' value = submission.source %]</div>
+</td>
 </tr>
 <tr>
 <td><label>Status:</label></td>
@@ -53,7 +55,7 @@
 </form>
 
 <h3 class="submission_h3">Source Code:</h3>
-<iframe id="source_code_iframe" src="[% submission.source.url |html %]"></iframe>
+<iframe id="source_code_iframe" src="[% submission.source.inline_text_url |html %]"></iframe>
 
 </td>
 <td id="rhs_column" width="40%" valign="top">

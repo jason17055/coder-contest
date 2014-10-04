@@ -250,6 +250,7 @@ public class TemplateVariables
 		f.id = key.getName();
 		f.name = (String) ent.getProperty("given_name");
 		f.url = req.getContextPath()+"/_f/"+f.id+"/"+f.name;
+		f.inline_text_url = req.getContextPath()+"/_f/"+f.id+"/"+f.name+"?type=text";
 		return f;
 	}
 }
