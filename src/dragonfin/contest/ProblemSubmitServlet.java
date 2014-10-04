@@ -61,7 +61,6 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 
 			ent.setProperty("problem", problemKey);
 			ent.setProperty("contest", contestId);
-			ent.setProperty("submitter", getLoggedInUserKey(req));
 			ds.put(ent);
 
 			txn.commit();

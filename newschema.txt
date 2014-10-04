@@ -59,10 +59,10 @@ Result [ User / Problem.id ]
 	source            Key(File)
 
 Submission [ User / id* ]
+	(parent key)      Key(User) submitter of the problem
 	created           Date
 	contest           String
         problem           Key(Problem)
 	source            Key(File)
 	status            String
 	judge             Key(User)
-	submitter         Key(User)

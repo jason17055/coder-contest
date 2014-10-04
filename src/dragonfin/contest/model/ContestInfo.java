@@ -39,4 +39,18 @@ public class ContestInfo implements java.io.Serializable
 	{
 		return "foo";
 	}
+
+	public String [] getStatus_choices()
+	{
+		return new String[] {
+			"Accepted",
+			"Correct",
+			"Wrong Answer",
+			"Output Format Error",
+			"Excessive Output",
+			"Compilation Error",
+			"Run-Time Error",
+			"Time-Limit Exceeded"
+			};
+	}
 }

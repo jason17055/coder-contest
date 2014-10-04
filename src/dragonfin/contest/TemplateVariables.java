@@ -3,6 +3,7 @@ package dragonfin.contest;
 import dragonfin.contest.model.*;
 
 import java.util.*;
+import java.util.regex.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
@@ -44,14 +45,7 @@ public class TemplateVariables
 		PreparedQuery pq = ds.prepare(q);
 		ArrayList<Submission> list = new ArrayList<Submission>();
 		for (Entity ent : pq.asIterable()) {
-			Submission s = new Submission(
-				Long.toString(ent.getKey().getId())
-				);
-			s.problemKey = (Key) ent.getProperty("problem");
-			s.created = (Date) ent.getProperty("created");
-			s.status = (String) ent.getProperty("status");
-			s.submitterKey = (Key) ent.getProperty("submitter");
-			s.judgeKey = (Key) ent.getProperty("judge");
+			Submission s = handleSubmission(ent.getKey(), ent);
 			list.add(s);
 		}
 		return list;
@@ -62,17 +56,25 @@ public class TemplateVariables
 		public final Key dsKey;
 		public String id;
 		public String name;
+		public String edit_url;
 		Key specKey;
 
 		Problem(Key dsKey) {
 			this.dsKey = dsKey;
 			this.id = Long.toString(dsKey.getId());
+			this.edit_url = makeUrl("problem?id="+id);
 		}
+	}
+
+	String makeUrl(String path)
+	{
+		return path;
 	}
 
 	public class User
 	{
 		public final Key dsKey;
+		public String username;
 		public String name;
 		public String description;
 		public int ordinal;
@@ -82,20 +84,32 @@ public class TemplateVariables
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;
+
+			String [] idParts = dsKey.getName().split("/");
+			this.username = idParts[1];
 		}
 	}
 
 	public class Submission
 	{
-		public final String id;
+		public final Key dsKey;
+		public String id;
 		public String status;
 		public Date created;
 		public String type = "submission";
 		public String edit_url;
+		public int minutes;
 
-		Submission(String id) {
-			this.id = id;
-			this.edit_url = "submission/"+id;
+		Submission(Key dsKey)
+		{
+			this.dsKey = dsKey;
+
+			String submitterId = dsKey.getParent().getName();
+			String [] parts = submitterId.split("/");
+			String username = parts[1];
+
+			this.id = username + "/" + Long.toString(dsKey.getId());
+			this.edit_url = "submission?id="+id;
 		}
 
 		Problem problemCached;
@@ -119,19 +133,40 @@ public class TemplateVariables
 			return problemCached;
 		}
 
-		Key submitterKey;
-		Key judgeKey;
 		public User getSubmitter()
 			throws EntityNotFoundException
 		{
-			return submitterKey != null ? fetchUser(submitterKey) : null;
+			return fetchUser(dsKey.getParent());
 		}
+
+		Key judgeKey;
 
 		public User getJudge()
 			throws EntityNotFoundException
 		{
 			return judgeKey != null ? fetchUser(judgeKey) : null;
 		}
+
+		Key sourceKey;
+		public File getSource()
+			throws EntityNotFoundException
+		{
+			return sourceKey != null ? fetchFile(sourceKey) : null;
+		}
+	}
+
+	HashMap<Key,File> cachedFiles = new HashMap<Key,File>();
+	File fetchFile(Key fileKey)
+		throws EntityNotFoundException
+	{
+		if (cachedFiles.containsKey(fileKey)) {
+			return cachedFiles.get(fileKey);
+		}
+
+		Entity ent = ds.get(fileKey);
+		File f = handleFile(fileKey, ent);
+		cachedFiles.put(fileKey, f);
+		return f;
 	}
 
 	HashMap<Key,User> cachedUsers = new HashMap<Key,User>();
@@ -162,5 +197,59 @@ public class TemplateVariables
 
 		cachedUsers.put(userKey, u);
 		return u;
+	}
+
+	HashMap<Key,Submission> cachedSubmissions = new HashMap<Key,Submission>();
+	Submission fetchSubmission(Key subKey)
+		throws EntityNotFoundException
+	{
+		if (cachedSubmissions.containsKey(subKey)) {
+			return cachedSubmissions.get(subKey);
+		}
+
+		Entity ent = ds.get(subKey);
+		Submission s = handleSubmission(subKey, ent);
+		cachedSubmissions.put(subKey, s);
+		return s;
+	}
+
+	static final Pattern SUBMISSION_ID_PATTERN = Pattern.compile("^([^/]+)/([0-9]+)$");
+
+	Submission fetchSubmission(String contestId, String submissionId)
+		throws EntityNotFoundException
+	{
+		Matcher m = SUBMISSION_ID_PATTERN.matcher(submissionId);
+		if (!m.matches()) {
+			throw new RuntimeException("Invalid submission id '"+submissionId+"'");
+		}
+		String username = m.group(1);
+		long number = Long.parseLong(m.group(2));
+
+		Key userKey = KeyFactory.createKey("User", contestId+"/"+username);
+		Key submissionKey = KeyFactory.createKey(userKey, "Submission", number);
+		return fetchSubmission(submissionKey);
+	}
+
+	Submission handleSubmission(Key key, Entity ent)
+	{
+		Submission s = new Submission(key);
+		s.problemKey = (Key) ent.getProperty("problem");
+		s.created = (Date) ent.getProperty("created");
+		s.status = (String) ent.getProperty("status");
+		s.judgeKey = (Key) ent.getProperty("judge");
+		s.minutes = ent.hasProperty("minutes") ?
+			(int)((Long) ent.getProperty("minutes")).longValue() :
+			0;
+		s.sourceKey = (Key) ent.getProperty("source");
+		return s;
+	}
+
+	File handleFile(Key key, Entity ent)
+	{
+		File f = new File();
+		f.id = key.getName();
+		f.name = (String) ent.getProperty("given_name");
+		f.url = req.getContextPath()+"/_f/"+f.id+"/"+f.name;
+		return f;
 	}
 }

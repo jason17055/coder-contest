@@ -1,0 +1,74 @@
+[% WRAPPER "common.inc"
+	page_title = 'Edit Submission'
+%]
+
+<table border="0" cellspacing="0" width="100%">
+<tr>
+<td id="lhs_column" width="60%" valign="top">
+
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<table>
+<tr>
+<td valign="top">Contestant:</td>
+<td valign="top">[% submission.submitter.name |html %] ([% submission.submitter.username |html %])</td>
+</tr>
+<tr>
+<td>Problem:</td>
+<td><a href="[% submission.problem.edit_url |html %]">[% submission.problem.name |html %]</a></td>
+</tr>
+<tr>
+<td>Minutes:</td>
+<td><input type="text" name="minutes" value="[% submission.minutes |html %]"></td>
+</tr>
+<tr>
+<td><label>Submission Time:</label></td>
+<td><input type="text" name="created" value="[% submission.created |html %]"></td>
+</tr>
+<tr>
+<td><label>Source code:</label></td>
+<td></td>
+</tr>
+<tr>
+<td><label>Status:</label></td>
+<td><select name="status">
+<option value=""[% !submission.status ? ' selected="selected"' : '' %]>(not judged)</option>
+[% found='' %]
+[% FOREACH opt IN contest.status_choices %]
+[% IF submission.status==opt found='1' END %]
+<option value="[% opt |html %]"[% submission.status==opt ? ' selected="selected"' : '' %]>[% opt |html %]</option>
+[% END %]
+<option value="**other**"[% !found ? ' selected="selected"' : '' %]>(other)</option>
+</select>
+<input type="text" name="status_other" value="[% !found ? submission.status : '' |html %]">
+</td>
+</tr>
+</table>
+
+<div>
+<button type="submit">Save Changes</button>
+<button type="submit" name="action:delete_submission" onclick='return confirm("Really delete this submission?")'>Delete</button>
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+
+</form>
+
+<h3 class="submission_h3">Source Code:</h3>
+<iframe id="source_code_iframe" src="[% submission.source.url |html %]"></iframe>
+
+</td>
+<td id="rhs_column" width="40%" valign="top">
+<h3 class="submission_h3">Test Results:</h3>
+<table border="1" width="100%">
+</table>
+
+<form method="post">
+<p>
+<button type="button" onclick="doCustomTest()">Custom Test</button>
+</p>
+</form>
+
+</td>
+</tr>
+</table>
+
+[% END #wrapper %]

@@ -191,10 +191,16 @@ public class CoreServlet extends HttpServlet
 		TemplateVariables tv = new TemplateVariables(req);
 		ctx.put("contest", tv.getContest());
 		ctx.put("all_submissions", tv.getAll_submissions());
+		moreVars(tv, ctx);
 
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
+	}
+
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws Exception
+	{
 	}
 
 	void makeContestVars(final String contestId, Map<String,Object> ctx)
