@@ -50,6 +50,8 @@ public class TemplateVariables
 			s.problemKey = (Key) ent.getProperty("problem");
 			s.created = (Date) ent.getProperty("created");
 			s.status = (String) ent.getProperty("status");
+			s.submitterKey = (Key) ent.getProperty("submitter");
+			s.judgeKey = (Key) ent.getProperty("judge");
 			list.add(s);
 		}
 		return list;
@@ -68,11 +70,23 @@ public class TemplateVariables
 		}
 	}
 
+	public class User
+	{
+		public final Key dsKey;
+		public String name;
+		public String description;
+		public int ordinal;
+		public boolean is_director;
+		public boolean is_judge;
+		public boolean is_contestant;
+
+		User(Key dsKey) {
+			this.dsKey = dsKey;
+		}
+	}
+
 	public class Submission
 	{
-		public UserInfo getSubmitter() { return null; }
-		public UserInfo getJudge() { return null; }
-
 		public final String id;
 		public String status;
 		public Date created;
@@ -104,5 +118,49 @@ public class TemplateVariables
 			problemCached.specKey = (Key) ent.getProperty("spec");
 			return problemCached;
 		}
+
+		Key submitterKey;
+		Key judgeKey;
+		public User getSubmitter()
+			throws EntityNotFoundException
+		{
+			return submitterKey != null ? fetchUser(submitterKey) : null;
+		}
+
+		public User getJudge()
+			throws EntityNotFoundException
+		{
+			return judgeKey != null ? fetchUser(judgeKey) : null;
+		}
+	}
+
+	HashMap<Key,User> cachedUsers = new HashMap<Key,User>();
+	User fetchUser(Key userKey)
+		throws EntityNotFoundException
+	{
+		if (cachedUsers.containsKey(userKey)) {
+			return cachedUsers.get(userKey);
+		}
+
+		Entity ent = ds.get(userKey);
+
+		User u = new User(userKey);
+		u.name = (String) ent.getProperty("name");
+		u.description = (String) ent.getProperty("description");
+		u.ordinal = ent.hasProperty("ordinal") ?
+			(int)((Long) ent.getProperty("ordinal")).longValue() :
+			0;
+		u.is_director = ent.hasProperty("is_director") ?
+			((Boolean) ent.getProperty("is_director")).booleanValue() :
+			false;
+		u.is_judge = ent.hasProperty("is_judge") ?
+			((Boolean) ent.getProperty("is_judge")).booleanValue() :
+			false;
+		u.is_contestant = ent.hasProperty("is_contestant") ?
+			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
+			false;
+
+		cachedUsers.put(userKey, u);
+		return u;
 	}
 }

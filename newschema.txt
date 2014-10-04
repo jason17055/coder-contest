@@ -65,3 +65,4 @@ Submission [ User / id* ]
 	source            Key(File)
 	status            String
 	judge             Key(User)
+	submitter         Key(User)
