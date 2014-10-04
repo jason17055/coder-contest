@@ -188,6 +188,9 @@ public class CoreServlet extends HttpServlet
 
 		}
 
+		TemplateVariables tv = new TemplateVariables(req);
+		ctx.put("contest", tv.getContest());
+
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
@@ -196,9 +199,6 @@ public class CoreServlet extends HttpServlet
 	void makeContestVars(final String contestId, Map<String,Object> ctx)
 		throws DataHelper.NotFound
 	{
-		ContestInfo contest = DataHelper.loadContest(contestId);
-		ctx.put("contest", contest);
-
 		Map<String,String> links = new HashMap<String,String>();
 		links.put("controller", makeContestUrl(contestId, "controller", null));
 		links.put("submissions_list", makeContestUrl(contestId, "submissions", null));
