@@ -1,0 +1,67 @@
+[% WRAPPER "common.inc"
+	page_title = 'List Submissions'
+%]
+
+<p>
+Status:
+</p>
+
+<form method="post" action="[% r.uri |html %]">
+<table class="realtable">
+<tr>
+<th>&nbsp;</th>
+<th>Submitted</th>
+<th>Problem</th>
+<th>Type</th>
+<th>Team</th>
+<th>Judge</th>
+<th>Status</th>
+</tr>
+[% FOREACH u IN all_submissions %]
+<tr>
+<td><input type="checkbox" name="[% u.id |html %]"></td>
+<td><a href="[% u.edit_url |html %]">
+[% u.submitted |html %]</a></td>
+<td>[% u.problem.name |html %]</td>
+<td>
+<img src="images/[% u.type |html %].png" alt="">[% u.type |html %]</td>
+<td>[% u.submitter.name |html %]</td>
+<td>[% u.judge.name |html %]</td>
+<td>[% u.status |html %]</td>
+</tr>
+[% END %]
+<tr>
+<td colspan="7" class="none_at_this_time" valign="top">None at this time.</td>
+</tr>
+</table>
+<p>
+Assign selected submissions to:
+<select name="assign_to">
+<option value="">--nobody--</option>
+</select>
+<button name="action:assign">Go</button>
+</p>
+
+</form>
+
+<p>
+<a href=".">Home</a> |
+<a href="[% contest_links.controller |html %]">Controller</a> |
+<a href="[% contest_links.problems_list |html %]">Define Problems</a> |
+<a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
+</p>
+
+<audio id="newSubmissionAudio" src="audio/microsoft/REMINDER.ogg"></audio>
+<script type="text/javascript"><!--
+function ringaling()
+{
+	document.getElementById('newSubmissionAudio').play();
+}
+if (localStorage.getItem('ringaling'))
+{
+	localStorage.removeItem('ringaling');
+	ringaling();
+}
+//--></script>
+
+[% END #wrapper %]

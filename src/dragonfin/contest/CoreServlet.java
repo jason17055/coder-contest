@@ -190,6 +190,7 @@ public class CoreServlet extends HttpServlet
 
 		TemplateVariables tv = new TemplateVariables(req);
 		ctx.put("contest", tv.getContest());
+		ctx.put("all_submissions", tv.getAll_submissions());
 
 		if (args != null)
 			ctx.putAll(args);

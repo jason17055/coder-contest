@@ -6,14 +6,13 @@
 Your name: <a href="[% contest_links.edit_self |html %]">[% user.name |html %]</a>
 </p>
 
-[% SET problems = contest.problems %]
+[% SET problems = all_results %]
 [% IF problems.size %]
 
 <h3>Problems</h3>
 <table border="1">
 <tr><th>Problem</th><th>Status</th></tr>
 [% FOREACH p IN problems %]
-	[% u = "problems/${p.number}" %]
 	[% IF p.solution_time %]
 		[% status = 'Solved' %]
 	[% ELSIF p.incorrect_submissions %]
@@ -23,7 +22,7 @@ Your name: <a href="[% contest_links.edit_self |html %]">[% user.name |html %]</
 	[% ELSE %]
 		[% status = 'Unopened' %]
 	[% END %]
-<tr><td><a href="[% u |html %]">[% p.name %][%
+<tr><td><a href="[% p.url |html %]">[% p.name %][%
 	" (${p.difficulty})" IF p.difficulty %]</a></td>
 <td>[% status |html %]</td>
 </tr>

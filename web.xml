@@ -48,6 +48,10 @@
  <servlet-name>list_problems</servlet-name>
  <servlet-class>dragonfin.contest.ListProblemsServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>ListSubmissions</servlet-name>
+ <servlet-class>dragonfin.contest.ListSubmissionsServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>DefineProblem</servlet-name>
@@ -124,6 +128,10 @@
 <servlet-mapping>
  <servlet-name>list_problems</servlet-name>
  <url-pattern>/_p/problems</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ListSubmissions</servlet-name>
+ <url-pattern>/_p/submissions</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>
