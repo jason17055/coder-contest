@@ -28,7 +28,7 @@ all_submissions - Submission[]
 
 submission    - the currently-selected submission
 .problem      - Problem
-.submitted    - when this submission was made
+.created      - when this submission was made
 .submitter    - User
 .judge        - User
 .status

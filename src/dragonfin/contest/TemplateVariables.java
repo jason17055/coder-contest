@@ -48,6 +48,8 @@ public class TemplateVariables
 				Long.toString(ent.getKey().getId())
 				);
 			s.problemKey = (Key) ent.getProperty("problem");
+			s.created = (Date) ent.getProperty("created");
+			s.status = (String) ent.getProperty("status");
 			list.add(s);
 		}
 		return list;
@@ -58,6 +60,7 @@ public class TemplateVariables
 		public final Key dsKey;
 		public String id;
 		public String name;
+		Key specKey;
 
 		Problem(Key dsKey) {
 			this.dsKey = dsKey;
@@ -72,7 +75,7 @@ public class TemplateVariables
 
 		public final String id;
 		public String status;
-		public String submitted = "today";
+		public Date created;
 		public String type = "submission";
 		public String edit_url;
 
@@ -98,6 +101,7 @@ public class TemplateVariables
 
 			problemCached = new Problem(problemKey);
 			problemCached.name = (String) ent.getProperty("name");		
+			problemCached.specKey = (Key) ent.getProperty("spec");
 			return problemCached;
 		}
 	}

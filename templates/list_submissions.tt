@@ -21,7 +21,7 @@ Status:
 <tr>
 <td><input type="checkbox" name="[% u.id |html %]"></td>
 <td><a href="[% u.edit_url |html %]">
-[% u.submitted |html %]</a></td>
+[% u.created |html %]</a></td>
 <td>[% u.problem.name |html %]</td>
 <td>
 <img src="images/[% u.type |html %].png" alt="">[% u.type |html %]</td>
