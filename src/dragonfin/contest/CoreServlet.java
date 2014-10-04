@@ -422,6 +422,34 @@ public class CoreServlet extends HttpServlet
 		}
 		return false;
 	}
+
+	void updateFromFormInt(Entity ent1, Map<String,String> POST, String propName)
+	{
+		if (POST.containsKey(propName)) {
+			try {
+			long x = Long.parseLong(POST.get(propName));
+			ent1.setProperty(propName, new Long(x));
+			}
+			catch (NumberFormatException e) {
+				ent1.removeProperty(propName);
+			}
+		}
+	}
+
+	void updateFromForm_file(Entity ent1, Map<String,String> POST, String propName)
+	{
+		String fileHash = POST.get(propName+"_upload");
+		if (fileHash != null) {
+			Key fileKey = KeyFactory.createKey("File", fileHash);
+			ent1.setProperty(propName, fileKey);
+			return;
+		}
+
+		if (POST.containsKey(propName+"_replace")) {
+			// replace file with nothing
+			ent1.removeProperty(propName);
+		}
+	}
 }
 
 class MyResourceLoader

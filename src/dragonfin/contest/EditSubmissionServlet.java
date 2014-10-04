@@ -42,17 +42,59 @@ public class EditSubmissionServlet extends CoreServlet
 			doCancel(req, resp);
 		}
 		else {
-			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			doUpdateSubmission(req, resp);
 		}
 	}
 
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException, ServletException
+		throws IOException
 	{
 		String u = req.getParameter("next");
 		if (u == null) {
 			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
 		}
 		resp.sendRedirect(u);
+	}
+
+	void doUpdateSubmission(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		@SuppressWarnings("unchecked")
+		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+
+		try {
+
+			String contestId = req.getParameter("contest");
+			String id = req.getParameter("id");
+			Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+			Entity ent = ds.get(submissionKey);
+			updateFromForm(ent, POST);
+			ds.put(ent);
+
+			txn.commit();
+		}
+		catch (EntityNotFoundException e) {
+			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		doCancel(req, resp);
+	}
+
+	void updateFromForm(Entity ent, Map<String,String> POST)
+	{
+		ent.setProperty("status", POST.get("status"));
+		updateFromFormInt(ent, POST, "minutes");
+		updateFromForm_file(ent, POST, "source");
 	}
 }

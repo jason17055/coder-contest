@@ -214,9 +214,7 @@ public class TemplateVariables
 	}
 
 	static final Pattern SUBMISSION_ID_PATTERN = Pattern.compile("^([^/]+)/([0-9]+)$");
-
-	Submission fetchSubmission(String contestId, String submissionId)
-		throws EntityNotFoundException
+	static Key parseSubmissionId(String contestId, String submissionId)
 	{
 		Matcher m = SUBMISSION_ID_PATTERN.matcher(submissionId);
 		if (!m.matches()) {
@@ -227,7 +225,13 @@ public class TemplateVariables
 
 		Key userKey = KeyFactory.createKey("User", contestId+"/"+username);
 		Key submissionKey = KeyFactory.createKey(userKey, "Submission", number);
-		return fetchSubmission(submissionKey);
+		return submissionKey;
+	}
+
+	Submission fetchSubmission(String contestId, String submissionId)
+		throws EntityNotFoundException
+	{
+		return fetchSubmission(parseSubmissionId(contestId, submissionId));
 	}
 
 	Submission handleSubmission(Key key, Entity ent)
