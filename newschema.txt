@@ -7,6 +7,22 @@ Session (managed by servlet container)
 
 Contest [ "id" ]
 	title             String
+	subtitle          String
+	logo              String
+	contestants_can_change_name        Boolean
+	contestants_can_change_description Boolean
+	contestants_can_change_password    Boolean
+	contestants_can_write_code         Boolean
+	judges_can_change_name             Boolean
+	judges_can_change_password         Boolean
+	collaboration     String
+	score_system      String
+	scoreboard        String
+	scoreboard_images Boolean
+	scoreboard_popups Boolean
+	scoreboard_order  String
+	scoreboard_fanfare String
+	started	          Date
 	created           Date
 	created_by        String
 	last_problem_id   Integer
