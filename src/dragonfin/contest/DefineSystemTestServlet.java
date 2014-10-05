@@ -71,6 +71,9 @@ public class DefineSystemTestServlet extends CoreServlet
 		else if (POST.containsKey("action:create_system_test")) {
 			doCreateSystemTest(req, resp);
 		}
+		else if (POST.containsKey("action:delete_system_test")) {
+			doDeleteSystemTest(req, resp);
+		}
 		else {
 			doUpdateSystemTest(req, resp);
 		}
@@ -84,6 +87,14 @@ public class DefineSystemTestServlet extends CoreServlet
 			u = makeContestUrl(req.getParameter("contest"), "problems", null);
 		}
 		resp.sendRedirect(u);
+	}
+
+	void doDeleteSystemTest(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 
 	void doCreateSystemTest(HttpServletRequest req, HttpServletResponse resp)
