@@ -1,0 +1,50 @@
+[% WRAPPER 'common.inc'
+	page_title = problem.name,
+	notitle = 1
+%]
+
+[% INCLUDE 'problem_actions_tabnav.inc'
+	show_mode = 'test'
+%]
+
+<h2>[% problem.name |html %]</h2>
+
+<h3>Test Results</h3>
+<table>
+<tr>
+<td><label>Test:</label></td>
+<td>[% test_job.id |html %]</td>
+</tr>
+<tr>
+<td><label>Source file:</label></td>
+<td><a href="[% test_job.source.url |html %]">[% test_job.source.name |html %]</a></td>
+</tr>
+<tr>
+<td><label>Input file:</label></td>
+<td><a href="[% test_job.input.url |html %]">[% test_job.input.name |html %]</a></td>
+</tr>
+<tr>
+<td valign="top"><label>Status:</label></td>
+<td valign="top">
+[% IF test_job.result_status %]
+<div>[% test_job.result_status |html %]</div>
+<iframe width="640" height="120" src="[% test_job.result_url |html %]"></iframe>
+[% ELSE #no result status %]
+<div><img src="[% resources_prefix|html %]/ajax-loader.gif" class="job-incomplete-indicator"><em><font color="#ff00ff">Testing... Please wait...</font></em></div>
+[% END #if no result status %]
+</td>
+</tr>
+[% IF test_job.output %]
+<tr>
+<td valign="top">Output:</td>
+<td valign="top"><iframe width="640" height="40%"
+	src="[% test_job.output.inline_text_url |html %]"></iframe></td>
+</tr>
+[% END #if test_job.output %]
+</table>
+
+<p>
+<a href="[% another_test_url |html %]">Another Test</a>
+</p>
+
+[% END #wrapper %]

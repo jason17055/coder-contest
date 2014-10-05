@@ -24,16 +24,17 @@ public class ProblemTestServlet extends ProblemCoreServlet
 	{
 		Map<String,String> POST = uploadForm.processMultipartForm(req);
 
-		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		doCreateTestJob(req, resp);
 	}
 
-	void doCreateSubmission(HttpServletRequest req, HttpServletResponse resp)
+	void doCreateTestJob(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String contestId = req.getParameter("contest");
 		if (requireContest(req, resp)) { return; }
 
+		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("problem");
+
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
 
@@ -41,7 +42,7 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
 
 		// TODO- check parameters
-		// TODO- check permission to submit solution to this problem at this time
+		// TODO- check permission
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
@@ -49,7 +50,7 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		try {
 
 			Key userKey = getLoggedInUserKey(req);
-			Entity ent = new Entity("Submission", userKey);
+			Entity ent = new Entity("TestJob");
 
 			ent.setProperty("created", new Date());
 
@@ -58,20 +59,28 @@ public class ProblemTestServlet extends ProblemCoreServlet
 				Key fileKey = KeyFactory.createKey("File", fileHash);
 				ent.setProperty("source", fileKey);
 			}
+			String fileHash2 = POST.get("input_upload");
+			if (fileHash2 != null) {
+				Key fileKey = KeyFactory.createKey("File", fileHash2);
+				ent.setProperty("input", fileKey);
+			}
 
-			ent.setProperty("problem", problemKey);
+			ent.setProperty("user", userKey);
 			ent.setProperty("contest", contestId);
-			ds.put(ent);
+			ent.setProperty("type", "U");
+			Key resultKey = ds.put(ent);
 
 			txn.commit();
+
+			String testId = Long.toString(resultKey.getId());
+
+			String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/test_result?id="+escapeUrl(testId);
+			resp.sendRedirect(url);
 		}
 		finally {
 			if (txn.isActive()) {
 				txn.rollback();
 			}
 		}
-
-		String url = "..";
-		resp.sendRedirect(url);
 	}
 }

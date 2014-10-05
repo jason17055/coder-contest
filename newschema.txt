@@ -84,3 +84,24 @@ Submission [ User / id* ]
 	source            Key(File)
 	status            String
 	judge             Key(User)
+
+TestJob [ id* ]
+	type              String S=system test of submission, E=generate expected output, U=user test,
+                                 V=validate input file, C=generate expected output of a challenge
+                                 D=generate actual output of a challenge, G=compare output
+	user              Key(User)
+	source            Key(File)
+	input             Key(File)
+	expected          Key(File) only used by output validator
+	actual            Key(File) only used by output validator
+	result_status     String e.g. 'No Error', 'Run-Time Error', 'Time-Limit Exceeded'
+	result_detail     String
+	output            Key(File)
+	owner             Key(Worker)
+	created           Date
+	last_touched      Date
+	runtime_limit     Integer
+	callback_data     String
+
+Worker [ id* ]
+
