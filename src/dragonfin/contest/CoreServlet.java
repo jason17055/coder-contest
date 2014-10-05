@@ -188,9 +188,18 @@ public class CoreServlet extends HttpServlet
 
 		}
 
-		TemplateVariables tv = new TemplateVariables(req);
+		final TemplateVariables tv = new TemplateVariables(req);
 		ctx.put("contest", tv.getContest());
 		ctx.put("all_submissions", tv.getAll_submissions());
+
+		Callable< ArrayList<TemplateVariables.Problem> > c1 = new Callable< ArrayList<TemplateVariables.Problem> >() {
+			public ArrayList<TemplateVariables.Problem> call() throws Exception
+			{
+				return tv.getAll_problems();
+			}
+		};
+		ctx.put("all_problems", c1);
+
 		moreVars(tv, ctx);
 
 		if (args != null)
@@ -217,14 +226,6 @@ public class CoreServlet extends HttpServlet
 		links.put("new_problem", makeContestUrl(contestId, "problem", null));
 		links.put("new_user", makeContestUrl(contestId, "user", null));
 		ctx.put("contest_links", links);
-
-		Callable< ArrayList<ProblemInfo> > c1 = new Callable< ArrayList<ProblemInfo> >() {
-			public ArrayList<ProblemInfo> call() throws Exception
-			{
-				return makeVar_all_problems(contestId);
-			}
-		};
-		ctx.put("all_problems", c1);
 	}
 
 	ArrayList<ProblemInfo> makeVar_all_problems(String contestId)

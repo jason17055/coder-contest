@@ -31,7 +31,7 @@
     -
 [% END %]
 </td>
-<td align="center">[% prb.system_test_count |html %]</td>
+<td align="center">[% prb.system_tests.size |html %]</td>
 <td align="center">[% prb.difficulty |html %]</td>
 </tr>
 

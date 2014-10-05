@@ -29,6 +29,29 @@ public class TemplateVariables
 		return DataHelper.loadContest(contestId);
 	}
 
+	ArrayList<Problem> getAll_problems()
+	{
+		String contestId = req.getParameter("contest");
+		if (contestId == null) {
+			return null;
+		}
+
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Query q = new Query("Problem")
+			.setAncestor(contestKey)
+		//	.addSort("ordinal")
+			.addSort("name")
+			;
+		PreparedQuery pq = ds.prepare(q);
+
+		ArrayList<Problem> list = new ArrayList<Problem>();
+		for (Entity ent : pq.asIterable()) {
+			Problem p = handleProblem(ent.getKey(), ent);
+			list.add(p);
+		}
+		return list;
+	}
+
 	ArrayList<Submission> getAll_submissions()
 	{
 		String contestId = req.getParameter("contest");
