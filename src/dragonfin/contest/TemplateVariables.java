@@ -128,7 +128,9 @@ public class TemplateVariables
 
 	String makeUrl(String path)
 	{
-		return path;
+		String contestId = req.getParameter("contest");
+		return req.getContextPath() + "/" + contestId +
+			"/" + path;
 	}
 
 	public class User
