@@ -134,10 +134,25 @@ public class TemplateVariables
 		public final Key dsKey;
 		public String id;
 		public String title;
+		public String subtitle;
+		public String logo;
 		public String created_by;
+		public String collaboration;
+		public String score_system;
+		public String scoreboard;
+		public String scoreboard_order;
 		public String current_phase_name = "CODING";
 		public String current_phase_timeleft = "foo";
 		public String [] status_choices;
+		public boolean contestants_can_change_name;
+		public boolean contestants_can_change_description;
+		public boolean contestants_can_change_password;
+		public boolean contestants_can_write_code;
+		public boolean judges_can_change_name;
+		public boolean judges_can_change_password;
+		public boolean scoreboard_images;
+		public boolean scoreboard_popups;
+		public boolean scoreboard_fanfare;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -391,10 +406,56 @@ public class TemplateVariables
 	Contest handleContest(Key key, Entity ent)
 	{
 		Contest c = new Contest(key);
+
+		// strings
 		c.title = ent.hasProperty("title") ?
 			(String)ent.getProperty("title") :
 			c.id;
+		c.subtitle = (String)ent.getProperty("subtitle");
+		c.logo = (String)ent.getProperty("logo");
 		c.created_by = (String)ent.getProperty("created_by");
+		c.collaboration = ent.hasProperty("collaboration") ?
+			(String)ent.getProperty("collaboration") :
+			"N";
+		c.score_system = ent.hasProperty("score_system") ?
+			(String)ent.getProperty("score_system") :
+			"A";
+		c.scoreboard = ent.hasProperty("scoreboard") ?
+			(String)ent.getProperty("scoreboard") :
+			"Y";
+		c.scoreboard_order = ent.hasProperty("scoreboard_order") ?
+			(String)ent.getProperty("scoreboard_order") :
+			"s";
+
+		// booleans
+		c.contestants_can_change_name = ent.hasProperty("contestants_can_change_name") ?
+			((Boolean)ent.getProperty("contestants_can_change_name")).booleanValue() :
+			true;
+		c.contestants_can_change_description = ent.hasProperty("contestants_can_change_description") ?
+			((Boolean)ent.getProperty("contestants_can_change_description")).booleanValue() :
+			true;
+		c.contestants_can_change_password = ent.hasProperty("contestants_can_change_password") ?
+			((Boolean)ent.getProperty("contestants_can_change_password")).booleanValue() :
+			true;
+		c.contestants_can_write_code = ent.hasProperty("contestants_can_write_code") ?
+			((Boolean)ent.getProperty("contestants_can_write_code")).booleanValue() :
+			true;
+		c.judges_can_change_name = ent.hasProperty("judges_can_change_name") ?
+			((Boolean)ent.getProperty("judges_can_change_name")).booleanValue() :
+			true;
+		c.judges_can_change_password = ent.hasProperty("judges_can_change_password") ?
+			((Boolean)ent.getProperty("judges_can_change_password")).booleanValue() :
+			true;
+		c.scoreboard_images = ent.hasProperty("scoreboard_images") ?
+			((Boolean)ent.getProperty("scoreboard_images")).booleanValue() :
+			true;
+		c.scoreboard_popups = ent.hasProperty("scoreboard_popups") ?
+			((Boolean)ent.getProperty("scoreboard_popups")).booleanValue() :
+			true;
+		c.scoreboard_fanfare = ent.hasProperty("scoreboard_fanfare") ?
+			((Boolean)ent.getProperty("scoreboard_fanfare")).booleanValue() :
+			true;
+
 		return c;
 	}
 

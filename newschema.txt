@@ -15,13 +15,13 @@ Contest [ "id" ]
 	contestants_can_write_code         Boolean
 	judges_can_change_name             Boolean
 	judges_can_change_password         Boolean
-	collaboration     String
-	score_system      String
-	scoreboard        String
+	collaboration     String Y=ad hoc, N=disabled
+	score_system      String A=ACM, T=TopCoder
+	scoreboard        String Y=enabled, N=disabled
 	scoreboard_images Boolean
 	scoreboard_popups Boolean
-	scoreboard_order  String
-	scoreboard_fanfare String
+	scoreboard_order  String n=by name, o=by ordinal, s=by score
+	scoreboard_fanfare Boolean
 	started	          Date
 	created           Date
 	created_by        String
