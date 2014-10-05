@@ -11,50 +11,53 @@ import com.google.appengine.api.datastore.*;
 
 public class DefineProblemServlet extends CoreServlet
 {
-	static final String TEMPLATE = "define_problem.tt";
+	String getTemplate() {
+		return "define_problem.tt";
+	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String contestId = req.getParameter("contest");
-		String problemId = req.getParameter("id");
-
 		if (requireDirector(req, resp)) { return; }
-
-		Map<String,Object> form = new HashMap<String,Object>();
-		if (problemId != null) {
-			try {
-			ProblemInfo prb = DataHelper.loadProblem(contestId, problemId);
-			form.put("name", prb.name);
-			form.put("visible", prb.visible ? "1" : "");
-			form.put("allow_submissions", prb.allow_submissions ? "1" : "");
-			form.put("judged_by", prb.judged_by);
-			form.put("difficulty", Integer.toString(prb.difficulty));
-			form.put("allocated_minutes", Integer.toString(prb.allocated_minutes));
-			form.put("runtime_limit", Integer.toString(prb.runtime_limit));
-			form.put("spec", checkFileUrl(prb.spec));
-			form.put("solution", checkFileUrl(prb.solution));
-			form.put("scoreboard_image", prb.scoreboard_image);
-			form.put("score_by_access_time", prb.score_by_access_time ? "1" : "");
-			form.put("start_time", prb.start_time);
-
-			} catch (DataHelper.NotFound e) {
-				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-				return;
-			}
-		}
-
-		Map<String,Object> args = new HashMap<String,Object>();
-		args.put("f", form);
-		renderTemplate(req, resp, TEMPLATE, args);
+		renderTemplate(req, resp, getTemplate());
 	}
 
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
 		throws Exception
 	{
 		String contestId = tv.req.getParameter("contest");
-		String id = tv.req.getParameter("id");
-		ctx.put("problem", tv.fetchProblem(contestId, id));
+		String problemId = tv.req.getParameter("id");
+
+		if (problemId != null) {
+
+			// editing an existing record
+
+			TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
+			ctx.put("problem", p);
+
+			Map<String,Object> form = new HashMap<String,Object>();
+			form.put("name", p.name);
+			form.put("visible", p.visible ? "1" : "");
+			form.put("allow_submissions", p.allow_submissions ? "1" : "");
+			form.put("judged_by", p.judged_by);
+			form.put("difficulty", Integer.toString(p.difficulty));
+			form.put("allocated_minutes", Integer.toString(p.allocated_minutes));
+			form.put("runtime_limit", Integer.toString(p.runtime_limit));
+			form.put("spec", p.getSpec());
+			form.put("solution", p.getSolution());
+			form.put("scoreboard_image", p.scoreboard_image);
+			form.put("score_by_access_time", p.score_by_access_time ? "1" : "");
+			form.put("start_time", p.start_time);
+
+			ctx.put("f", form);
+		}
+		else {
+
+			// creating a new record
+
+			Map<String,Object> form = new HashMap<String,Object>();
+			ctx.put("f", form);
+		}
 	}
 
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();

@@ -37,18 +37,20 @@ User [ "Contest.id" / "username" ]
 	ordinal           Integer
 
 Problem [ Contest / id ]
-	name              String
-	created           Date
-	visible           Boolean
-	allow_submissions Boolean
-	judged_by         String
-	difficulty        Integer
-	start_time        Date
-	allocated_minutes Integer
-	runtime_limit     Integer
-	spec              Key(File)
-	solution          Key(File)
-	last_system_test_id Integer
+	name                  String
+	created               Date
+	visible               Boolean
+	allow_submissions     Boolean
+	judged_by             String
+	difficulty            Integer
+	start_time            Date
+	allocated_minutes     Integer
+	runtime_limit         Integer
+	score_by_access_time  Boolean
+	scoreboard_image      String
+	spec                  Key(File)
+	solution              Key(File)
+	last_system_test_id   Integer
 	last_clarification_id Integer
 
 SystemTest [ Problem / id ]

@@ -56,17 +56,48 @@ public class TemplateVariables
 		public final Key dsKey;
 		public String id;
 		public String name;
-		public String edit_url;
-		public String new_system_test_url;
-		public String new_clarification_url;
-		Key specKey;
+		public String judged_by;
+		public String scoreboard_image;
+		public int difficulty;
+		public int allocated_minutes;
+		public int runtime_limit;
+		public Date start_time;
+		public boolean visible;
+		public boolean allow_submissions;
+		public boolean score_by_access_time;
+		Key specFileKey;
+		Key solutionFileKey;
 
 		Problem(Key dsKey) {
 			this.dsKey = dsKey;
 			this.id = Long.toString(dsKey.getId());
-			this.edit_url = makeUrl("problem?id="+id);
-			this.new_system_test_url = makeUrl("system_test?problem="+id);
-			this.new_clarification_url = makeUrl("clarification?problem="+id);
+		}
+
+		public String getEdit_url()
+		{
+			return makeUrl("problem?id="+id);
+		}
+
+		public String getNew_system_test_url()
+		{
+			return makeUrl("system_test?problem="+id);
+		}
+
+		public String getNew_clarification_url()
+		{
+			return makeUrl("clarification?problem="+id);
+		}
+
+		public File getSpec()
+			throws EntityNotFoundException
+		{
+			return specFileKey != null ? fetchFile(specFileKey) : null;
+		}
+
+		public File getSolution()
+			throws EntityNotFoundException
+		{
+			return solutionFileKey != null ? fetchFile(solutionFileKey) : null;
 		}
 
 		public ArrayList<SystemTest> getSystem_tests()
@@ -239,8 +270,38 @@ public class TemplateVariables
 	Problem handleProblem(Key key, Entity ent)
 	{
 		Problem p = new Problem(key);
+
+		//strings/dates
 		p.name = (String) ent.getProperty("name");		
-		p.specKey = (Key) ent.getProperty("spec");
+		p.judged_by = (String) ent.getProperty("judged_by");
+		p.scoreboard_image = (String) ent.getProperty("scoreboard_image");
+		p.start_time = (Date) ent.getProperty("start_time");
+
+		//files
+		p.specFileKey = (Key) ent.getProperty("spec");
+		p.solutionFileKey = (Key) ent.getProperty("solution");
+
+		//booleans
+		p.visible = ent.hasProperty("visible") ?
+			((Boolean) ent.getProperty("visible")).booleanValue() :
+			false;
+		p.allow_submissions = ent.hasProperty("allow_submissions") ?
+			((Boolean) ent.getProperty("allow_submissions")).booleanValue() :
+			false;
+		p.score_by_access_time = ent.hasProperty("score_by_access_time") ?
+			((Boolean) ent.getProperty("score_by_access_time")).booleanValue() :
+			false;
+
+		// integers
+		p.difficulty = ent.hasProperty("difficulty") ?
+			(int)((Long)ent.getProperty("difficulty")).longValue() :
+			0;
+		p.allocated_minutes = ent.hasProperty("allocated_minutes") ?
+			(int)((Long)ent.getProperty("allocated_minutes")).longValue() :
+			0;
+		p.runtime_limit = ent.hasProperty("runtime_limit") ?
+			(int)((Long)ent.getProperty("runtime_limit")).longValue() :
+			0;
 		return p;
 	}
 
