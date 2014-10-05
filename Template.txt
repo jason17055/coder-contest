@@ -1,3 +1,9 @@
+session      - properties of the current session
+.user        - User for the currently-logged in user
+.username    - username of the currently-logged in user (or null if not logged in)
+.is_director
+.is_judge
+
 contest      - properties of the current contest
 .problems    - Problem[] problems visible to the current user
 .contestants - User[] contestants of this contest

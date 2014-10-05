@@ -23,7 +23,7 @@
 <option value="N"[% !f.visible ? ' selected="selected"' : '' %]>No</option>
 </select></td>
 </tr>
-[% IF s.is_director %]
+[% IF session.is_director %]
 <tr>
 <td><label>Roles:</label></td>
 <td>

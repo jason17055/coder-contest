@@ -3,7 +3,7 @@
 %]
 
 <p>
-Your name: <a href="[% contest_links.edit_self |html %]">[% user.name |html %]</a>
+Your name: <a href="[% contest_links.edit_self |html %]">[% session.user.name |html %]</a>
 </p>
 
 [% SET problems = all_results %]
@@ -69,11 +69,11 @@ Clarification: [% m.request.substr(0,60) |html %]
 
 <h3>Actions</h3>
 <div>
-[% IF s.is_director %]
+[% IF session.is_director %]
 <a href="[% contest_links.controller |html %]">Controller</a> |
 [% END %]
 <a href="[% contest_links.scoreboard |html %]" target="_blank">Scoreboard</a>
-[% IF s.is_judge || s.is_director %]
+[% IF session.is_judge || session.is_director %]
 | <a href="[% contest_links.submissions_list |html %]">View Submissions</a>
 [% END %]
 </div>

@@ -54,6 +54,8 @@ public class CoreServlet extends HttpServlet
 	public static class SessionAdapter
 	{
 		HttpSession session;
+		Callable<TemplateVariables.User> user;
+
 		SessionAdapter(HttpSession session)
 		{
 			this.session = session;
@@ -166,28 +168,6 @@ public class CoreServlet extends HttpServlet
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
 
-		HttpSession s = req.getSession(false);
-		if (s != null)
-		{
-			ctx.put("s", new SessionAdapter(s));
-
-			final String contestId = (String) s.getAttribute("contest");
-			if (contestId != null) {
-				makeContestVars(contestId, ctx);
-			}
-
-			final String userId = (String) s.getAttribute("username");
-			Callable<UserInfo> userC = new Callable<UserInfo>()
-			{
-			public UserInfo call() throws Exception
-			{
-				return DataHelper.loadUser(contestId, userId);
-			}
-		};
-		ctx.put("user", userC);
-
-		}
-
 		final TemplateVariables tv = new TemplateVariables(req);
 		ctx.put("contest", tv.getContest());
 		ctx.put("all_submissions", tv.getAll_submissions());
@@ -207,6 +187,27 @@ public class CoreServlet extends HttpServlet
 			}
 		};
 		ctx.put("all_users", c2);
+
+		HttpSession s = req.getSession(false);
+		if (s != null)
+		{
+			SessionAdapter sa = new SessionAdapter(s);
+			ctx.put("session", sa);
+
+			final String contestId = (String) s.getAttribute("contest");
+			if (contestId != null) {
+				makeContestVars(contestId, ctx);
+			}
+
+			final String userId = (String) s.getAttribute("username");
+			Callable<TemplateVariables.User> userC = new Callable<TemplateVariables.User>() {
+				public TemplateVariables.User call() throws Exception
+				{
+					return tv.fetchUser(contestId, userId);
+				}
+			};
+			sa.user = userC;
+		}
 
 		moreVars(tv, ctx);
 

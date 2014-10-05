@@ -28,7 +28,7 @@
 </form>
 
 <p>
-[% IF s.is_director %]
+[% IF session.is_director %]
 <a href="[% contest_links.new_user |html %]">New User</a> |
 <a href="[% contest_links.controller |html %]">Controller</a>
 [% ELSE %]
