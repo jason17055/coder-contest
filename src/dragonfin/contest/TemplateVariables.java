@@ -210,7 +210,7 @@ public class TemplateVariables
 		public boolean online;
 		public boolean visible;
 		public String score_html;
-		public Map<String,ResultInfo> result_by_problem = new HashMap<String,ResultInfo>();
+		public Map<String,Result> result_by_problem;
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;
@@ -222,6 +222,15 @@ public class TemplateVariables
 		public String getEdit_url()
 		{
 			return makeUrl("user?id="+username);
+		}
+	}
+
+	public class Result
+	{
+		public final Key dsKey;
+
+		Result(Key dsKey) {
+			this.dsKey = dsKey;
 		}
 	}
 
