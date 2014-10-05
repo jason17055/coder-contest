@@ -228,27 +228,6 @@ public class CoreServlet extends HttpServlet
 		ctx.put("contest_links", links);
 	}
 
-	ArrayList<ProblemInfo> makeVar_all_problems(String contestId)
-	{
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		Query q = new Query("Problem")
-			.setAncestor(contestKey)
-			.addSort("name");
-		PreparedQuery pq = ds.prepare(q);
-
-		ArrayList<ProblemInfo> list = new ArrayList<ProblemInfo>();
-		for (Entity ent : pq.asIterable()) {
-			ProblemInfo p = DataHelper.problemFromEntity(ent);
-			p.edit_url = makeContestUrl(contestId, "problem", "id="+p.id);
-			p.url = makeContestUrl(contestId, "problem."+p.id+"/", null);
-			list.add(p);
-		}
-
-		return list;
-	}
-
 	public void renderTemplate(HttpServletRequest req, HttpServletResponse resp,
 			String templateName, Map<String,Object> args)
 		throws ServletException, IOException

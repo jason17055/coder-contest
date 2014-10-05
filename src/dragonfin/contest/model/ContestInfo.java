@@ -9,7 +9,6 @@ public class ContestInfo implements java.io.Serializable
 	public String title;
 	public String created_by;
 	public String url;
-	public List<ProblemInfo> problems;
 
 	public ContestInfo()
 	{
@@ -18,11 +17,6 @@ public class ContestInfo implements java.io.Serializable
 	public String getId()
 	{
 		return id;
-	}
-
-	public List<ProblemInfo> getProblems()
-	{
-		return problems;
 	}
 
 	public String getTitle()
