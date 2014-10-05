@@ -230,6 +230,25 @@ public class TemplateVariables
 			return solutionFileKey != null ? fetchFile(solutionFileKey) : null;
 		}
 
+		public ArrayList<SystemTest> getSample_inputs()
+		{
+			Query q = new Query("SystemTest");
+			q.setAncestor(dsKey);
+			q.setFilter(Query.FilterOperator.EQUAL.of("sample", Boolean.TRUE));
+			q.addSort("created");
+
+			PreparedQuery pq = ds.prepare(q);
+			ArrayList<SystemTest> list = new ArrayList<SystemTest>();
+			int count = 0;
+			for (Entity ent : pq.asIterable()) {
+				count++;
+				SystemTest st = handleSystemTest(ent.getKey(), ent);
+				st.sample_name = name + "_" + count;
+				list.add(st);
+			}
+			return list;
+		}
+
 		public ArrayList<SystemTest> getSystem_tests()
 		{
 			Query q = new Query("SystemTest");
@@ -351,6 +370,7 @@ public class TemplateVariables
 		public final Key dsKey;
 		public boolean sample;
 		public boolean auto_judge;
+		public String sample_name;
 		Key inputKey;
 		Key expectedKey;
 
