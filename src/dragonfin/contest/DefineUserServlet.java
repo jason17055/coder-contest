@@ -2,6 +2,7 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.contest.model.*;
@@ -10,40 +11,50 @@ import com.google.appengine.api.datastore.*;
 
 public class DefineUserServlet extends CoreServlet
 {
-	static final String TEMPLATE = "define_user.tt";
+	String getTemplate() {
+		return "define_user.tt";
+	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String contestId = req.getParameter("contest");
-		String userId = req.getParameter("id");
-
 		if (requireDirector(req, resp)) { return; }
+		renderTemplate(req, resp, getTemplate());
+	}
 
-		Map<String,Object> form = new HashMap<String,Object>();
-		if (userId != null) {
-			try {
-			UserInfo u = DataHelper.loadUser(contestId, userId);
+	@Override
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws EntityNotFoundException
+	{
+		String contestId = tv.req.getParameter("contest");
+		String username = tv.req.getParameter("id");
 
+		if (username != null) {
+
+			// editing an existing record
+
+			TemplateVariables.User u = tv.fetchUser(contestId, username);
+			ctx.put("user", u);
+
+			Map<String,Object> form = new HashMap<String,Object>();
 			form.put("username", u.username);
 			form.put("name", u.name);
 			form.put("description", u.description);
 			form.put("ordinal", u.ordinal);
-			form.put("contest", u.contest);
 
 			form.put("is_director", u.is_director);
 			form.put("is_judge", u.is_judge);
 			form.put("is_contestant", u.is_contestant);
 
-			} catch (DataHelper.NotFound e) {
-				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-				return;
-			}
+			ctx.put("f", form);
 		}
+		else {
 
-		Map<String,Object> args = new HashMap<String,Object>();
-		args.put("f", form);
-		renderTemplate(req, resp, TEMPLATE, args);
+			// creating a new record
+
+			Map<String,Object> form = new HashMap<String,Object>();
+			ctx.put("f", form);
+		}
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)

@@ -440,6 +440,33 @@ public class TemplateVariables
 		return u;
 	}
 
+	User fetchUser(String contestId, String username)
+		throws EntityNotFoundException
+	{
+		Key userKey = KeyFactory.createKey("User", contestId+"/"+username);
+		return fetchUser(userKey);
+	}
+
+	User handleUser(Key key, Entity ent)
+	{
+		User u = new User(key);
+		u.is_director = ent.hasProperty("is_director") ?
+			((Boolean) ent.getProperty("is_director")).booleanValue() :
+			false;
+		u.is_judge = ent.hasProperty("is_judge") ?
+			((Boolean) ent.getProperty("is_judge")).booleanValue() :
+			false;
+		u.is_contestant = ent.hasProperty("is_contestant") ?
+			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
+			false;
+		u.name = (String) ent.getProperty("name");
+		u.description = (String) ent.getProperty("description");
+		u.ordinal = ent.hasProperty("ordinal") ?
+			(int)((Long)ent.getProperty("ordinal")).longValue() :
+			0;
+		return u;
+	}
+
 	HashMap<Key,Submission> cachedSubmissions = new HashMap<Key,Submission>();
 	Submission fetchSubmission(Key subKey)
 		throws EntityNotFoundException
@@ -497,25 +524,5 @@ public class TemplateVariables
 		f.url = req.getContextPath()+"/_f/"+f.id+"/"+f.name;
 		f.inline_text_url = req.getContextPath()+"/_f/"+f.id+"/"+f.name+"?type=text";
 		return f;
-	}
-
-	User handleUser(Key key, Entity ent)
-	{
-		User u = new User(key);
-		u.is_director = ent.hasProperty("is_director") ?
-			((Boolean) ent.getProperty("is_director")).booleanValue() :
-			false;
-		u.is_judge = ent.hasProperty("is_judge") ?
-			((Boolean) ent.getProperty("is_judge")).booleanValue() :
-			false;
-		u.is_contestant = ent.hasProperty("is_contestant") ?
-			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
-			false;
-		u.name = (String) ent.getProperty("name");
-		u.description = (String) ent.getProperty("description");
-		u.ordinal = ent.hasProperty("ordinal") ?
-			(int)((Long)ent.getProperty("ordinal")).longValue() :
-			0;
-		return u;
 	}
 }
