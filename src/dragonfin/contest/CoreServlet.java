@@ -107,6 +107,21 @@ public class CoreServlet extends HttpServlet
 			);
 		boolean queryArgsChanged = false;
 
+		if (relUrl.startsWith("/_p/_problem/")) {
+			// find the problem query arg
+			String problemId = null;
+			for (Iterator<String> it = queryArgs.iterator(); it.hasNext(); )
+			{
+				String arg = it.next();
+				if (arg.startsWith("problem=")) {
+					problemId = arg.substring(8);
+					it.remove();
+					queryArgsChanged = true;
+				}
+			}
+			relUrl = "/_p/problem."+problemId+relUrl.substring(12);
+		}
+
 		if (relUrl.startsWith("/_p/")) {
 			// find the contest query arg
 			String contestId = null;
