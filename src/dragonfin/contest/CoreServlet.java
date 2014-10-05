@@ -403,20 +403,19 @@ public class CoreServlet extends HttpServlet
 		}
 
 		try {
-		UserInfo user = DataHelper.loadUser(contestId, username);
-		if (!user.isDirector()) {
+		TemplateVariables tv = new TemplateVariables(req);
+		TemplateVariables.User user = tv.fetchUser(contestId, username);
+		if (!user.is_director) {
+
 			// not a director
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
 				"This page requires you to be contest director.");
 			return true;
 		}
 		}
-		catch (DataHelper.NotFound e) {
-			// not a director
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-				"This page requires you to be contest director.");
-			return true;
+		catch (EntityNotFoundException e) {
 		}
+
 		return false;
 	}
 
