@@ -74,6 +74,25 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<User> getAll_users()
+	{
+		String contestId = req.getParameter("contest");
+		if (contestId == null) {
+			return null;
+		}
+
+		Query q = new Query("User");
+		q.setFilter(Query.FilterOperator.EQUAL.of("contest", contestId));
+
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<User> list = new ArrayList<User>();
+		for (Entity ent : pq.asIterable()) {
+			User u = handleUser(ent.getKey(), ent);
+			list.add(u);
+		}
+		return list;
+	}
+
 	public class Problem
 	{
 		public final Key dsKey;
@@ -172,6 +191,11 @@ public class TemplateVariables
 
 			String [] idParts = dsKey.getName().split("/");
 			this.username = idParts[1];
+		}
+
+		public String getEdit_url()
+		{
+			return makeUrl("user?id="+username);
 		}
 	}
 
@@ -473,5 +497,25 @@ public class TemplateVariables
 		f.url = req.getContextPath()+"/_f/"+f.id+"/"+f.name;
 		f.inline_text_url = req.getContextPath()+"/_f/"+f.id+"/"+f.name+"?type=text";
 		return f;
+	}
+
+	User handleUser(Key key, Entity ent)
+	{
+		User u = new User(key);
+		u.is_director = ent.hasProperty("is_director") ?
+			((Boolean) ent.getProperty("is_director")).booleanValue() :
+			false;
+		u.is_judge = ent.hasProperty("is_judge") ?
+			((Boolean) ent.getProperty("is_judge")).booleanValue() :
+			false;
+		u.is_contestant = ent.hasProperty("is_contestant") ?
+			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
+			false;
+		u.name = (String) ent.getProperty("name");
+		u.description = (String) ent.getProperty("description");
+		u.ordinal = ent.hasProperty("ordinal") ?
+			(int)((Long)ent.getProperty("ordinal")).longValue() :
+			0;
+		return u;
 	}
 }

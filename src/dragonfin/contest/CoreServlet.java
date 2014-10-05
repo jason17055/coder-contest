@@ -200,6 +200,14 @@ public class CoreServlet extends HttpServlet
 		};
 		ctx.put("all_problems", c1);
 
+		Callable< ArrayList<TemplateVariables.User> > c2 = new Callable< ArrayList<TemplateVariables.User> >() {
+			public ArrayList<TemplateVariables.User> call() throws Exception
+			{
+				return tv.getAll_users();
+			}
+		};
+		ctx.put("all_users", c2);
+
 		moreVars(tv, ctx);
 
 		if (args != null)

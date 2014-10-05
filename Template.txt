@@ -54,3 +54,12 @@ clarification
 .id           - number
 .edit_url
 .problem      - Problem
+
+user
+.edit_url
+.username
+.name
+.description
+.ordinal
+.is_director
+.is_judge
