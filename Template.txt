@@ -43,6 +43,7 @@ submission    - the currently-selected submission
 
 system_test
 .edit_url
+.test_number
 .input        - File
 .expected     - File
 .sample

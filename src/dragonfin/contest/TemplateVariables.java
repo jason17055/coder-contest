@@ -71,7 +71,17 @@ public class TemplateVariables
 
 		public ArrayList<SystemTest> getSystem_tests()
 		{
-			return new ArrayList<SystemTest>();
+			Query q = new Query("SystemTest");
+			q.setAncestor(dsKey);
+			q.addSort("created");
+
+			PreparedQuery pq = ds.prepare(q);
+			ArrayList<SystemTest> list = new ArrayList<SystemTest>();
+			for (Entity ent : pq.asIterable()) {
+				SystemTest st = handleSystemTest(ent.getKey(), ent);
+				list.add(st);
+			}
+			return list;
 		}
 
 		public ArrayList<Clarification> getClarifications()
@@ -157,6 +167,47 @@ public class TemplateVariables
 
 	public class SystemTest
 	{
+		public final Key dsKey;
+		public boolean sample;
+		public boolean auto_judge;
+		Key inputKey;
+		Key expectedKey;
+
+		SystemTest(Key key)
+		{
+			this.dsKey = key;
+		}
+
+		public File getInput()
+			throws EntityNotFoundException
+		{
+			return inputKey != null ? fetchFile(inputKey) : null;
+		}
+
+		public File getExpected()
+			throws EntityNotFoundException
+		{
+			return expectedKey != null ? fetchFile(expectedKey) : null;
+		}
+
+		public String getEdit_url()
+		{
+			String problemId = Long.toString(dsKey.getParent().getId());
+			String num = Long.toString(dsKey.getId());
+			return makeUrl("system_test?problem="+problemId+"&number="+num);
+		}
+
+		public long getTest_number()
+		{
+			return dsKey.getId();
+		}
+
+		public Problem getProblem()
+			throws EntityNotFoundException
+		{
+			Key problemKey = dsKey.getParent();
+			return fetchProblem(problemKey);
+		}
 	}
 
 	public class Clarification
@@ -191,6 +242,43 @@ public class TemplateVariables
 		p.name = (String) ent.getProperty("name");		
 		p.specKey = (Key) ent.getProperty("spec");
 		return p;
+	}
+
+	HashMap<Key,SystemTest> cachedSystemTests = new HashMap<Key,SystemTest>();
+	SystemTest fetchSystemTest(Key testKey)
+		throws EntityNotFoundException
+	{
+		if (cachedSystemTests.containsKey(testKey)) {
+			return cachedSystemTests.get(testKey);
+		}
+
+		Entity ent = ds.get(testKey);
+		SystemTest st = handleSystemTest(testKey, ent);
+		cachedSystemTests.put(testKey, st);
+		return st;
+	}
+
+	SystemTest fetchSystemTest(String contestId, String problemId, String testId)
+		throws EntityNotFoundException
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
+		Key testKey = KeyFactory.createKey(problemKey, "SystemTest", Long.parseLong(testId));
+		return fetchSystemTest(testKey);
+	}
+
+	SystemTest handleSystemTest(Key key, Entity ent)
+	{
+		SystemTest st = new SystemTest(key);
+		st.inputKey = (Key) ent.getProperty("input");
+		st.expectedKey = (Key) ent.getProperty("expected");
+		st.sample = ent.hasProperty("sample") ?
+			((Boolean) ent.getProperty("sample")).booleanValue() :
+			false;
+		st.auto_judge = ent.hasProperty("auto_judge") ?
+			((Boolean) ent.getProperty("auto_judge")).booleanValue() :
+			false;
+		return st;
 	}
 
 	HashMap<Key,File> cachedFiles = new HashMap<Key,File>();

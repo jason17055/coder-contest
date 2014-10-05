@@ -1,5 +1,5 @@
 [% WRAPPER 'common.inc'
-	page_title = r.id ? 'Edit System Test' : 'Create System Test'
+	page_title = r.number ? 'Edit System Test' : 'Create System Test'
 %]
 
 [% IF message %]
@@ -34,7 +34,7 @@
 </table>
 
 <div>
-[% IF r.id %]
+[% IF r.number %]
 <button type="submit">Save Changes</button>
 <button type="submit" name="action:delete_system_test" onclick="return confirm('Really delete this system test?')">Delete</button>
 [% ELSE %]

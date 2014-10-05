@@ -28,16 +28,26 @@ public class DefineSystemTestServlet extends CoreServlet
 	{
 		String contestId = tv.req.getParameter("contest");
 		String problemId = tv.req.getParameter("problem");
-		String id = tv.req.getParameter("id");
+		String testNumber = tv.req.getParameter("number");
 
-		if (id != null) {
+		if (testNumber != null) {
 
-			//TODO
+			// editing an existing record
+
+			TemplateVariables.SystemTest st = tv.fetchSystemTest(contestId, problemId, testNumber);
+			ctx.put("system_test", st);
+			ctx.put("problem", st.getProblem());
 
 			Map<String,Object> form = new HashMap<String,Object>();
+			form.put("input", st.getInput());
+			form.put("expected", st.getExpected());
+			form.put("sample", st.sample);
+			form.put("auto_judge", st.auto_judge);
 			ctx.put("f", form);
 		}
 		else {
+
+			// creating a new record
 
 			TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
 			ctx.put("problem", p);
