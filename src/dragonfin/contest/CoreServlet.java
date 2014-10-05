@@ -245,7 +245,6 @@ public class CoreServlet extends HttpServlet
 	}
 
 	void makeContestVars(final String contestId, Map<String,Object> ctx)
-		throws DataHelper.NotFound
 	{
 		Map<String,String> links = new HashMap<String,String>();
 		links.put("controller", makeContestUrl(contestId, "controller", null));
