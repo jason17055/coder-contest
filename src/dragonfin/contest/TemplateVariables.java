@@ -74,6 +74,28 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<User> getAll_contestants()
+	{
+		String contestId = req.getParameter("contest");
+		if (contestId == null) {
+			return null;
+		}
+
+		Query q = new Query("User");
+		q.setFilter(Query.CompositeFilterOperator.and(
+			Query.FilterOperator.EQUAL.of("contest", contestId),
+			Query.FilterOperator.EQUAL.of("is_contestant", Boolean.TRUE)
+			));
+
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<User> list = new ArrayList<User>();
+		for (Entity ent : pq.asIterable()) {
+			User u = handleUser(ent.getKey(), ent);
+			list.add(u);
+		}
+		return list;
+	}
+
 	ArrayList<User> getAll_users()
 	{
 		String contestId = req.getParameter("contest");
@@ -185,6 +207,10 @@ public class TemplateVariables
 		public boolean is_director;
 		public boolean is_judge;
 		public boolean is_contestant;
+		public boolean online;
+		public boolean visible;
+		public String score_html;
+		public Map<String,ResultInfo> result_by_problem = new HashMap<String,ResultInfo>();
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;

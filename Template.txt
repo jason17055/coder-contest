@@ -36,6 +36,8 @@ contest_links
 my_results    - Result[] current user's results
 
 all_submissions - Submission[]
+all_users       - User[]
+all_contestants - User[]
 
 submission    - the currently-selected submission
 .problem      - Problem
@@ -69,3 +71,7 @@ user
 .ordinal
 .is_director
 .is_judge
+.online
+.visible
+.score_html
+.result_by_problem
