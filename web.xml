@@ -56,6 +56,10 @@
  <servlet-name>EditSubmission</servlet-name>
  <servlet-class>dragonfin.contest.EditSubmissionServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>DefineSystemTest</servlet-name>
+ <servlet-class>dragonfin.contest.DefineSystemTestServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>DefineProblem</servlet-name>
@@ -140,6 +144,10 @@
 <servlet-mapping>
  <servlet-name>EditSubmission</servlet-name>
  <url-pattern>/_p/submission</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>DefineSystemTest</servlet-name>
+ <url-pattern>/_p/system_test</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

@@ -1,0 +1,47 @@
+[% WRAPPER 'common.inc'
+	page_title = r.id ? 'Edit System Test' : 'Create System Test'
+%]
+
+[% IF message %]
+<p class="error">[% message |html %]</p>
+[% END %]
+
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label>Problem:</label></td>
+<td>[% f.problem.name |html %]</td>
+</tr>
+<tr>
+<td valign="top"><label>Input File:</label></td>
+<td valign="top">[% INCLUDE 'select_file_widget.inc'
+	name = 'input'
+	value = f.input %]</td>
+</tr>
+<tr>
+<td valign="top"><label>Expected Output:</label></td>
+<td valign="top">[% INCLUDE 'select_file_widget.inc'
+	name = 'expected'
+	value = f.expected %]</td>
+</tr>
+<tr>
+<td valign="top"><label>Auto-Judge Options:</label></td>
+<td valign="top">
+<div><label><input type="checkbox" name="sample"[% f.sample ? ' checked="checked"' : '' %]>This is an Example input file for the problem</label></div>
+<div><label><input type="checkbox" name="auto_judge"[% f.auto_judge ? ' checked="checked"' : '' %]>Immediately judge any submissions which fail this test</label</div>
+</td>
+</tr>
+</table>
+
+<div>
+[% IF r.id %]
+<button type="submit">Save Changes</button>
+<button type="submit" name="action:delete_system_test" onclick="return confirm('Really delete this system test?')">Delete</button>
+[% ELSE %]
+<button type="submit" name="action:create_system_test">Create</button>
+[% END %]
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+</form>
+
+[% END #wrapper %]
