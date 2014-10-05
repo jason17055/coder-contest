@@ -2,12 +2,15 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.users.*;
+
+import static dragonfin.contest.CoreServlet.escapeUrl;
 
 public class ListContestsServlet extends CoreServlet
 {
@@ -49,6 +52,11 @@ public class ListContestsServlet extends CoreServlet
 		return true;
 	}
 
+	String getTemplate()
+	{
+		return "admin/list_contest.tt";
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -56,24 +64,15 @@ public class ListContestsServlet extends CoreServlet
 			return;
 		}
 
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		renderTemplate(req, resp, getTemplate());
+	}
 
-		Query q = new Query("Contest");
-		PreparedQuery pq = ds.prepare(q);
-
-		ArrayList<ContestInfo> list = new ArrayList<ContestInfo>();
-		for (Entity ent : pq.asIterable()) {
-			String contestId = ent.getKey().getName();
-			String creator = (String) ent.getProperty("created_by");
-			ContestInfo c = new ContestInfo();
-			c.id = contestId;
-			c.created_by = creator;
-			c.url = "define_contest?contest="+contestId;
-			list.add(c);
-		}
-
-		HashMap<String,Object> args = new HashMap<String,Object>();
-		args.put("all_contests", list);
-		renderTemplate(req, resp, "admin/list_contest.tt", args);
+	@Override
+	void moreVars(final TemplateVariables tv, SimpleBindings ctx)
+	{
+		ctx.put("all_contests", new Callable< ArrayList<TemplateVariables.Contest> >() {
+			public ArrayList<TemplateVariables.Contest> call() {
+				return tv.getAll_contests();
+			}});
 	}
 }

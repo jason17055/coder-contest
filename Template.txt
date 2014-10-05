@@ -12,6 +12,7 @@ contest      - properties of the current contest
 .title
 .current_phase_name
 .current_phase_timeleft
+.config_url  - takes user to Admin Contest definition page
 
 problem      - properties of the currently-selected problem
 .name        - name of the problem
@@ -73,5 +74,18 @@ user
 .is_judge
 .online
 .visible
+.score
+.score_alt
 .score_html
 .result_by_problem
+
+result
+.opened
+.source
+.problem
+.incorrect_submissions
+.score
+.score_alt
+.score_html
+.minutes
+.submissions

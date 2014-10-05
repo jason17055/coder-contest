@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import dragonfin.contest.model.*;
+import static dragonfin.contest.CoreServlet.escapeUrl;
 
 import java.util.*;
 import java.util.regex.*;
@@ -18,15 +19,15 @@ public class TemplateVariables
 		this.req = req;
 	}
 
-	ContestInfo getContest()
-		throws DataHelper.NotFound
+	Contest getContest()
+		throws EntityNotFoundException
 	{
 		String contestId = req.getParameter("contest");
 		if (contestId == null) {
 			return null;
 		}
 
-		return DataHelper.loadContest(contestId);
+		return fetchContest(contestId);
 	}
 
 	ArrayList<Problem> getAll_problems()
@@ -96,6 +97,19 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<Contest> getAll_contests()
+	{
+		Query q = new Query("Contest");
+		PreparedQuery pq = ds.prepare(q);
+
+		ArrayList<Contest> list = new ArrayList<Contest>();
+		for (Entity ent : pq.asIterable()) {
+			Contest c = handleContest(ent.getKey(), ent);
+			list.add(c);
+		}
+		return list;
+	}
+
 	ArrayList<User> getAll_users()
 	{
 		String contestId = req.getParameter("contest");
@@ -113,6 +127,38 @@ public class TemplateVariables
 			list.add(u);
 		}
 		return list;
+	}
+
+	public class Contest
+	{
+		public final Key dsKey;
+		public String id;
+		public String title;
+		public String created_by;
+		public String current_phase_name = "CODING";
+		public String current_phase_timeleft = "foo";
+		public String [] status_choices;
+
+		Contest(Key dsKey) {
+			this.dsKey = dsKey;
+			this.id = dsKey.getName();
+
+			status_choices = new String[] {
+				"Accepted",
+				"Correct",
+				"Wrong Answer",
+				"Output Format Error",
+				"Excessive Output",
+				"Compilation Error",
+				"Run-Time Error",
+				"Time-Limit Exceeded"
+				};
+		}
+
+		public String getConfig_url()
+		{
+			return req.getContextPath()+"/_admin/define_contest?contest="+escapeUrl(id);
+		}
 	}
 
 	public class Problem
@@ -332,6 +378,24 @@ public class TemplateVariables
 
 	public class Clarification
 	{
+	}
+
+	Contest fetchContest(String contestId)
+		throws EntityNotFoundException
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Entity ent = ds.get(contestKey);
+		return handleContest(contestKey, ent);
+	}
+
+	Contest handleContest(Key key, Entity ent)
+	{
+		Contest c = new Contest(key);
+		c.title = ent.hasProperty("title") ?
+			(String)ent.getProperty("title") :
+			c.id;
+		c.created_by = (String)ent.getProperty("created_by");
+		return c;
 	}
 
 	HashMap<Key,Problem> cachedProblems = new HashMap<Key,Problem>();

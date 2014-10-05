@@ -14,7 +14,7 @@
 
 [% FOREACH c IN all_contests %]
 <tr>
-<td><a href="[% c.url |html %]">[% c.id |html %]</a></td>
+<td><a href="[% c.config_url |html %]">[% c.id |html %]</a></td>
 <td>[% c.created_by |html %]</td>
 </tr>
 [% END %]

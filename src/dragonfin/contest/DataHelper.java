@@ -25,30 +25,6 @@ public class DataHelper
 		}
 	}
 
-	public static ContestInfo loadContest(String contestId)
-		throws NotFound
-	{
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-
-		try {
-		Entity ent = ds.get(contestKey);
-		ContestInfo rv = new ContestInfo();
-
-		rv.id = contestId;
-		rv.title = ent.hasProperty("title") ?
-			(String)ent.getProperty("title") :
-			contestId;
-		rv.created_by = (String)ent.getProperty("created_by");
-
-		return rv;
-
-		}
-		catch (EntityNotFoundException e) {
-			throw new NotFound(e);
-		}
-	}
-
 	static File key2file(Key k)
 	{
 		File f = new File();
