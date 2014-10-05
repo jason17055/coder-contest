@@ -88,6 +88,11 @@ public class TemplateVariables
 			return makeUrl("clarification?problem="+id);
 		}
 
+		public String getUrl()
+		{
+			return makeUrl("problem."+id+"/");
+		}
+
 		public File getSpec()
 			throws EntityNotFoundException
 		{
