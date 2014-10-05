@@ -701,8 +701,13 @@ public class TemplateVariables
 		File f = new File();
 		f.id = key.getName();
 		f.name = (String) ent.getProperty("given_name");
-		f.url = req.getContextPath()+"/_f/"+f.id+"/"+f.name;
-		f.inline_text_url = req.getContextPath()+"/_f/"+f.id+"/"+f.name+"?type=text";
+		f.url = makeFileUrl(req, f.id, f.name);
+		f.inline_text_url = makeFileUrl(req, f.id, f.name)+"?type=text";
 		return f;
+	}
+
+	public static String makeFileUrl(HttpServletRequest req, String id, String name)
+	{
+		return req.getContextPath()+"/_f/"+id+"/"+name;
 	}
 }
