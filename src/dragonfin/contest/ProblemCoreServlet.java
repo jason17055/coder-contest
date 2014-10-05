@@ -2,9 +2,9 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.sql.*;
 import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
 
@@ -14,32 +14,19 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		throws IOException, ServletException
 	{
 		if (requireContest(req, resp)) { return; }
-
-		String contestId = req.getParameter("contest");
-		String problemId = req.getParameter("problem");
-
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
-
-		Entity ent;
-		try {
-			ent = ds.get(problemKey);
-		}
-		catch (EntityNotFoundException e){
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
-		
-		ProblemInfo p = DataHelper.problemFromEntity(ent);
-
-		p.spec = checkFileUrl(DataHelper.addFileMetadata(ds, p.spec));
-		p.url = makeContestUrl(contestId, "problem."+problemId+"/");
-
-		HashMap<String,Object> args = new HashMap<String,Object>();
-		args.put("problem", p);
-		renderTemplate(req, resp, getTemplatePageName(), args);
+		renderTemplate(req, resp, getTemplate());
 	}
 
-	public abstract String getTemplatePageName();
+	@Override
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws EntityNotFoundException
+	{
+		String contestId = tv.req.getParameter("contest");
+		String problemId = tv.req.getParameter("problem");
+
+		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
+		ctx.put("problem", p);
+	}
+
+	public abstract String getTemplate();
 }

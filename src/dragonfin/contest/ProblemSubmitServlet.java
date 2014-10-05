@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.*;
 public class ProblemSubmitServlet extends ProblemCoreServlet
 {
 	@Override
-	public String getTemplatePageName()
+	public String getTemplate()
 	{
 		return "problem_submit.tt";
 	}
