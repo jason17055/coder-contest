@@ -11,6 +11,10 @@ problem      - properties of the currently-selected problem
 .name        - name of the problem
 .spec        - File the pdf description of the problem
 .edit_url    - takes user to Problem Definition page
+.system_tests - SystemTest[]
+.clarifications - Clarification[]
+.new_system_test_url
+.new_clarification_url
 
 contest_links
 .controller
@@ -36,3 +40,16 @@ submission    - the currently-selected submission
 .type         - either 'submission' or 'clarification'
 .edit_url     - takes user to submission edit page
 .minutes
+
+system_test
+.edit_url
+.input        - File
+.expected     - File
+.sample
+.auto_judge
+.problem      - Problem
+
+clarification
+.id           - number
+.edit_url
+.problem      - Problem

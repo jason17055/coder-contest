@@ -57,12 +57,26 @@ public class TemplateVariables
 		public String id;
 		public String name;
 		public String edit_url;
+		public String new_system_test_url;
+		public String new_clarification_url;
 		Key specKey;
 
 		Problem(Key dsKey) {
 			this.dsKey = dsKey;
 			this.id = Long.toString(dsKey.getId());
 			this.edit_url = makeUrl("problem?id="+id);
+			this.new_system_test_url = makeUrl("system_test?problem="+id);
+			this.new_clarification_url = makeUrl("clarification?problem="+id);
+		}
+
+		public ArrayList<SystemTest> getSystem_tests()
+		{
+			return new ArrayList<SystemTest>();
+		}
+
+		public ArrayList<Clarification> getClarifications()
+		{
+			return new ArrayList<Clarification>();
 		}
 	}
 
@@ -112,25 +126,11 @@ public class TemplateVariables
 			this.edit_url = "submission?id="+id;
 		}
 
-		Problem problemCached;
 		Key problemKey;
 		public Problem getProblem()
 			throws EntityNotFoundException
 		{
-			if (problemCached != null) {
-				return problemCached;
-			}
-
-			if (problemKey == null) {
-				return null;
-			}
-
-			Entity ent = ds.get(problemKey);
-
-			problemCached = new Problem(problemKey);
-			problemCached.name = (String) ent.getProperty("name");		
-			problemCached.specKey = (Key) ent.getProperty("spec");
-			return problemCached;
+			return problemKey != null ? fetchProblem(problemKey) : null;
 		}
 
 		public User getSubmitter()
@@ -153,6 +153,44 @@ public class TemplateVariables
 		{
 			return sourceKey != null ? fetchFile(sourceKey) : null;
 		}
+	}
+
+	public class SystemTest
+	{
+	}
+
+	public class Clarification
+	{
+	}
+
+	HashMap<Key,Problem> cachedProblems = new HashMap<Key,Problem>();
+	Problem fetchProblem(Key problemKey)
+		throws EntityNotFoundException
+	{
+		if (cachedProblems.containsKey(problemKey)) {
+			return cachedProblems.get(problemKey);
+		}
+
+		Entity ent = ds.get(problemKey);
+		Problem p = handleProblem(problemKey, ent);
+		cachedProblems.put(problemKey, p);
+		return p;
+	}
+
+	Problem fetchProblem(String contestId, String id)
+		throws EntityNotFoundException
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(id));
+		return fetchProblem(problemKey);
+	}
+
+	Problem handleProblem(Key key, Entity ent)
+	{
+		Problem p = new Problem(key);
+		p.name = (String) ent.getProperty("name");		
+		p.specKey = (Key) ent.getProperty("spec");
+		return p;
 	}
 
 	HashMap<Key,File> cachedFiles = new HashMap<Key,File>();

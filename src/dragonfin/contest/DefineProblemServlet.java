@@ -2,6 +2,7 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import dragonfin.contest.model.*;
@@ -46,6 +47,14 @@ public class DefineProblemServlet extends CoreServlet
 		Map<String,Object> args = new HashMap<String,Object>();
 		args.put("f", form);
 		renderTemplate(req, resp, TEMPLATE, args);
+	}
+
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws Exception
+	{
+		String contestId = tv.req.getParameter("contest");
+		String id = tv.req.getParameter("id");
+		ctx.put("problem", tv.fetchProblem(contestId, id));
 	}
 
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();

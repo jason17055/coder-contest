@@ -92,4 +92,46 @@ At a fixed time:</label>
 </div>
 </form>
 
+[% IF r.id %]
+
+[% IF problem.system_tests.size %]
+<p>System Tests</p>
+<table border="1">
+<tr>
+<th>Test</th>
+<th>Input</th>
+<th>Expected Output</th>
+<th>Example?</th>
+<th>Auto-judge?</th>
+</tr>
+[% FOREACH st IN problem.system_tests %]
+<tr>
+<td><a href="[% st.edit_url |html %]">[% st.test_number |html %]</a></td>
+<td><a href="[% st.input.url |html %]">[% st.input.name |html %]</a></td>
+<td><a href="[% st.expected.url |html %]">[% st.expected.name |html %]</a></td>
+<td>[% st.sample ? '&#x2713;' : '' %]</td>
+<td>[% st.auto_judge ? '&#x2713;' : '' %]</td>
+</tr>
+[% END #each system test %]
+</table>
+
+[% END #if any system tests %]
+[% IF problem.clarifications.size %]
+<p>Clarifications</p>
+<table border="1">
+[% FOREACH c IN problem.clarifications %]
+<tr>
+<td><a href="[% c.edit_url |html %]">Clarification [% c.id %]</a></td>
+</tr>
+[% END #each clarification %]
+</table>
+[% END #if any clarifications %]
+
+<p>
+<a href="[% problem.new_system_test_url |html %]">Add System Test</a>
+|
+<a href="[% problem.new_clarification_url |html %]">Issue Clarification</a>
+</p>
+
+[% END #if r.id %]
 [% END #wrapper %]
