@@ -104,6 +104,8 @@ TestJob [ id* ]
 	callback_data     String
 	finished          Boolean
 	claimed           Boolean
+	contest           String
+	problem           Key(Problem)
 
 Worker [ Contest / id* ]
 	created           Date

@@ -68,6 +68,9 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			ent.setProperty("user", userKey);
 			ent.setProperty("contest", contestId);
 			ent.setProperty("type", "U");
+			ent.setProperty("claimed", Boolean.FALSE);
+			ent.setProperty("finished", Boolean.FALSE);
+			ent.setProperty("problem", problemKey);
 			Key resultKey = ds.put(ent);
 
 			txn.commit();
