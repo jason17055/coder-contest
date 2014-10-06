@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.Date;
 import javax.servlet.*;
@@ -75,9 +76,11 @@ public class ProblemTestServlet extends ProblemCoreServlet
 
 			txn.commit();
 
-			String testId = Long.toString(resultKey.getId());
+			String jobId = Long.toString(resultKey.getId());
 
-			String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/test_result?id="+escapeUrl(testId);
+			JobBroker.notifyNewJob(jobId);
+
+			String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/test_result?id="+escapeUrl(jobId);
 			resp.sendRedirect(url);
 		}
 		finally {
