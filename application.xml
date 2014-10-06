@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" version="5">
+<description>Coder Contest</description>
+<display-name>codercontest</display-name>
+<module>
+	<web>
+		<web-uri>default</web-uri>
+		<context-root>default</context-root>
+	</web>
+</module>
+<module>
+	<web>
+		<web-uri>job_broker</web-uri>
+		<context-root>job_broker</context-root>
+	</web>
+</module>
+</application>

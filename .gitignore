@@ -1,8 +1,7 @@
 config.php
-falcon-contest.war
 build
 extlib
 context.xml
-war
+*.war
 *.swp
 deploy.appengine

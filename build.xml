@@ -48,7 +48,9 @@
 	<webinf dir="." includes="templates/* templates/admin/*" />
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
-
+<war destfile="job_broker.war" webxml="job_broker/web.xml">
+	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
+</war>
 </target>
 
 <target name="install" depends="build">
@@ -71,9 +73,17 @@
 </target>
 
 <target name="deploy-appengine" depends="build">
-<unzip src="${warfile}" dest="deploy.appengine"/>
-<copy file="appengine-web.xml" todir="deploy.appengine/WEB-INF"/>
-<copy file="datastore-indexes.xml" todir="deploy.appengine/WEB-INF"/>
+<!--application descriptor files -->
+<copy file="appengine-application.xml" todir="deploy.appengine/META-INF"/>
+<copy file="application.xml" todir="deploy.appengine/META-INF"/>
+<!--default module -->
+<unzip src="${warfile}" dest="deploy.appengine/default"/>
+<copy file="appengine-web.xml" todir="deploy.appengine/default/WEB-INF"/>
+<!--job_broker module -->
+<unzip src="job_broker.war" dest="deploy.appengine/job_broker"/>
+<copy file="job_broker/appengine-web.xml" todir="deploy.appengine/job_broker/WEB-INF"/>
+<!--optional app-wide configuration files, go into the default/WEB-XML directory -->
+<copy file="datastore-indexes.xml" todir="deploy.appengine/default/WEB-INF"/>
 </target>
 
 </project>
