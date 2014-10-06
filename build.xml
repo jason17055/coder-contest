@@ -49,6 +49,10 @@
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
 <war destfile="job_broker.war" webxml="job_broker/web.xml">
+	<classes dir="build/classes" includes="
+		dragonfin/contest/TemplateVariables.class
+		dragonfin/contest/FileUploadFormHelper.class
+		dragonfin/contest/broker/*" />
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
 </target>

@@ -233,7 +233,7 @@ public class FileUploadFormHelper
 		return f;
 	}
 
-	Map<String,String> processMultipartForm(HttpServletRequest req)
+	public Map<String,String> processMultipartForm(HttpServletRequest req)
 		throws ServletException, IOException
 	{
 		try {

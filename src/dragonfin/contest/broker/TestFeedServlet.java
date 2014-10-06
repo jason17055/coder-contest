@@ -1,4 +1,4 @@
-package dragonfin.contest;
+package dragonfin.contest.broker;
 
 import java.io.IOException;
 import java.util.*;
@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 import com.fasterxml.jackson.core.*;
 import com.google.appengine.api.datastore.*;
 
+import dragonfin.contest.FileUploadFormHelper;
 import static dragonfin.contest.TemplateVariables.makeFileUrl;
 
 public class TestFeedServlet extends HttpServlet

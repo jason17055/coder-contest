@@ -3,4 +3,12 @@
 <display-name>job_broker</display-name>
 <description>Coder Contest - Job Broker</description>
 
+<servlet>
+ <servlet-name>TestFeed</servlet-name>
+ <servlet-class>dragonfin.contest.broker.TestFeedServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>TestFeed</servlet-name>
+ <url-pattern>/feed</url-pattern>
+</servlet-mapping>
 </web-app>
