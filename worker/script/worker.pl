@@ -108,7 +108,6 @@ my $resp = $ua->post("$contest_url/register_worker",
 		"system" => $operating_system,
 		"description" => $operating_system . $java_version . $cpp_version,
 		],
-		"Accepted-Languages" => join(',',keys %accepted_languages),
 		);
 $resp->is_success
 	or die "Error: not a contest URL: $contest_url\n";
@@ -117,7 +116,6 @@ my $feed_url = read_response($resp)->{feed_url}
 	or die "Error: incompatible service at $contest_url\n";
 
 print "feed url is $feed_url\n";
-exit;
 
 my $spinner = "|/-\\";
 my $spinner_idx = 0;
@@ -132,10 +130,12 @@ for (;;)
 	$spinner_idx = ($spinner_idx + 1) % length($spinner);
 
 	my $resp = $ua->post($feed_url,
-		[ "action:claim" => 1,
+		[
+		"action:claim" => 1,
+		"worker_status" => make_worker_status_string(),
+		"languages" => join(',',keys %accepted_languages),
 		],
-		"Accepted-Languages" => join(',',keys %accepted_languages),
-		"Worker-Status" => make_worker_status_string(),
+		Content_Type => "form-data",
 		);
 
 	print "\b \b"x21;

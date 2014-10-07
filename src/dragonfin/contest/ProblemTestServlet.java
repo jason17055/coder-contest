@@ -28,6 +28,19 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		doCreateTestJob(req, resp);
 	}
 
+	static String fileExtensionOf(String fileName)
+	{
+		if (fileName == null) {
+			return null;
+		}
+		int period = fileName.lastIndexOf('.');
+		if (period == -1) {
+			return null;
+		}
+
+		return fileName.substring(period+1);
+	}
+
 	void doCreateTestJob(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -59,6 +72,7 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			if (fileHash != null) {
 				Key fileKey = KeyFactory.createKey("File", fileHash);
 				ent.setProperty("source", fileKey);
+				ent.setProperty("source_extension", fileExtensionOf(POST.get("source_upload.name")));
 			}
 			String fileHash2 = POST.get("input_upload");
 			if (fileHash2 != null) {

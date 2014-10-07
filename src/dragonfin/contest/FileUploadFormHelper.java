@@ -255,6 +255,9 @@ public class FileUploadFormHelper
 				String fileName = item.getName();
 				File f = handleFileUpload(item);
 				formFields.put(name, f != null ? f.id : null);
+				if (f != null) {
+					formFields.put(name+".name", f.name);
+				}
 			}
 		}
 
