@@ -200,9 +200,16 @@ sub do_job
 	chdir $props->{hash}
 		or die "Error: cannot chdir $props->{hash}: $!\n";
 
-	my $source_file = download_file($props->{source_file});
-	download_file($props->{input_file}, "input.txt");
-
+	my $source_file = undef;
+	if ($props->{source_file})
+	{
+		$source_file = download_file($props->{source_file});
+	}
+	my $input_file = undef;
+	if ($props->{input_file})
+	{
+		$input_file = download_file($props->{input_file}, "input.txt");
+	}
 	if ($props->{expected_file})
 	{
 		download_file($props->{expected_file}, "expected.txt");
@@ -220,7 +227,7 @@ sub do_job
 
 	@detail_output = ();
 
-	my $status = do_job_helper($props, $source_file);
+	my $status = do_job_helper($props, $source_file, $input_file);
 
 	my $resp = $ua->post(
 		$feed_url,
@@ -240,7 +247,12 @@ sub do_job
 
 sub do_job_helper
 {
-	my ($props, $source_file) = @_;
+	my ($props, $source_file, $input_file) = @_;
+
+	if (!defined($source_file)) {
+		detail "ERROR: missing source file\n";
+		return "Compilation Error";
+	}
 
 	my $ext = ($source_file =~ /\.([^.]+)$/ and $1);
 	my $lang = $accepted_languages{$ext};
@@ -277,7 +289,7 @@ sub do_job_helper
 	$cmdline = $lang->get_run_command($source_file);
 	detail join(" ", @$cmdline) . "\n";
 	$started = time();
-	($status, $result) = run_command($cmdline, "input.txt", "output.txt");
+	($status, $result) = run_command($cmdline, $input_file, "output.txt");
 	$elapsed = time() - $started;
 	if (@$result)
 	{
