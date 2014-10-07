@@ -13,6 +13,8 @@ import dragonfin.contest.model.*;
 import dragonfin.contest.model.File;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+
 public class CoreServlet extends HttpServlet
 {
 	TemplateToolkit engine;
@@ -23,17 +25,6 @@ public class CoreServlet extends HttpServlet
 			inFile.url = getServletContext().getContextPath()+"/_f/"+inFile.id+"/"+inFile.name;
 		}
 		return inFile;
-	}
-
-	public static String escapeUrl(String inStr)
-	{
-		try
-		{
-		return java.net.URLEncoder.encode(inStr, "UTF-8");
-		}catch (UnsupportedEncodingException e)
-		{
-			throw new Error("unexpected: "+e.getMessage(), e);
-		}
 	}
 
 	@Override

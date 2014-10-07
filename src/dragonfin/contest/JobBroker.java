@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 import com.google.appengine.api.modules.*;
 
-import static dragonfin.contest.CoreServlet.escapeUrl;
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 /**
  * Methods allowing front-end to interface with Job Broker backend.

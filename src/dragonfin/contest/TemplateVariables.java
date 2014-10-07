@@ -1,7 +1,7 @@
 package dragonfin.contest;
 
 import dragonfin.contest.model.*;
-import static dragonfin.contest.CoreServlet.escapeUrl;
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 import java.util.*;
 import java.util.regex.*;

@@ -8,7 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
-import dragonfin.contest.FileUploadFormHelper;
+import dragonfin.contest.common.FileUploadFormHelper;
 import static dragonfin.contest.TemplateVariables.makeFileUrl;
 
 public class RegisterWorkerServlet extends HttpServlet

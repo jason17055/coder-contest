@@ -1,4 +1,4 @@
-package dragonfin.contest;
+package dragonfin.contest.common;
 
 import java.io.*;
 import java.util.*;

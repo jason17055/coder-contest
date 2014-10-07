@@ -1,12 +1,14 @@
 package dragonfin.contest;
 
+import dragonfin.contest.model.*;
+import dragonfin.contest.common.*;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
-import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
 
 public class ProblemSubmitServlet extends ProblemCoreServlet

@@ -1,5 +1,8 @@
 package dragonfin.contest;
 
+import dragonfin.contest.model.*;
+import dragonfin.contest.common.*;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -7,8 +10,9 @@ import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
-import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
+
+import static dragonfin.contest.common.CommonFunctions.*;
 
 public class ProblemTestServlet extends ProblemCoreServlet
 {

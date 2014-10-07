@@ -11,8 +11,8 @@ import com.fasterxml.jackson.core.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.modules.*;
 
-import dragonfin.contest.FileUploadFormHelper;
-import static dragonfin.contest.CoreServlet.escapeUrl;
+import dragonfin.contest.common.FileUploadFormHelper;
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class TestFeedServlet extends HttpServlet
 {
@@ -176,16 +176,5 @@ public class TestFeedServlet extends HttpServlet
 		String v = modulesApi.getCurrentVersion();
 		return "http://" + modulesApi.getVersionHostname("default", v)
 			+ "/_f/" + escapeUrl(fileId) + "/" + escapeUrl(fileName);
-	}
-
-	public static String escapeUrl(String inStr)
-	{
-		try
-		{
-		return java.net.URLEncoder.encode(inStr, "UTF-8");
-		}catch (UnsupportedEncodingException e)
-		{
-			throw new Error("unexpected: "+e.getMessage(), e);
-		}
 	}
 }

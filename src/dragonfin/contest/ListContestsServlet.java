@@ -10,7 +10,7 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.users.*;
 
-import static dragonfin.contest.CoreServlet.escapeUrl;
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class ListContestsServlet extends CoreServlet
 {
