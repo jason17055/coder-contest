@@ -9,10 +9,13 @@ use Time::HiRes "time";
 use constant TIMEOUT => -33;
 use File::stat;
 
-my $feed_url = "http://home.messiah.edu/contest/worker/feed.php";
 our $timeout = 10;
 GetOptions(
 	) or exit 2;
+
+my ($contest_url) = @ARGV
+	or die "Usage: $0 [options] CONTEST_URL\n";
+$contest_url =~ s{/+$}{}s; # removing any trailing slashes
 
 my $ua = LWP::UserAgent->new();
 $ua->agent("worker.pl/$$/".time());
@@ -97,7 +100,7 @@ my %accepted_languages = (
 	($ruby_version ? (rb => "Ruby") : ()),
 	);
 
-my $resp = $ua->post($feed_url,
+my $resp = $ua->post("$contest_url/register_worker",
 		[
 		"action:register" => 1,
 		"languages" => join(',',keys %accepted_languages),
@@ -108,7 +111,13 @@ my $resp = $ua->post($feed_url,
 		"Accepted-Languages" => join(',',keys %accepted_languages),
 		);
 $resp->is_success
-	or die "Error: could not register at $feed_url\n";
+	or die "Error: not a contest URL: $contest_url\n";
+
+my $feed_url = read_response($resp)->{feed_url}
+	or die "Error: incompatible service at $contest_url\n";
+
+print "feed url is $feed_url\n";
+exit;
 
 my $spinner = "|/-\\";
 my $spinner_idx = 0;
@@ -406,6 +415,20 @@ sub make_worker_status_string
 		$job_count,
 		100 * ($sum_busy_time ? ($sum_busy_time / ($sum_idle_time+$sum_busy_time)) : 0),
 		;
+}
+
+sub read_response
+{
+	my ($resp) = @_;
+
+	my %props;
+	foreach my $line (split /\n/, $resp->content)
+	{
+		my ($k, $v) = split / /, $line, 2;
+		$props{$k} = $v;
+	}
+
+	return \%props;
 }
 
 package Java;

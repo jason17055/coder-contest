@@ -111,6 +111,11 @@
  <servlet-class>dragonfin.contest.AdminFileChunksServlet</servlet-class>
 </servlet>
 
+<servlet>
+ <servlet-name>RegisterWorker</servlet-name>
+ <servlet-class>dragonfin.contest.RegisterWorkerServlet</servlet-class>
+</servlet>
+
 <servlet-mapping>
  <servlet-name>config</servlet-name>
  <url-pattern>/config</url-pattern>
@@ -171,6 +176,10 @@
 <servlet-mapping>
  <servlet-name>ContestRules</servlet-name>
  <url-pattern>/_p/rules</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>RegisterWorker</servlet-name>
+ <url-pattern>/_p/register_worker</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

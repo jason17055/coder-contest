@@ -12,6 +12,15 @@ public class JobBroker
 	private static final Logger log = Logger.getLogger(
 		JobBroker.class.getName());
 
+	public static String getFeedUrl(String contestId, String workerId)
+	{
+		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
+		String jobBrokerHost = modulesApi.getVersionHostname("job_broker", "1");
+		return "http://" + jobBrokerHost + "/feed?"
+			+ (contestId != null ? "contest="+escapeUrl(contestId)+"&" : "")
+			+ "worker=" + escapeUrl(workerId);
+	}
+
 	public static void notifyNewJob(String jobId)
 	{
 		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
