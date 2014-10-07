@@ -5,7 +5,6 @@ import java.util.*;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
 
 public class ListProblemsServlet extends CoreServlet
@@ -19,10 +18,5 @@ public class ListProblemsServlet extends CoreServlet
 	{
 		if (requireDirector(req, resp)) { return; }
 		renderTemplate(req, resp, getTemplate());
-	}
-
-	@Override
-	void moreVars(TemplateVariables tv, SimpleBindings ctx)
-	{
 	}
 }

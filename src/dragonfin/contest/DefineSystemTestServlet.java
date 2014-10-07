@@ -1,8 +1,6 @@
 package dragonfin.contest;
 
 import dragonfin.contest.common.*;
-import dragonfin.contest.model.*;
-import dragonfin.contest.model.File;
 
 import java.io.*;
 import java.util.*;

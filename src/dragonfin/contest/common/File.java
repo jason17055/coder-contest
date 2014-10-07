@@ -1,4 +1,4 @@
-package dragonfin.contest.model;
+package dragonfin.contest.common;
 
 public class File
 {

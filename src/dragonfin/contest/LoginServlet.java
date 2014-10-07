@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import dragonfin.contest.model.*;
 import com.google.appengine.api.datastore.*;
 
 public class LoginServlet extends CoreServlet

@@ -1,5 +1,9 @@
 package dragonfin.contest;
 
+import dragonfin.contest.common.*;
+import dragonfin.contest.common.File;
+import dragonfin.templates.*;
+
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -8,9 +12,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
-import dragonfin.templates.*;
-import dragonfin.contest.model.*;
-import dragonfin.contest.model.File;
 import com.google.appengine.api.datastore.*;
 
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
