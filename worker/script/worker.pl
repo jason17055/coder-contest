@@ -312,11 +312,7 @@ sub do_job_helper
 
 sub download_file
 {
-	my ($rel_url, $local_filename) = @_;
-
-	my $url = $feed_url;
-	$url =~ s{[^/]+$}{}s;
-	$url .= $rel_url;
+	my ($url, $local_filename) = @_;
 
 	if (!$local_filename)
 	{

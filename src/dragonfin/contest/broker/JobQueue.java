@@ -22,13 +22,15 @@ public class JobQueue
 			for (Iterator<Entity> it = pendingJobs.iterator(); it.hasNext(); ) {
 				Entity ent = it.next();
 
-				if (isEligible(ent, contestId, languages)
-					&& tryClaim(workerKey, ent.getKey()))
-				{
-					// successful claim
+				if (isEligible(ent, contestId, languages)) {
+
 					it.remove();
-					activeJobs.put(ent.getKey(), ent);
-					return ent;
+					if (tryClaim(workerKey, ent.getKey())) {
+
+						// successful claim
+						activeJobs.put(ent.getKey(), ent);
+						return ent;
+					}
 				}
 			}
 
@@ -66,10 +68,15 @@ public class JobQueue
 		for (Entity ent : pq.asIterable()) {
 			if (!knownJobs.contains(ent.getKey())) {
 
-				pendingJobs.add(ent);
-				knownJobs.add(ent.getKey());
+				newJob(ent);
 			}
 		}
+	}
+
+	private void newJob(Entity ent)
+	{
+		pendingJobs.add(ent);
+		knownJobs.add(ent.getKey());
 	}
 
 	private boolean isEligible(Entity ent, String contestId, Set<String> languages)

@@ -18,7 +18,8 @@ public class JobBroker
 	public static String getJobBrokerUrl()
 	{
 		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-		return "http://" + modulesApi.getVersionHostname("job_broker", "1");
+		String v = modulesApi.getCurrentVersion();
+		return "http://" + modulesApi.getVersionHostname("job_broker", v);
 	}
 
 	public static String getFeedUrl(String contestId, String workerId)

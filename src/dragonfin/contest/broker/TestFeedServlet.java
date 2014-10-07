@@ -2,19 +2,22 @@ package dragonfin.contest.broker;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.fasterxml.jackson.core.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.modules.*;
 
 import dragonfin.contest.FileUploadFormHelper;
-import static dragonfin.contest.TemplateVariables.makeFileUrl;
+import static dragonfin.contest.CoreServlet.escapeUrl;
 
 public class TestFeedServlet extends HttpServlet
 {
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();
+	ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -100,6 +103,12 @@ public class TestFeedServlet extends HttpServlet
 			return;
 		}
 
+		sendJobDetails(resp, ds, ent);
+	}
+
+	void sendJobDetails(HttpServletResponse resp, DatastoreService ds, Entity ent)
+		throws IOException
+	{
 		Key jobKey = ent.getKey();
 
 		String sourceUrl = null;
@@ -109,22 +118,28 @@ public class TestFeedServlet extends HttpServlet
 			sourceId = sourceKey.getName();
 			Entity sourceEnt = ds.get(sourceKey);
 			String sourceName = (String) sourceEnt.getProperty("given_name");
-			sourceUrl = makeFileUrl(req, sourceId, sourceName);
+			sourceUrl = makeFileUrl(sourceId, sourceName);
 		}
 		catch (EntityNotFoundException e) {
 		}
 
 		Key inputKey = (Key) ent.getProperty("input");
-		String inputId = inputKey.getName();
-		String inputUrl = makeFileUrl(req, inputId, "input.txt");
+		String inputUrl;
+		if (inputKey != null) {
+			String inputId = inputKey.getName();
+			inputUrl = makeFileUrl(inputId, "input.txt");
+		}
+		else {
+			inputUrl = null;
+		}
 
 		Key expectedKey = (Key) ent.getProperty("expected");
 		String expectedUrl = expectedKey != null ?
-			makeFileUrl(req, expectedKey.getName(), "expected.txt") : null;
+			makeFileUrl(expectedKey.getName(), "expected.txt") : null;
 
 		Key actualKey = (Key) ent.getProperty("actual");
 		String actualUrl = actualKey != null ?
-			makeFileUrl(req, actualKey.getName(), "actual.txt") : null;
+			makeFileUrl(actualKey.getName(), "actual.txt") : null;
 
 		String jobType = (String) ent.getProperty("type");
 		long runtimeLimit = ent.hasProperty("runtime_limit") ?
@@ -154,5 +169,23 @@ public class TestFeedServlet extends HttpServlet
 			out.printf("timeout %d\n", runtimeLimit);
 		}
 		out.close();
+	}
+
+	String makeFileUrl(String fileId, String fileName)
+	{
+		String v = modulesApi.getCurrentVersion();
+		return "http://" + modulesApi.getVersionHostname("default", v)
+			+ "/_f/" + escapeUrl(fileId) + "/" + escapeUrl(fileName);
+	}
+
+	public static String escapeUrl(String inStr)
+	{
+		try
+		{
+		return java.net.URLEncoder.encode(inStr, "UTF-8");
+		}catch (UnsupportedEncodingException e)
+		{
+			throw new Error("unexpected: "+e.getMessage(), e);
+		}
 	}
 }
