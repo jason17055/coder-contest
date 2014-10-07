@@ -1,6 +1,7 @@
 package dragonfin.contest.broker;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.Date;
 import javax.servlet.*;
@@ -14,6 +15,18 @@ import static dragonfin.contest.TemplateVariables.makeFileUrl;
 public class TestFeedServlet extends HttpServlet
 {
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		resp.setContentType("text/plain;charset=UTF-8");
+		PrintWriter out = resp.getWriter();
+
+		JobQueue Q = (JobQueue) getServletContext().getAttribute("jobQueue");
+		out.println("job queue: "+(Q != null ? "exists" : "does not exist"));
+		out.close();
+	}
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)

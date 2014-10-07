@@ -3,6 +3,10 @@
 <display-name>job_broker</display-name>
 <description>Coder Contest - Job Broker</description>
 
+<listener>
+ <listener-class>dragonfin.contest.broker.ContextListener</listener-class>
+</listener>
+
 <servlet>
  <servlet-name>TestFeed</servlet-name>
  <servlet-class>dragonfin.contest.broker.TestFeedServlet</servlet-class>
