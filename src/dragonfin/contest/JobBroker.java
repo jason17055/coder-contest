@@ -7,28 +7,32 @@ import com.google.appengine.api.modules.*;
 
 import static dragonfin.contest.CoreServlet.escapeUrl;
 
+/**
+ * Methods allowing front-end to interface with Job Broker backend.
+ */
 public class JobBroker
 {
 	private static final Logger log = Logger.getLogger(
 		JobBroker.class.getName());
 
-	public static String getFeedUrl(String contestId, String workerId)
+	public static String getJobBrokerUrl()
 	{
 		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-		String jobBrokerHost = modulesApi.getVersionHostname("job_broker", "1");
-		return "http://" + jobBrokerHost + "/feed?"
+		return "http://" + modulesApi.getVersionHostname("job_broker", "1");
+	}
+
+	public static String getFeedUrl(String contestId, String workerId)
+	{
+		return getJobBrokerUrl() + "/feed?"
 			+ (contestId != null ? "contest="+escapeUrl(contestId)+"&" : "")
 			+ "worker=" + escapeUrl(workerId);
 	}
 
 	public static void notifyNewJob(String jobId)
 	{
-		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-		String jobBrokerHost = modulesApi.getVersionHostname("job_broker", "1");
-
+		String url = getJobBrokerUrl()+"/notify?job="+escapeUrl(jobId);
 		try {
-			URL url = new URL("http://"+jobBrokerHost+"/notify?job="+escapeUrl(jobId));
-			InputStream inStream = url.openStream();
+			InputStream inStream = new URL(url).openStream();
 			byte [] b = new byte[1024];
 			while (inStream.read(b) != -1);
 			inStream.close();
