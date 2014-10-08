@@ -411,6 +411,44 @@ public class TemplateVariables
 		}
 	}
 
+	public class TestJob
+	{
+		final Key dsKey;
+		public String id;
+		public String type;
+		public String result_status;
+		public String result_detail;
+		public String result_detail_url; //caller must provide
+		public boolean claimed;
+		public boolean finished;
+		Key sourceFileKey;
+		Key inputFileKey;
+		Key outputFileKey;
+
+		TestJob(Key dsKey) {
+			this.dsKey = dsKey;
+			this.id = Long.toString(dsKey.getId());
+		}
+
+		public File getSource()
+			throws EntityNotFoundException
+		{
+			return sourceFileKey != null ? fetchFile(sourceFileKey) : null;
+		}
+
+		public File getInput()
+			throws EntityNotFoundException
+		{
+			return inputFileKey != null ? fetchFile(inputFileKey) : null;
+		}
+
+		public File getOutput()
+			throws EntityNotFoundException
+		{
+			return outputFileKey != null ? fetchFile(outputFileKey) : null;
+		}
+	}
+
 	public class Clarification
 	{
 	}
@@ -477,6 +515,45 @@ public class TemplateVariables
 			true;
 
 		return c;
+	}
+
+	TestJob fetchTestJob(Key jobKey)
+		throws EntityNotFoundException
+	{
+		Entity ent = ds.get(jobKey);
+		return handleTestJob(jobKey, ent);
+	}
+
+	TestJob fetchTestJob(String jobId)
+		throws EntityNotFoundException
+	{
+		Key jobKey = KeyFactory.createKey("TestJob", Long.parseLong(jobId));
+		return fetchTestJob(jobKey);
+	}
+
+	TestJob handleTestJob(Key key, Entity ent)
+	{
+		TestJob j = new TestJob(key);
+
+		//strings/dates
+		j.type = (String) ent.getProperty("type");		
+		j.result_status = (String) ent.getProperty("result_status");
+		j.result_detail = (String) ent.getProperty("result_detail");
+
+		//files
+		j.sourceFileKey = (Key) ent.getProperty("source");
+		j.inputFileKey = (Key) ent.getProperty("input");
+		j.outputFileKey = (Key) ent.getProperty("output");
+
+		//booleans
+		j.claimed = ent.hasProperty("claimed") ?
+			((Boolean) ent.getProperty("claimed")).booleanValue() :
+			false;
+		j.finished = ent.hasProperty("finished") ?
+			((Boolean) ent.getProperty("finished")).booleanValue() :
+			false;
+
+		return j;
 	}
 
 	HashMap<Key,Problem> cachedProblems = new HashMap<Key,Problem>();

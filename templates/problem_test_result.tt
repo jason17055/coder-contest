@@ -26,12 +26,12 @@
 <tr>
 <td valign="top"><label>Status:</label></td>
 <td valign="top">
-[% IF test_job.result_status %]
+[% IF test_job.finished %]
 <div>[% test_job.result_status |html %]</div>
-<iframe width="640" height="120" src="[% test_job.result_url |html %]"></iframe>
+<iframe width="640" height="120" src="[% test_job.result_detail_url |html %]"></iframe>
 [% ELSE #no result status %]
 <div><img src="[% resources_prefix|html %]/images/ajax-loader.gif" class="job-incomplete-indicator"><em><font color="#ff00ff">Testing... Please wait...</font></em></div>
-[% END #if no result status %]
+[% END #if not finished %]
 </td>
 </tr>
 [% IF test_job.output %]

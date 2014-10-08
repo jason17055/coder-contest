@@ -89,3 +89,14 @@ result
 .score_html
 .minutes
 .submissions
+
+test_job
+.id
+.type
+.result_status
+.result_detail
+.claimed
+.finished
+.source      - File
+.input       - File
+.output      - File
