@@ -229,8 +229,10 @@ sub do_job
 
 	my $status = do_job_helper($props, $source_file, $input_file);
 
+	my $post_url = $props->{post_result_to};
+	print "post url is $post_url\n";
 	my $resp = $ua->post(
-		$feed_url,
+		$post_url,
 		[
 			id => $props->{id},
 			status => $status,

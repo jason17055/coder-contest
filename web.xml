@@ -111,10 +111,24 @@
  <servlet-class>dragonfin.contest.AdminFileChunksServlet</servlet-class>
 </servlet>
 
+<!-- Used by Worker script.
+  -->
 <servlet>
  <servlet-name>RegisterWorker</servlet-name>
  <servlet-class>dragonfin.contest.RegisterWorkerServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>PostJobResult</servlet-name>
+ <servlet-class>dragonfin.contest.PostJobResultServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>RegisterWorker</servlet-name>
+ <url-pattern>/_p/register_worker</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>PostJobResult</servlet-name>
+ <url-pattern>/_w/post_job_result</url-pattern>
+</servlet-mapping>
 
 <servlet-mapping>
  <servlet-name>config</servlet-name>
@@ -176,10 +190,6 @@
 <servlet-mapping>
  <servlet-name>ContestRules</servlet-name>
  <url-pattern>/_p/rules</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
- <servlet-name>RegisterWorker</servlet-name>
- <url-pattern>/_p/register_worker</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

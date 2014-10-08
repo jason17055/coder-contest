@@ -149,6 +149,7 @@ public class TestFeedServlet extends HttpServlet
 		PrintWriter out = resp.getWriter();
 
 		out.printf("id %s\n", Long.toString(jobKey.getId()));
+		out.printf("post_result_to %s\n", makeResultUrl(jobKey));
 		out.printf("type %s\n", jobType);
 		if (sourceId != null) {
 			out.printf("hash %s\n", sourceId);
@@ -173,8 +174,19 @@ public class TestFeedServlet extends HttpServlet
 
 	String makeFileUrl(String fileId, String fileName)
 	{
+		return getUrlPrefix() + "/_f/" + escapeUrl(fileId) +
+			"/" + escapeUrl(fileName);
+	}
+
+	String makeResultUrl(Key jobKey)
+	{
+		String jobId = Long.toString(jobKey.getId());
+		return getUrlPrefix() + "/_w/post_job_result?job="+escapeUrl(jobId);
+	}
+
+	String getUrlPrefix()
+	{
 		String v = modulesApi.getCurrentVersion();
-		return "http://" + modulesApi.getVersionHostname("default", v)
-			+ "/_f/" + escapeUrl(fileId) + "/" + escapeUrl(fileName);
+		return "http://" + modulesApi.getVersionHostname("default", v);
 	}
 }
