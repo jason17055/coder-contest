@@ -40,8 +40,6 @@ public class PostJobResultServlet extends HttpServlet
 
 		String statusStr = POST.get("status");
 		statusStr = statusStr != null ? statusStr : "";
-		String detailStr = POST.get("detail");
-		detailStr = detailStr != null ? detailStr : "";
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
@@ -57,12 +55,13 @@ public class PostJobResultServlet extends HttpServlet
 				ent.setProperty("output", fileKey);
 			}
 
-			if (statusStr.equals("No Error") && outputHash == null) {
-				detailStr += "Warning: output file could not be saved because it was too large.\n";
+			String detailHash = POST.get("detail_upload");
+			if (detailHash != null) {
+				Key fileKey = KeyFactory.createKey("File", detailHash);
+				ent.setProperty("result_detail", fileKey);
 			}
 
 			ent.setProperty("result_status", statusStr);
-			ent.setProperty("result_detail", detailStr);
 			ent.setProperty("finished", Boolean.TRUE);
 			ent.setProperty("last_touched", new Date());
 			ent.removeProperty("claimed");

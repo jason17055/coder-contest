@@ -417,13 +417,12 @@ public class TemplateVariables
 		public String id;
 		public String type;
 		public String result_status;
-		public String result_detail;
-		public String result_detail_url; //caller must provide
 		public boolean claimed;
 		public boolean finished;
 		Key sourceFileKey;
 		Key inputFileKey;
 		Key outputFileKey;
+		Key result_detailFileKey;
 
 		TestJob(Key dsKey) {
 			this.dsKey = dsKey;
@@ -446,6 +445,12 @@ public class TemplateVariables
 			throws EntityNotFoundException
 		{
 			return outputFileKey != null ? fetchFile(outputFileKey) : null;
+		}
+
+		public File getResult_detail()
+			throws EntityNotFoundException
+		{
+			return result_detailFileKey != null ? fetchFile(result_detailFileKey) : null;
 		}
 	}
 
@@ -538,12 +543,12 @@ public class TemplateVariables
 		//strings/dates
 		j.type = (String) ent.getProperty("type");		
 		j.result_status = (String) ent.getProperty("result_status");
-		j.result_detail = (String) ent.getProperty("result_detail");
 
 		//files
 		j.sourceFileKey = (Key) ent.getProperty("source");
 		j.inputFileKey = (Key) ent.getProperty("input");
 		j.outputFileKey = (Key) ent.getProperty("output");
+		j.result_detailFileKey = (Key) ent.getProperty("result_detail");
 
 		//booleans
 		j.claimed = ent.hasProperty("claimed") ?

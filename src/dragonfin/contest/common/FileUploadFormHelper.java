@@ -199,6 +199,10 @@ public class FileUploadFormHelper
 			return null;
 		}
 
+		if (contentType == null || contentType.equals("")) {
+			contentType = "text/plain";
+		}
+
 		UploadHelper helper = new UploadHelper();
 		helper.ds = DatastoreServiceFactory.getDatastoreService();
 
