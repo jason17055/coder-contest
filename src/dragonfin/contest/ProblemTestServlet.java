@@ -54,8 +54,9 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
 
-		@SuppressWarnings("unchecked")
-		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData) req.getAttribute("POST");
+		File sourceFile = POST.handleFileContent("source");
+		File inputFile = POST.handleFileContent("input");
 
 		// TODO- check parameters
 		// TODO- check permission
@@ -70,15 +71,13 @@ public class ProblemTestServlet extends ProblemCoreServlet
 
 			ent.setProperty("created", new Date());
 
-			String fileHash = POST.get("source_upload");
-			if (fileHash != null) {
-				Key fileKey = KeyFactory.createKey("File", fileHash);
+			if (sourceFile != null) {
+				Key fileKey = KeyFactory.createKey("File", sourceFile.id);
 				ent.setProperty("source", fileKey);
-				ent.setProperty("source_extension", fileExtensionOf(POST.get("source_upload.name")));
+				ent.setProperty("source_extension", fileExtensionOf(sourceFile.name));
 			}
-			String fileHash2 = POST.get("input_upload");
-			if (fileHash2 != null) {
-				Key fileKey = KeyFactory.createKey("File", fileHash2);
+			if (inputFile != null) {
+				Key fileKey = KeyFactory.createKey("File", inputFile.id);
 				ent.setProperty("input", fileKey);
 			}
 

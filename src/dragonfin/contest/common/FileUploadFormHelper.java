@@ -12,12 +12,14 @@ import java.security.NoSuchAlgorithmException;
 import com.google.appengine.api.datastore.*;
 import java.util.logging.Logger;
 
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+
 public class FileUploadFormHelper
 {
 	private static final Logger log = Logger.getLogger(
 			FileUploadFormHelper.class.getName());
-
 	static final Charset UTF8 = Charset.forName("UTF-8");
+
 	static String readStream(InputStream in)
 		throws IOException
 	{
@@ -203,10 +205,16 @@ public class FileUploadFormHelper
 			contentType = "text/plain";
 		}
 
+		InputStream stream = item.openStream();
+		return finishFileUpload(stream, fileName, contentType);
+	}
+
+	private File finishFileUpload(InputStream stream, String fileName, String contentType)
+		throws IOException
+	{
 		UploadHelper helper = new UploadHelper();
 		helper.ds = DatastoreServiceFactory.getDatastoreService();
 
-		InputStream stream = item.openStream();
 		Key headChunk = helper.processStream(stream);
 
 		helper.md.reset();
@@ -236,12 +244,70 @@ public class FileUploadFormHelper
 		return f;
 	}
 
-	public Map<String,String> processMultipartForm(HttpServletRequest req)
+	File convertTextToFile(String textContent, String fileName)
+		throws IOException
+	{
+		ByteArrayInputStream bytes = new ByteArrayInputStream(
+				textContent.getBytes(UTF8)
+			);
+		return finishFileUpload(bytes, fileName, "text/plain");
+	}
+
+	public class FormData extends HashMap<String,String>
+	{
+		final HttpServletRequest req;
+
+		FormData(HttpServletRequest req)
+		{
+			this.req = req;
+		}
+
+		public File handleFileContent(String fieldName)
+			throws IOException
+		{
+			if (containsKey(fieldName+"_upload") && containsKey(fieldName+"_upload.name")) {
+				// already got a file
+				return getFile(fieldName);
+			}
+			else if (containsKey(fieldName+"_content")) {
+
+				String fakeName = fieldName+".txt";
+				File f = convertTextToFile(get(fieldName+"_content"), fakeName);
+				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
+				f.inline_text_url = f.url + "?type=text";
+
+				put(fieldName+"_upload", f.id);
+				put(fieldName+"_upload.name", f.name);
+				return f;
+			}
+			else {
+				return null;
+			}
+		}
+
+		public File getFile(String fieldName)
+			throws IOException
+		{
+			if (containsKey(fieldName+"_upload") && containsKey(fieldName+"_upload.name")) {
+				File f = new File();
+				f.id = get(fieldName+"_upload");
+				f.name = get(fieldName+"_upload.name");
+				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
+				f.inline_text_url = f.url + "?type=text";
+				return f;
+			}
+			else {
+				return null;
+			}
+		}
+	}
+
+	public FormData processMultipartForm(HttpServletRequest req)
 		throws ServletException, IOException
 	{
 		try {
 
-		Map<String,String> formFields = new HashMap<String,String>();
+		FormData formFields = new FormData(req);
 
 		ServletFileUpload upload = new ServletFileUpload();
 		FileItemIterator it = upload.getItemIterator(req);
