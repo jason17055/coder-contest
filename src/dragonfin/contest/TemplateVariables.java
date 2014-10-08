@@ -308,9 +308,17 @@ public class TemplateVariables
 	public class Result
 	{
 		public final Key dsKey;
+		public Date opened;
+		Key sourceFileKey;
 
 		Result(Key dsKey) {
 			this.dsKey = dsKey;
+		}
+
+		public File getSource()
+			throws EntityNotFoundException
+		{
+			return sourceFileKey != null ? fetchFile(sourceFileKey) : null;
 		}
 	}
 
@@ -619,6 +627,28 @@ public class TemplateVariables
 			(int)((Long)ent.getProperty("runtime_limit")).longValue() :
 			0;
 		return p;
+	}
+
+	HashMap<Key,Result> cachedResults = new HashMap<Key,Result>();
+	Result fetchResult(Key resultKey)
+		throws EntityNotFoundException
+	{
+		if (cachedResults.containsKey(resultKey)) {
+			return cachedResults.get(resultKey);
+		}
+
+		Entity ent = ds.get(resultKey);
+		Result r = handleResult(resultKey, ent);
+		cachedResults.put(resultKey, r);
+		return r;
+	}
+
+	Result handleResult(Key key, Entity ent)
+	{
+		Result r = new Result(key);
+		r.sourceFileKey = (Key) ent.getProperty("source");
+		r.opened = (Date) ent.getProperty("opened");
+		return r;
 	}
 
 	HashMap<Key,SystemTest> cachedSystemTests = new HashMap<Key,SystemTest>();

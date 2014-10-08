@@ -72,7 +72,6 @@ Result [ User / Problem.id ]
 	score_alt         Integer
 	minutes           Integer
 	incorrect_submissions Integer
-	problem           Key(Problem)
 	opened            Date
 	source            Key(File)
 

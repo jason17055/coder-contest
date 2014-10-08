@@ -50,6 +50,10 @@ public class ProblemTestServlet extends ProblemCoreServlet
 
 		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("problem");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
