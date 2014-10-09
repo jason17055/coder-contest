@@ -32,7 +32,6 @@ public class TestFeedServlet extends HttpServlet
 		out.println("job queue: "+(Q != null ? "exists" : "does not exist"));
 		if (Q != null) {
 			out.println("pending jobs: "+Q.pendingJobs.size());
-			out.println("active jobs: "+Q.activeJobs.size());
 		}
 		out.close();
 	}
