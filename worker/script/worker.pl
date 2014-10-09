@@ -47,6 +47,7 @@ sub register_worker
 
 	my $java_version = `javac -version 2>&1`;
 	if ($? == 0) {
+		$java_version =~ s/\s+$//s;
 		$language_details{"language:java"} = "$java_version ($operating_system)";
 		print "Found Java: $java_version\n";
 	} else {
@@ -54,8 +55,9 @@ sub register_worker
 		undef $java_version;
 	}
 
-	my ($cpp_version) = `g++ --version`;
+	my ($cpp_version) = `g++ --version 2>&1`;
 	if ($? == 0) {
+		$cpp_version =~ s/\s+$//s;
 		$language_details{"language:cpp"} = "$cpp_version ($operating_system)";
 		print "Found G++: $cpp_version\n";
 	} else {
@@ -65,6 +67,7 @@ sub register_worker
 
 	my ($py_version) = `python -V 2>&1`;
 	if ($? == 0) {
+		$py_version =~ s/\s+$//s;
 		$language_details{"language:py"} = "$py_version ($operating_system)";
 		print "Found Python: $py_version\n";
 	} else {
@@ -72,8 +75,10 @@ sub register_worker
 		undef $py_version;
 	}
 
-	my ($perl_version) = `perl -e 'print $^V' 2>&1`;
+	my ($perl_version) = `perl -e 'print \$^V' 2>&1`;
 	if ($? == 0) {
+		$perl_version =~ s/\s+$//s;
+		$perl_version =~ s/^(Perl\s*)?/Perl /is;
 		$language_details{"language:pl"} = "$perl_version ($operating_system)";
 		print "Found Perl: $perl_version\n";
 	} else {
@@ -83,6 +88,7 @@ sub register_worker
 
 	my ($ruby_version) = `ruby -v 2>&1`;
 	if ($? == 0) {
+		$ruby_version =~ s/\s+$//s;
 		$language_details{"language:rb"} = "$ruby_version ($operating_system)";
 		print "Found Ruby: $ruby_version\n";
 	} else {
@@ -92,6 +98,7 @@ sub register_worker
 
 	my ($csharp_version) = `csc 2>&1`;
 	if ($? == 0) {
+		$csharp_version =~ s/\s+$//s;
 		$language_details{"language:cs"} = $csharp_version;
 		print "Found C-Sharp: $csharp_version\n";
 	} else {
