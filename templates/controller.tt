@@ -15,10 +15,10 @@
 [% tname = team.name || "(no name)" %]
 <tr><td height="32">
 [% IF team.online %]
-[%	online_img = "images/plus.png" %]
+[%	online_img = "[% images_url %]/plus.png" %]
 [%	online_lbl = "[Online]" %]
 [% ELSE %]
-[%	online_img = "images/minus.png" %]
+[%	online_img = "[% images_url %]/minus.png" %]
 [%	online_lbl = "[Offline]" %]
 [% END %]
 <div>
@@ -63,10 +63,10 @@
 
 [% FOREACH judge IN all_judges %]
 [% IF judge.online %]
-[%	online_img = "images/plus.png" %]
+[%	online_img = "[% images_url %]/plus.png" %]
 [%	online_lbl = "[Online]" %]
 [% ELSE %]
-[%	online_img = "images/minus.png" %]
+[%	online_img = "[% images_url %]/minus.png" %]
 [%	online_lbl = "[Offline]" %]
 [% END %]
 
@@ -75,13 +75,13 @@
 <a href="[% judge.edit_url |html %]">[% judge.name |html %]</a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
-<img src="images/clarification.png" alt="Clarifications:"
+<img src="[% images_url %]/clarification.png" alt="Clarifications:"
 	class="task-count-indicator"
 	id="ind_clarificationcount_judge_[% judge.id |html %]_[% judge.clarifications_total |html %]">
 [% judge.clarifications_pending |html %]
 ([% judge.clarifications_done |html %])
 
-<img style="margin-left: 1em" src="images/submission.png" alt="Submissions:"
+<img style="margin-left: 1em" src="[% images_url %]/submission.png" alt="Submissions:"
 	class="task-count-indicator"
 	id="ind_submissioncount_judge_[% judge.id |html %]_[% judge.submissions_total |html %]">
 [% judge.submissions_pending |html %]
@@ -103,7 +103,7 @@
 
 <tr>
 <td height="32">
-<div><img src="images/plus.png" alt="[Online]" width="14" height="14">
+<div><img src="[% images_url %]/plus.png" alt="[Online]" width="14" height="14">
 [% wkr.name |html %]</div>
 <div>[% wkr.busy ? "Busy" : "Idle" %]</div>
 <div>[% wkr.worker_status |html %]</div>
@@ -116,7 +116,7 @@
 [% IF contest.workers.size == 0 %]
 <tr>
 <td colspan="3" height="32">
-<img src="images/minus.png" alt="" width='14' height='14'>
+<img src="[% images_url %]/minus.png" alt="" width='14' height='14'>
 <span style="color: red; font-weight: bold">No workers are online</span>
 <div><small><a href="worker/">Click here to find out how to start a worker</a></small></div></td>
 </tr>

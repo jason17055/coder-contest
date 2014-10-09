@@ -1,3 +1,5 @@
+images_url   - URL prefix of image files
+
 session      - properties of the current session
 .user        - User for the currently-logged in user
 .username    - username of the currently-logged in user (or null if not logged in)
