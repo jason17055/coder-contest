@@ -1,0 +1,41 @@
+[% WRAPPER "common.inc"
+	page_title = 'Edit Clarification'
+%]
+
+[% INCLUDE 'form_messages.inc' %]
+
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label>Problem:</label></td>
+<td><a href="[% submission.problem.edit_url |html %]">[% submission.problem.name |html %]</a></td>
+</tr>
+<tr>
+<td valign="top"><label>Message:</label></td>
+<td valign="top"><textarea name="request" rows="10" cols="72">[% f.request|html %]</textarea></td>
+</tr>
+<tr>
+<td valign="top"><label>Response Type:</label></td>
+<td valign="top"><select name="status">
+<option value=""[% !f.status ? ' selected="selected"' : '' %]>--choose--</option>
+<option value="reply-one"[% f.status=='reply-one' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
+<option value="reply-all"[% f.status=='reply-all' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
+</select></td>
+</tr>
+<tr>
+<td valign="top"><label>Response Message:</label></td>
+<td valign="top"><textarea name="response" rows="10" cols="72">[% f.response |html %]</textarea></td>
+</tr>
+</table>
+
+<div>
+<button type="submit" onclick='return checkAnswerClarificationForm()'>Submit</button>
+[% IF r.id && session.is_director %]
+<button type="submit" name="action:delete_clarification" onclick='return confirm("Really delete this clarification?")'>Delete</button>
+[% END #if director %]
+<button type="submit" name="action:cancel">Cancel</button>
+</div>
+
+</form>
+
+[% END #wrapper %]

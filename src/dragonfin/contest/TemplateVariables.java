@@ -402,7 +402,6 @@ public class TemplateVariables
 		public String status;
 		public Date created;
 		public String type;
-		public String edit_url;
 		public int minutes;
 
 		Submission(Key dsKey)
@@ -414,7 +413,16 @@ public class TemplateVariables
 			String username = parts[1];
 
 			this.id = username + "/" + Long.toString(dsKey.getId());
-			this.edit_url = "submission?id="+id;
+		}
+
+		public String getEdit_url()
+		{
+			if ("clarification".equals(type)) {
+				return "clarification?id="+id;
+			}
+			else {
+				return "submission?id="+id;
+			}
 		}
 
 		Key problemKey;

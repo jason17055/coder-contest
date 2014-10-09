@@ -53,6 +53,10 @@
  <servlet-class>dragonfin.contest.ListSubmissionsServlet</servlet-class>
 </servlet>
 <servlet>
+ <servlet-name>EditClarification</servlet-name>
+ <servlet-class>dragonfin.contest.EditClarificationServlet</servlet-class>
+</servlet>
+<servlet>
  <servlet-name>EditSubmission</servlet-name>
  <servlet-class>dragonfin.contest.EditSubmissionServlet</servlet-class>
 </servlet>
@@ -171,6 +175,10 @@
 <servlet-mapping>
  <servlet-name>ListSubmissions</servlet-name>
  <url-pattern>/_p/submissions</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>EditClarification</servlet-name>
+ <url-pattern>/_p/clarification</url-pattern>
 </servlet-mapping>
 <servlet-mapping>
  <servlet-name>EditSubmission</servlet-name>
