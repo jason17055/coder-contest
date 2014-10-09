@@ -234,9 +234,18 @@
  <servlet-name>GetFile</servlet-name>
  <servlet-class>dragonfin.contest.GetFileServlet</servlet-class>
 </servlet>
-
 <servlet-mapping>
  <servlet-name>GetFile</servlet-name>
  <url-pattern>/_f/*</url-pattern>
 </servlet-mapping>
+
+<servlet>
+ <servlet-name>NewSubmissionTask</servlet-name>
+ <servlet-class>dragonfin.contest.NewSubmissionTask</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>NewSubmissionTask</servlet-name>
+ <url-pattern>/_task/new_submission</url-pattern>
+</servlet-mapping>
+
 </web-app>

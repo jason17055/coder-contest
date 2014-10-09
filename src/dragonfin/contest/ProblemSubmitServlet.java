@@ -9,6 +9,10 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 public class ProblemSubmitServlet extends ProblemCoreServlet
 {
@@ -60,9 +64,10 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
 
+		Key userKey = getLoggedInUserKey(req);
+		Key submissionKey;
 		try {
 
-			Key userKey = getLoggedInUserKey(req);
 			Entity ent = new Entity("Submission", userKey);
 
 			ent.setProperty("created", new Date());
@@ -75,7 +80,7 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 
 			ent.setProperty("problem", problemKey);
 			ent.setProperty("contest", contestId);
-			ds.put(ent);
+			submissionKey = ds.put(ent);
 
 			txn.commit();
 		}
@@ -84,6 +89,13 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 				txn.rollback();
 			}
 		}
+
+		// enqueue a task for processing this new submission
+		Queue taskQueue = QueueFactory.getDefaultQueue();
+		taskQueue.add(withUrl("/_task/new_submission")
+			.param("submitter", userKey.getName())
+			.param("submission", Long.toString(submissionKey.getId()))
+			);
 
 		String url = "..";
 		resp.sendRedirect(url);
