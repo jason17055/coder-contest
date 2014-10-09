@@ -452,6 +452,16 @@ public class TemplateVariables
 		{
 			return sourceKey != null ? fetchFile(sourceKey) : null;
 		}
+
+		public ArrayList<TestResult> getTest_results()
+		{
+			return null;
+		}
+	}
+
+	public class TestResult
+	{
+	//TODO
 	}
 
 	public class SystemTest

@@ -61,6 +61,15 @@
 <td id="rhs_column" width="40%" valign="top">
 <h3 class="submission_h3">Test Results:</h3>
 <table border="1" width="100%">
+[% FOREACH tr IN submission.test_results %]
+[% name = 'Test ' _ tr.test_number %]
+<tr>
+<td><a href="[% tr.url |html %]">[% name %]</a></td>
+<td>[% IF tr.result_status %]
+[% ELSE %]<img src="ajax-loader.gif"> Pending
+[% END %]</td>
+</tr>
+[% END #each test result %]
 </table>
 
 <form method="post">
