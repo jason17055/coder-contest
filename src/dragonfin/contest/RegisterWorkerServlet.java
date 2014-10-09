@@ -37,12 +37,23 @@ public class RegisterWorkerServlet extends HttpServlet
 		String systemDescription = req.getParameter("system");
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+
+		// check to ensure that contest exists
+		// TODO- check security
+		try {
+			Entity contestEnt = ds.get(contestKey);
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
 		Transaction txn = ds.beginTransaction();
 
 		String workerId;
 		try {
 
-			Key contestKey = KeyFactory.createKey("Contest", contestId);
 			Entity ent = new Entity("Worker", contestKey);
 			ent.setProperty("created", new Date());
 			ent.setProperty("accepted_languages", languages);
