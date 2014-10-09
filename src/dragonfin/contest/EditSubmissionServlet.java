@@ -8,6 +8,10 @@ import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 public class EditSubmissionServlet extends CoreServlet
 {
@@ -65,16 +69,26 @@ public class EditSubmissionServlet extends CoreServlet
 		@SuppressWarnings("unchecked")
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
 
+		boolean statusChanged;
+
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+		Key userKey = submissionKey.getParent();
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
-
 		try {
-
-			String contestId = req.getParameter("contest");
-			String id = req.getParameter("id");
-			Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
 			Entity ent = ds.get(submissionKey);
+
+			String oldStatus = (String) ent.getProperty("status");
+			if (oldStatus == null) { oldStatus = ""; }
+
 			updateFromForm(ent, POST);
+
+			String newStatus = (String) ent.getProperty("status");
+			statusChanged = !oldStatus.equals(newStatus);
+
 			ds.put(ent);
 
 			txn.commit();
@@ -87,6 +101,15 @@ public class EditSubmissionServlet extends CoreServlet
 			if (txn.isActive()) {
 				txn.rollback();
 			}
+		}
+
+		if (statusChanged) {
+			// enqueue a task for processing this submission status change
+			Queue taskQueue = QueueFactory.getDefaultQueue();
+			taskQueue.add(withUrl("/_task/submission_status_changed")
+				.param("submitter", userKey.getName())
+				.param("submission", Long.toString(submissionKey.getId()))
+				);
 		}
 
 		doCancel(req, resp);
