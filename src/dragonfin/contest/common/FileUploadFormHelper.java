@@ -271,8 +271,13 @@ public class FileUploadFormHelper
 			}
 			else if (containsKey(fieldName+"_content")) {
 
-				String fakeName = fieldName+".txt";
-				File f = convertTextToFile(get(fieldName+"_content"), fakeName);
+				String fileName = get(fieldName+"_name");
+				if (fileName == null) {
+					// generate an appropriate file name
+					fileName = fieldName+".txt";
+				}
+
+				File f = convertTextToFile(get(fieldName+"_content"), fileName);
 				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
 				f.inline_text_url = f.url + "?type=text";
 
