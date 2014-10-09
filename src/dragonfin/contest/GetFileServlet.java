@@ -8,6 +8,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.common.File.outputChunk;
+
 public class GetFileServlet extends CoreServlet
 {
 	static Pattern PATTERN = Pattern.compile("^/([^/]+)/([^/]+)$");
@@ -46,33 +48,5 @@ public class GetFileServlet extends CoreServlet
 		OutputStream out = resp.getOutputStream();
 		outputChunk(out, ds, (Key) fileEnt.getProperty("head_chunk"));
 		out.close();
-	}
-
-	void outputChunk(OutputStream out, DatastoreService ds, Key chunkKey)
-		throws IOException
-	{
-		Entity ent;
-		try {
-			ent = ds.get(chunkKey);
-		}
-		catch (EntityNotFoundException e) {
-			log.warning("Chunk "+chunkKey+" not found");
-			return;
-		}
-
-		@SuppressWarnings("unchecked")
-		List<Key> partsList = (List<Key>) ent.getProperty("parts");
-		if (partsList != null && !partsList.isEmpty()) {
-
-			for (Key k : partsList) {
-				outputChunk(out, ds, k);
-			}
-		}
-
-		Blob b = (Blob) ent.getProperty("data");
-		if (b != null) {
-
-			out.write(b.getBytes());
-		}
 	}
 }

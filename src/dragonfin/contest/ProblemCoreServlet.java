@@ -18,7 +18,7 @@ public abstract class ProblemCoreServlet extends CoreServlet
 
 	@Override
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
-		throws EntityNotFoundException
+		throws EntityNotFoundException, IOException
 	{
 		String contestId = tv.req.getParameter("contest");
 		String problemId = tv.req.getParameter("problem");
@@ -28,8 +28,14 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
 		ctx.put("problem", p);
 
-		TemplateVariables.Result r = tv.fetchResult(resultKey);
-		ctx.put("result", r);
+		try {
+			TemplateVariables.Result r = tv.fetchResult(resultKey);
+			ctx.put("result", r);
+		}
+		catch (EntityNotFoundException e) {
+			// safe to ignore
+			ctx.put("result", null);
+		}
 	}
 
 	public abstract String getTemplate();

@@ -10,32 +10,32 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
-public class ProblemCoderServlet extends CoreServlet
+public class ProblemCoderServlet extends ProblemCoreServlet
 {
 	public String getTemplate() {
 		return "problem_write.tt";
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException, ServletException
-	{
-		if (requireContest(req, resp)) { return; }
-		renderTemplate(req, resp, getTemplate());
-	}
-
 	@Override
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
-		throws EntityNotFoundException
+		throws EntityNotFoundException, IOException
 	{
-		String contestId = tv.req.getParameter("contest");
-		String problemId = tv.req.getParameter("problem");
+		super.moreVars(tv, ctx);
 
-		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
-		ctx.put("problem", p);
+		TemplateVariables.Result r = (TemplateVariables.Result) ctx.get("result");
 
 		HashMap<String,Object> form = new HashMap<String,Object>();
 		form.put("source_name", "Main.java");
-		form.put("source_content", "Hello world.");
+		form.put("source_content", "");
+
+		if (r != null) {
+			File sourceFile = r.getSource();
+			if (sourceFile != null) {
+				form.put("source_name", sourceFile.name);
+				form.put("source_content", sourceFile.getText_content());
+			}
+		}
+
 		ctx.put("f", form);
 	}
 

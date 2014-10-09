@@ -15,7 +15,7 @@
 %]
 
 <h2>[% problem.name |html %]</h2>
-<form method="post" action="[% r.url |html %]">
+<form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
 <div>
 <label>Filename:
 <input type="text" id="source_name_entry" name="source_name" value="[% f.source_name |html %]"></label>
