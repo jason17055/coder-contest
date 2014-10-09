@@ -19,8 +19,10 @@ public abstract class ProblemCoreServlet extends CoreServlet
 	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
 		throws IOException, ServletException
 	{
-		String [] messages = new String[] { errorMessage };
+		ArrayList<String> messages = new ArrayList<String>();
+		messages.add(errorMessage);
 		Map<String,Object> args = new HashMap<String,Object>();
+		args.put("messages", messages);
 		renderTemplate(req, resp, getTemplate(), args);
 	}
 

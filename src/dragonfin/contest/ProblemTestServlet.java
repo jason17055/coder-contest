@@ -63,6 +63,11 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		File inputFile = POST.handleFileContent("input");
 
 		// TODO- check parameters
+		if (sourceFile == null) {
+			doFormError(req, resp, "Error: source file must be provided.");
+			return;
+		}
+
 		// TODO- check permission
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();

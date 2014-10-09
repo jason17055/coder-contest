@@ -43,6 +43,9 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
 
+		//
+		// check form parameters
+		//
 		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
 			req.getAttribute("POST");
 		File sourceFile = POST.handleFileContent("source");
@@ -52,8 +55,7 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 			return;
 		}
 
-		// TODO- check parameters
-		// TODO- check permission to submit solution to this problem at this time
+		// TODO- check permission to submit
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
