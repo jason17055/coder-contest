@@ -33,8 +33,8 @@
 <tr>
 <td><label>Status:</label></td>
 <td><select name="status">
+[% found=!submission.status %]
 <option value=""[% !submission.status ? ' selected="selected"' : '' %]>(not judged)</option>
-[% found='' %]
 [% FOREACH opt IN contest.status_choices %]
 [% IF submission.status==opt found='1' END %]
 <option value="[% opt |html %]"[% submission.status==opt ? ' selected="selected"' : '' %]>[% opt |html %]</option>
