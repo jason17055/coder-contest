@@ -44,85 +44,29 @@ sub register_worker
 	print "Detected operating system: $operating_system\n";
 
 	my %language_details;
+	my @description;
+	push @description, $operating_system;
 
-	my $java_version = `javac -version 2>&1`;
-	if ($? == 0) {
-		$java_version =~ s/\s+$//s;
-		$language_details{"language:java"} = "$java_version ($operating_system)";
-		print "Found Java: $java_version\n";
-	} else {
-		print "Did not find Java\n";
-		undef $java_version;
+	%accepted_languages = ();
+	foreach my $plugin (qw( PlainOldC CPlusPlus Java Python Perl Ruby ))
+	{
+		my $version = $plugin->check_version();
+		if (defined $version) {
+			push @description, $version;
+			print "$plugin: Found $version\n";
+			foreach my $file_type ($plugin->extensions) {
+				$accepted_languages{$file_type} = $plugin;
+				$language_details{"language:$file_type"} = "$version ($operating_system)";
+			}
+		}
+		else {
+			print "$plugin: Not found\n";
+		}
 	}
-
-	my ($cpp_version) = `g++ --version 2>&1`;
-	if ($? == 0) {
-		$cpp_version =~ s/\s+$//s;
-		$language_details{"language:cpp"} = "$cpp_version ($operating_system)";
-		print "Found G++: $cpp_version\n";
-	} else {
-		print "Did not find G++\n";
-		undef $cpp_version;
-	}
-
-	my ($py_version) = `python -V 2>&1`;
-	if ($? == 0) {
-		$py_version =~ s/\s+$//s;
-		$language_details{"language:py"} = "$py_version ($operating_system)";
-		print "Found Python: $py_version\n";
-	} else {
-		print "Did not find Python\n";
-		undef $py_version;
-	}
-
-	my ($perl_version) = `perl -e 'print \$^V' 2>&1`;
-	if ($? == 0) {
-		$perl_version =~ s/\s+$//s;
-		$perl_version =~ s/^(Perl\s*)?/Perl /is;
-		$language_details{"language:pl"} = "$perl_version ($operating_system)";
-		print "Found Perl: $perl_version\n";
-	} else {
-		print "Did not find Perl\n";
-		undef $perl_version;
-	}
-
-	my ($ruby_version) = `ruby -v 2>&1`;
-	if ($? == 0) {
-		$ruby_version =~ s/\s+$//s;
-		$language_details{"language:rb"} = "$ruby_version ($operating_system)";
-		print "Found Ruby: $ruby_version\n";
-	} else {
-		print "Did not find Ruby\n";
-		undef $ruby_version;
-	}
-
-	my ($csharp_version) = `csc 2>&1`;
-	if ($? == 0) {
-		$csharp_version =~ s/\s+$//s;
-		$language_details{"language:cs"} = $csharp_version;
-		print "Found C-Sharp: $csharp_version\n";
-	} else {
-		print "Did not find C-Sharp\n";
-		undef $csharp_version;
-	}
-
-	%accepted_languages = (
-		($cpp_version ?
-			("c" => "PlainOldC",
-			"cc" => "CPlusPlus",
-			"cpp" => "CPlusPlus") : ()),
-		($java_version ? (java => "Java") : ()),
-		($py_version ? (py => "Python") : ()),
-		($perl_version ? (pl => "Perl") : ()),
-		($ruby_version ? (rb => "Ruby") : ()),
-		);
+	
 	$languages_str = join(',', keys %accepted_languages);
 
-	my $description = join("\n",
-		$operating_system,
-		($java_version ? ($java_version) : ()),
-		($cpp_version ? ($cpp_version) : ()),
-		);
+	my $description = join(";\n", @description);
 
 	my $resp = $ua->post("$contest_url/register_worker",
 			[
@@ -498,6 +442,22 @@ sub read_response
 
 package Java;
 
+sub check_version
+{
+	my $java_version = `javac -version 2>&1`;
+	if ($? == 0) {
+		$java_version =~ s/\s+$//s;
+		return $java_version;
+	} else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ('java');
+}
+
 sub compile_command
 {
 	my ($self, $source_file) = @_;
@@ -515,6 +475,16 @@ sub get_run_command
 
 package PlainOldC;
 
+sub check_version
+{
+	return CPlusPlus->check_version;
+}
+
+sub extensions
+{
+	return ("c");
+}
+
 sub compile_command
 {
 	my ($self, $source_file) = @_;
@@ -529,6 +499,22 @@ sub get_run_command
 }
 
 package CPlusPlus;
+
+sub check_version
+{
+	my ($cpp_version) = `g++ --version 2>&1`;
+	if ($? == 0) {
+		$cpp_version =~ s/\s+$//s;
+		return $cpp_version;
+	} else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ('cc', 'cpp');
+}
 
 sub compile_command
 {
@@ -545,6 +531,23 @@ sub get_run_command
 
 package Perl;
 
+sub check_version
+{
+	my ($perl_version) = `perl -e 'print \$^V' 2>&1`;
+	if ($? == 0) {
+		$perl_version =~ s/\s+$//s;
+		$perl_version =~ s/^(Perl\s*)?/Perl /is;
+		return $perl_version;
+	} else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ("pl");
+}
+
 sub compile_command
 {
 	my ($self, $source_file) = @_;
@@ -559,6 +562,22 @@ sub get_run_command
 }
 
 package Python;
+
+sub check_version
+{
+	my ($py_version) = `python -V 2>&1`;
+	if ($? == 0) {
+		$py_version =~ s/\s+$//s;
+		return $py_version;
+	} else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ("py");
+}
 
 sub compile_command
 {
@@ -575,6 +594,23 @@ sub get_run_command
 
 package Ruby;
 
+sub check_version
+{
+	my ($ruby_version) = `ruby -v 2>&1`;
+	if ($? == 0) {
+		$ruby_version =~ s/\s+$//s;
+		return $ruby_version;
+	}
+	else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ("rb");
+}
+
 sub compile_command
 {
 	my ($self, $source_file) = @_;
@@ -586,6 +622,24 @@ sub get_run_command
 	my ($self, $source_file) = @_;
 
 	return [ "ruby", $source_file ];
+}
+
+package CSharp;
+
+sub check_version
+{
+	my ($csharp_version) = `csc 2>&1`;
+	if ($? == 0) {
+		$csharp_version =~ s/\s+$//s;
+		return $csharp_version;
+	} else {
+		return undef;
+	}
+}
+
+sub extensions
+{
+	return ('cs');
 }
 
 1;
