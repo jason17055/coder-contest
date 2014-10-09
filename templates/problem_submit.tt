@@ -28,12 +28,12 @@ In the meantime, continue working on other problems.
 <tr>
 <td valign="top">Source code:</td>
 <td valign="top">
-[% IF myproblem.source %]
+[% IF result.source %]
 	<div>
-	<input type="hidden" name="source_name" value="[% myproblem.source.name |html %]">
-	<input type="hidden" name="source_file" value="[% myproblem.source.id |html %]">
+	<input type="hidden" name="source_name" value="[% result.source.name |html %]">
+	<input type="hidden" name="source_file" value="[% result.source.id |html %]">
 	Use existing source code file:
-	<a href="[% myproblem.source.url |html %]">[% myproblem.source.name |html %]</a>
+	<a href="[% result.source.url |html %]">[% result.source.name |html %]</a>
 	</div>
 	<div>or upload a new file:
 [% ELSE %]

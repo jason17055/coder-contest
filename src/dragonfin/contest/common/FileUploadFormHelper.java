@@ -265,11 +265,21 @@ public class FileUploadFormHelper
 		public File handleFileContent(String fieldName)
 			throws IOException
 		{
+			//
+			// if the user provided a file in the file-upload control,
+			// that's the file we return.
+			//
 			if (containsKey(fieldName+"_upload") && containsKey(fieldName+"_upload.name")) {
 				// already got a file
 				return getFile(fieldName);
 			}
-			else if (containsKey(fieldName+"_content")) {
+
+			//
+			// if the user provided content in a file-content textarea,
+			// we convert it to a text/plain file and return that.
+			//
+			String contentString = get(fieldName+"_content");
+			if (contentString != null && contentString.length() != 0) {
 
 				String fileName = get(fieldName+"_name");
 				if (fileName == null) {
@@ -277,7 +287,7 @@ public class FileUploadFormHelper
 					fileName = fieldName+".txt";
 				}
 
-				File f = convertTextToFile(get(fieldName+"_content"), fileName);
+				File f = convertTextToFile(contentString, fileName);
 				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
 				f.inline_text_url = f.url + "?type=text";
 
@@ -285,9 +295,32 @@ public class FileUploadFormHelper
 				put(fieldName+"_upload.name", f.name);
 				return f;
 			}
-			else {
-				return null;
+
+			//
+			// if the user provided a file hash reference in a hidden
+			// control, return that.
+			//
+			String fileHashRef = get(fieldName+"_file");
+			if (fileHashRef != null && fileHashRef.length() != 0) {
+
+				String fileName = get(fieldName+"_name");
+				if (fileName == null) {
+					// generate an appropriate file name
+					fileName = fieldName+".txt";
+				}
+
+				File f = new File();
+				f.id = fileHashRef;
+				f.name = fileName;
+				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
+				f.inline_text_url = f.url + "?type=text";
+
+				put(fieldName+"_upload", f.id);
+				put(fieldName+"_upload.name", f.name);
+				return f;
 			}
+
+			return null;
 		}
 
 		public File getFile(String fieldName)
