@@ -401,7 +401,7 @@ public class TemplateVariables
 		public String id;
 		public String status;
 		public Date created;
-		public String type = "submission";
+		public String type;
 		public String edit_url;
 		public int minutes;
 
@@ -891,6 +891,7 @@ public class TemplateVariables
 			(int)((Long) ent.getProperty("minutes")).longValue() :
 			0;
 		s.sourceKey = (Key) ent.getProperty("source");
+		s.type = (String) ent.getProperty("type");
 		return s;
 	}
 
