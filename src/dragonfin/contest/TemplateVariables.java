@@ -68,13 +68,8 @@ public class TemplateVariables
 		return list;
 	}
 
-	ArrayList<Submission> getAll_submissions()
+	ArrayList<Submission> enumerateSubmissions(String contestId)
 	{
-		String contestId = req.getParameter("contest");
-		if (contestId == null) {
-			return null;
-		}
-
 		Query q = new Query("Submission");
 		q.setFilter(
 			Query.FilterOperator.EQUAL.of("contest", contestId)
@@ -199,6 +194,15 @@ public class TemplateVariables
 
 			workersCached = enumerateWorkers(id);
 			return workersCached;
+		}
+
+		ArrayList<Submission> submissionsCached;
+		public ArrayList<Submission> getSubmissions()
+		{
+			if (submissionsCached == null) {
+				submissionsCached = enumerateSubmissions(id);
+			}
+			return submissionsCached;
 		}
 	}
 

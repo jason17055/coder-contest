@@ -17,22 +17,24 @@ Status:
 <th>Judge</th>
 <th>Status</th>
 </tr>
-[% FOREACH u IN all_submissions %]
+[% FOREACH u IN contest.submissions %]
 <tr>
 <td><input type="checkbox" name="[% u.id |html %]"></td>
 <td><a href="[% u.edit_url |html %]">
 [% u.created |html %]</a></td>
 <td>[% u.problem.name |html %]</td>
 <td>
-<img src="images/[% u.type |html %].png" alt="">[% u.type |html %]</td>
+<img src="[% images_url %]/[% u.type |html %].png" alt="">[% u.type |html %]</td>
 <td>[% u.submitter.name |html %]</td>
 <td>[% u.judge.name |html %]</td>
 <td>[% u.status |html %]</td>
 </tr>
 [% END %]
+[% IF contest.submissions.size == 0 %]
 <tr>
 <td colspan="7" class="none_at_this_time" valign="top">None at this time.</td>
 </tr>
+[% END %]
 </table>
 <p>
 Assign selected submissions to:

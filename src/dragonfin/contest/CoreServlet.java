@@ -178,7 +178,6 @@ public class CoreServlet extends HttpServlet
 
 		final TemplateVariables tv = new TemplateVariables(req);
 		ctx.put("contest", tv.getContest());
-		ctx.put("all_submissions", tv.getAll_submissions());
 
 		Callable< ArrayList<TemplateVariables.Problem> > c1 = new Callable< ArrayList<TemplateVariables.Problem> >() {
 			public ArrayList<TemplateVariables.Problem> call() throws Exception
