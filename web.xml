@@ -82,6 +82,10 @@
  <servlet-class>dragonfin.contest.ProblemDescriptionServlet</servlet-class>
 </servlet>
 <servlet>
+ <servlet-name>ProblemClarifications</servlet-name>
+ <servlet-class>dragonfin.contest.ProblemClarificationsServlet</servlet-class>
+</servlet>
+<servlet>
  <servlet-name>ProblemCoder</servlet-name>
  <servlet-class>dragonfin.contest.ProblemCoderServlet</servlet-class>
 </servlet>
@@ -199,6 +203,10 @@
 <servlet-mapping>
  <servlet-name>ProblemDescription</servlet-name>
  <url-pattern>/_p/_problem/description</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ProblemClarifications</servlet-name>
+ <url-pattern>/_p/_problem/clarifications</url-pattern>
 </servlet-mapping>
 <servlet-mapping>
  <servlet-name>ProblemCoder</servlet-name>

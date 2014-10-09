@@ -1,0 +1,63 @@
+[% WRAPPER 'common.inc'
+	page_title = problem.name,
+	notitle = 1
+%]
+
+[% INCLUDE 'problem_actions_tabnav.inc'
+	show_mode = 'clarifications'
+%]
+
+<h2>[% problem.name |html %]</h2>
+
+[% FOREACH c IN problem.clarifications %]
+[% cl = 'own-question' %]
+<div class="clarification-question [% cl %]">
+<div class="clarification-author"><span class="author">[% c.author.name |html %]</span> asked:</div>
+<p>[% c.request |html %]</p>
+</div>
+
+[% IF c.response %]
+
+[% IF c.status == 'reply-all'
+	cl = 'reply-all'
+   ELSE
+	cl = 'reply-one'
+   END %]
+<div class="clarification-answer [%cl%]">
+<div class="clarification-author"><span class="author">[%
+	IF !c.request || c.status == 'reply-all' %]A clarification has been issued[%
+	ELSE %]Judge's Reply:[% END %]</span></div>
+<p>[% c.response |html %]</p>
+</div>
+[% ELSE # clarification has no response %]
+<div class="clarification-answer-none">No response at this time.</div>
+[% END # if clarification no response %]
+[% END #each clarification %]
+[% IF problem.clarifications.size == 0 %]
+<p>
+There have not been any clarifications issued for this problem.
+</p>
+[% END %]
+
+<hr>
+<p>
+Confused by a problem specification? Request a clarification here.
+</p>
+
+[% INCLUDE 'form_messages.inc' %]
+
+<form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
+<table>
+<tr>
+<td valign="top"><label>Message:</label></td>
+<td valign="top"><textarea name="message" rows="10" cols="72">[% f.message |html %]</textarea>
+</td>
+</tr>
+</table>
+
+<div>
+<button type="submit">Submit</button>
+</div>
+</form>
+
+[% END #wrapper %]
