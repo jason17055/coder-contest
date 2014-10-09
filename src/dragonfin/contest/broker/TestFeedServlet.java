@@ -19,6 +19,8 @@ public class TestFeedServlet extends HttpServlet
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();
 	ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 
+	static final long DEFAULT_TIME_LIMIT = 10000;
+
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
@@ -67,6 +69,12 @@ public class TestFeedServlet extends HttpServlet
 			return;
 		}
 
+		long timeLimit = DEFAULT_TIME_LIMIT;
+		String timeLimitS = POST.get("timeout");
+		if (timeLimitS != null) {
+			timeLimit = (long)Math.round(1000*Double.parseDouble(timeLimitS));
+		}
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		//
@@ -96,7 +104,7 @@ public class TestFeedServlet extends HttpServlet
 			languages.add(tmp);
 		}
 
-		Entity ent = Q.claim(contestId, languages, workerKey, 10000);
+		Entity ent = Q.claim(contestId, languages, workerKey, timeLimit);
 		if (ent == null) {
 
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);

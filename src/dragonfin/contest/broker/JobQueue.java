@@ -1,18 +1,20 @@
 package dragonfin.contest.broker;
 
+import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 import com.google.appengine.api.datastore.*;
 
 public class JobQueue
 {
 	ArrayList<Entity> pendingJobs = new ArrayList<Entity>();
 	HashSet<Key> knownJobs = new HashSet<Key>();
-	HashMap<Key,Entity> activeJobs = new HashMap<Key,Entity>();
 
 	long lastScan = 0;
 	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-	static final long SCAN_CYCLE = 30000;
+	static final long SCAN_CYCLE = 180000; //three minutes
+	private static final Logger log = Logger.getLogger(JobQueue.class.getName());
 
 	synchronized Entity claim(String contestId, Set<String> languages, Key workerKey, long timeout)
 	{
@@ -24,11 +26,12 @@ public class JobQueue
 
 				if (isEligible(ent, contestId, languages)) {
 
+					knownJobs.remove(ent.getKey());
 					it.remove();
+
 					if (tryClaim(workerKey, ent.getKey())) {
 
 						// successful claim
-						activeJobs.put(ent.getKey(), ent);
 						return ent;
 					}
 				}
@@ -37,21 +40,25 @@ public class JobQueue
 			long curTime = System.currentTimeMillis();
 			if (curTime - lastScan > SCAN_CYCLE) {
 
+				log.info("scanning for new jobs");
 				scanNow();
 				curTime = System.currentTimeMillis();
+				lastScan = curTime;
 			}
+			else if (curTime >= endTime) {
 
-			if (curTime >= endTime) {
-	
+				// ran out of time
 				return null;
 			}
+			else {
 
-			try {
-				wait(endTime-curTime);
-			}
-			catch (InterruptedException e) {
-				// shutdown the thread
-				return null;
+				try {
+					wait(endTime-curTime);
+				}
+				catch (InterruptedException e) {
+					// request for thread to shutdown?
+					return null;
+				}
 			}
 		}
 	}
@@ -70,6 +77,30 @@ public class JobQueue
 
 				newJob(ent);
 			}
+		}
+	}
+
+	public synchronized boolean maybeNewJob(String jobId)
+	{
+		log.info("notified of job "+jobId);
+
+		Key jobKey = KeyFactory.createKey("TestJob", Long.parseLong(jobId));
+		if (knownJobs.contains(jobKey)) {
+
+			return false;
+		}
+
+		try {
+			Entity ent = ds.get(jobKey);
+			newJob(ent);
+			notifyAll();
+
+			return true;
+		}
+		catch (EntityNotFoundException e) {
+			log.warning("notified of job "+jobId+", but this job not found in datastore");
+			//unexpected
+			return true;
 		}
 	}
 

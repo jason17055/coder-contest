@@ -10,7 +10,8 @@ use constant TIMEOUT => -33;
 use File::stat;
 use Sys::Hostname;
 
-our $timeout = 10;
+our $job_timeout = 10;
+my $feed_timeout = 60;
 GetOptions(
 	) or exit 2;
 
@@ -22,6 +23,7 @@ my $worker_name = hostname() . "[$$]";
 
 my $ua = LWP::UserAgent->new();
 $ua->agent("worker.pl/$worker_name");
+$ua->timeout(+$feed_timeout+30);
 
 my $languages_str;
 my %accepted_languages;
@@ -107,7 +109,7 @@ sub register_worker
 		($perl_version ? (pl => "Perl") : ()),
 		($ruby_version ? (rb => "Ruby") : ()),
 		);
-	my $languages_str = join(',', keys %accepted_languages);
+	$languages_str = join(',', keys %accepted_languages);
 
 	my $description = join("\n",
 		$operating_system,
@@ -154,6 +156,7 @@ for (;;)
 		"action:claim" => 1,
 		"worker_status" => make_worker_status_string(),
 		"languages" => $languages_str,
+		"timeout" => $feed_timeout,
 		],
 		Content_Type => "form-data",
 		);
@@ -239,7 +242,7 @@ sub do_job
 	$job_count++;
 
 	print "GOT A JOB : id = $props->{id}\n";
-	local $timeout = $props->{timeout} || $timeout;
+	local $job_timeout = $props->{timeout} || $job_timeout;
 
 	mkdir $props->{hash};
 	chdir $props->{hash}
@@ -435,12 +438,12 @@ sub run_command
 	close OUTPUT_FILE;
 	close INPUT_FILE;
 
-	# wait, up to $timeout seconds, for child process to complete
+	# wait, up to $job_timeout seconds, for child process to complete
 	my $status;
 	eval
 	{
 		local $SIG{ALRM} = sub { die "alarm\n" };
-		alarm $timeout;
+		alarm $job_timeout;
 		wait;
 		$status = $?;
 		alarm 0;

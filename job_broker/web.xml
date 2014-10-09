@@ -15,4 +15,14 @@
  <servlet-name>TestFeed</servlet-name>
  <url-pattern>/feed</url-pattern>
 </servlet-mapping>
+
+<servlet>
+ <servlet-name>Notify</servlet-name>
+ <servlet-class>dragonfin.contest.broker.NotifyServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>Notify</servlet-name>
+ <url-pattern>/notify</url-pattern>
+</servlet-mapping>
+
 </web-app>
