@@ -23,7 +23,6 @@ my $worker_name = hostname() . "[$$]";
 my $ua = LWP::UserAgent->new();
 $ua->agent("worker.pl/$worker_name");
 
-my $feed_url;
 my $languages_str;
 my %accepted_languages;
 
@@ -127,14 +126,16 @@ sub register_worker
 			],
 			);
 	$resp->is_success
-		or die "Error: not a contest URL: $contest_url\n";
+		or return undef;
 
-	$feed_url = read_response($resp)->{feed_url}
+	my $feed_url = read_response($resp)->{feed_url}
 		or die "Error: incompatible service at $contest_url\n";
 
 	print "feed url is $feed_url\n";
+	return $feed_url;
 }
-register_worker();
+my $feed_url = register_worker()
+	or die "Error: not a contest URL: $contest_url\n";
 
 my $spinner = "|/-\\";
 my $spinner_idx = 0;
@@ -196,7 +197,32 @@ for (;;)
 		my $end_time = time;
 		$sum_idle_time += ($end_time - $start_time);
 		$start_time = $end_time;
+
+		if ($resp->code != 404) {
+			# some other error, try re-registering
+			re_register_worker();
+		}
 	}
+}
+
+sub re_register_worker
+{
+	my $give_up = 10;
+	for (my $i = 0; $i < $give_up; $i++) {
+		$feed_url = register_worker()
+			and return;
+
+		print "no service at $contest_url\n";
+		print "...will try again in 60 seconds\n";
+		sleep 60;
+	}
+
+	# one last attempt
+	$feed_url = register_worker()
+		and return;
+	print "no service at $contest_url\n";
+	print "giving up\n";
+	exit 1;
 }
 
 my @detail_output;
