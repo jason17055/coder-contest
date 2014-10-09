@@ -33,8 +33,8 @@ public class TemplateVariables
 	ArrayList<Worker> enumerateWorkers(String contestId)
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		Query q = new Query("Worker");
-			//.setAncestor(contestKey);
+		Query q = new Query("Worker")
+			.setAncestor(contestKey);
 
 		PreparedQuery pq = ds.prepare(q);
 		ArrayList<Worker> list = new ArrayList<Worker>();
