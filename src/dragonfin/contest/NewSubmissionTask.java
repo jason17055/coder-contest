@@ -70,6 +70,7 @@ public class NewSubmissionTask extends HttpServlet
 
 			Entity ent = ds.get(submissionKey);
 			ent.setProperty("minutes", new Long(minutes));
+			ent.setProperty("judge", null);
 
 			ds.put(ent);
 			txn.commit();

@@ -71,17 +71,14 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 			Entity ent = new Entity("Submission", userKey);
 
 			ent.setProperty("created", new Date());
-
-			String fileHash = POST.get("source_upload");
-			if (fileHash != null) {
-				Key fileKey = KeyFactory.createKey("File", fileHash);
-				ent.setProperty("source", fileKey);
-			}
-
+			ent.setProperty("type", "submission");
 			ent.setProperty("problem", problemKey);
 			ent.setProperty("contest", contestId);
-			submissionKey = ds.put(ent);
 
+			Key fileKey = KeyFactory.createKey("File", sourceFile.id);
+			ent.setProperty("source", fileKey);
+
+			submissionKey = ds.put(ent);
 			txn.commit();
 		}
 		finally {

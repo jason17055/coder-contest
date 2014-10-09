@@ -66,6 +66,7 @@ Clarification [ Problem / id ]
 	created_by        Key(User)
 	submitted_by      Key(User)
 	status            String
+	judge             Key(User)
 
 Result [ User / Problem.id ]
 	score             Integer
@@ -80,9 +81,13 @@ Submission [ User / id* ]
 	created           Date
 	contest           String
         problem           Key(Problem)
-	source            Key(File)
 	status            String
 	judge             Key(User)
+	type              String 'submission', 'clarification'
+  if type==submission:
+	source            Key(File)
+  if type==clarification:
+        request           String
 
 TestJob [ id* ]
 	type              String S=system test of submission, E=generate expected output, U=user test,
@@ -116,3 +121,12 @@ Worker [ Contest / id* ]
 WorkerStatus [ Contest / Worker / 1 ]
 	last_refreshed    Date
 	worker_status     String
+
+Announcement [ Contest / id* ]
+	created           Date
+	recipient_group   String (one of *, judges, scoreboard, etc.)
+	message           String
+
+Message [ User / id* ]
+	created           Date
+	message           String
