@@ -32,6 +32,7 @@ public class RegisterWorkerServlet extends HttpServlet
 	{
 		String contestId = req.getParameter("contest");
 		String languages = req.getParameter("languages");
+		String workerName = req.getParameter("name");
 		String workerDescription = req.getParameter("description");
 		String systemDescription = req.getParameter("system");
 
@@ -45,6 +46,7 @@ public class RegisterWorkerServlet extends HttpServlet
 			Entity ent = new Entity("Worker", contestKey);
 			ent.setProperty("created", new Date());
 			ent.setProperty("accepted_languages", languages);
+			ent.setProperty("name", workerName);
 			ent.setProperty("description", workerDescription);
 			ent.setProperty("system", systemDescription);
 
@@ -53,6 +55,7 @@ public class RegisterWorkerServlet extends HttpServlet
 
 			Key statusKey = KeyFactory.createKey(workerKey, "WorkerStatus", 1);
 			Entity statusEnt = new Entity(statusKey);
+			statusEnt.setProperty("busy", Boolean.FALSE);
 			statusEnt.setProperty("last_refreshed", new Date());
 			ds.put(statusEnt);
 

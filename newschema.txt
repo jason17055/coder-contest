@@ -107,10 +107,12 @@ TestJob [ id* ]
 	problem           Key(Problem)
 
 Worker [ Contest / id* ]
-	created           Date
-	accepted_languages
-	description
+	created            Date
+	name               String
+	description        String
+	system             String
+	accepted_languages String
 
-WorkerStatus [ Contest / Worker / 0 ]
+WorkerStatus [ Contest / Worker / 1 ]
 	last_refreshed    Date
 	worker_status     String

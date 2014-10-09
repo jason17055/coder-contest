@@ -13,6 +13,7 @@ contest      - properties of the current contest
 .current_phase_name
 .current_phase_timeleft
 .config_url  - takes user to Admin Contest definition page
+.workers     - Worker[]
 
 problem      - properties of the currently-selected problem
 .name        - name of the problem
@@ -100,3 +101,10 @@ test_job
 .source      - File
 .input       - File
 .output      - File
+
+worker
+.created
+.accepted_languages
+.description
+.worker_status
+.busy

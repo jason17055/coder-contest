@@ -99,21 +99,21 @@
 <th>Details</th>
 </tr>
 
-[% FOREACH wkr IN all_workers %]
+[% FOREACH wkr IN contest.workers %]
 
 <tr>
 <td height="32">
 <div><img src="images/plus.png" alt="[Online]" width="14" height="14">
 [% wkr.name |html %]</div>
 <div>[% wkr.busy ? "Busy" : "Idle" %]</div>
-<div>[% wkr.status |html %]</div>
+<div>[% wkr.worker_status |html %]</div>
 </td>
 <td>[% wkr.accepted_languages |html %]</td>
 <td>[% wkr.description |html %]</td>
 </tr>
 
 [% END #foreach wkr %]
-[% IF all_workers.size == 0 %]
+[% IF contest.workers.size == 0 %]
 <tr>
 <td colspan="3" height="32">
 <img src="images/minus.png" alt="" width='14' height='14'>

@@ -30,6 +30,21 @@ public class TemplateVariables
 		return fetchContest(contestId);
 	}
 
+	ArrayList<Worker> enumerateWorkers(String contestId)
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Query q = new Query("Worker");
+			//.setAncestor(contestKey);
+
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<Worker> list = new ArrayList<Worker>();
+		for (Entity ent : pq.asIterable()) {
+			Worker w = handleWorker(ent.getKey(), ent);
+			list.add(w);
+		}
+		return list;
+	}
+
 	ArrayList<Problem> getAll_problems()
 	{
 		String contestId = req.getParameter("contest");
@@ -174,6 +189,17 @@ public class TemplateVariables
 		{
 			return req.getContextPath()+"/_admin/define_contest?contest="+escapeUrl(id);
 		}
+
+		ArrayList<Worker> workersCached;
+		public ArrayList<Worker> getWorkers()
+		{
+			if (workersCached != null) {
+				return workersCached;
+			}
+
+			workersCached = enumerateWorkers(id);
+			return workersCached;
+		}
 	}
 
 	public class Problem
@@ -275,6 +301,49 @@ public class TemplateVariables
 		String contestId = req.getParameter("contest");
 		return req.getContextPath() + "/" + contestId +
 			"/" + path;
+	}
+
+	public class Worker
+	{
+		public final Key dsKey;
+		public String id;
+		public Date created;
+		public String accepted_languages;
+		public String name;
+		public String description;
+		public String system;
+
+		Worker(Key dsKey) {
+			this.dsKey = dsKey;
+			this.id = Long.toString(dsKey.getId());
+		}
+
+		Entity statusEnt;
+		void fetchStatus()
+		{
+			if (statusEnt != null) { return; }
+
+			Key statusKey = KeyFactory.createKey(dsKey, "WorkerStatus", 1);
+			try {
+				statusEnt = ds.get(statusKey);
+			}
+			catch (EntityNotFoundException e) {
+				statusEnt = new Entity(statusKey);
+			}
+		}
+
+		public String getWorker_status()
+		{
+			fetchStatus();
+			return (String) statusEnt.getProperty("worker_status");
+		}
+
+		public boolean getBusy()
+		{
+			fetchStatus();
+			Boolean b = (Boolean) statusEnt.getProperty("busy");
+			return (b != null && b.booleanValue());
+		}
 	}
 
 	public class User
@@ -627,6 +696,19 @@ public class TemplateVariables
 			(int)((Long)ent.getProperty("runtime_limit")).longValue() :
 			0;
 		return p;
+	}
+
+	Worker handleWorker(Key key, Entity ent)
+	{
+		Worker w = new Worker(key);
+
+		w.created = (Date) ent.getProperty("created");
+		w.accepted_languages = (String) ent.getProperty("accepted_languages");
+		w.name = (String) ent.getProperty("name");
+		w.description = (String) ent.getProperty("description");
+		w.system = (String) ent.getProperty("system");
+
+		return w;
 	}
 
 	HashMap<Key,Result> cachedResults = new HashMap<Key,Result>();

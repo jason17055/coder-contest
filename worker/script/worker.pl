@@ -8,6 +8,7 @@ use URI::Escape;
 use Time::HiRes "time";
 use constant TIMEOUT => -33;
 use File::stat;
+use Sys::Hostname;
 
 our $timeout = 10;
 GetOptions(
@@ -17,8 +18,10 @@ my ($contest_url) = @ARGV
 	or die "Usage: $0 [options] CONTEST_URL\n";
 $contest_url =~ s{/+$}{}s; # removing any trailing slashes
 
+my $worker_name = hostname() . "[$$]";
+
 my $ua = LWP::UserAgent->new();
-$ua->agent("worker.pl/$$/".time());
+$ua->agent("worker.pl/$worker_name");
 
 my $operating_system;
 if ($^O eq "MSWin32")
@@ -106,6 +109,7 @@ my $resp = $ua->post("$contest_url/register_worker",
 		"languages" => join(',',keys %accepted_languages),
 		%language_details,
 		"system" => $operating_system,
+		"name" => $worker_name,
 		"description" => $operating_system . $java_version . $cpp_version,
 		],
 		);
