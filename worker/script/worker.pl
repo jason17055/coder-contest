@@ -23,103 +23,118 @@ my $worker_name = hostname() . "[$$]";
 my $ua = LWP::UserAgent->new();
 $ua->agent("worker.pl/$worker_name");
 
-my $operating_system;
-if ($^O eq "MSWin32")
+my $feed_url;
+my $languages_str;
+my %accepted_languages;
+
+sub register_worker
 {
-	eval { require Win32; } or die;
-	$operating_system = Win32::GetOSName();
-}
-else
-{
-	$operating_system = `uname -s -p`;
-	chomp $operating_system;
-}
-print "Detected operating system: $operating_system\n";
+	my $operating_system;
+	if ($^O eq "MSWin32")
+	{
+		eval { require Win32; } or die;
+		$operating_system = Win32::GetOSName();
+	}
+	else
+	{
+		$operating_system = `uname -s -p`;
+		chomp $operating_system;
+	}
+	print "Detected operating system: $operating_system\n";
 
-my %language_details;
+	my %language_details;
 
-my $java_version = `javac -version 2>&1`;
-if ($? == 0) {
-	$language_details{"language:java"} = "$java_version ($operating_system)";
-	print "Found Java: $java_version\n";
-} else {
-	print "Did not find Java\n";
-	undef $java_version;
-}
+	my $java_version = `javac -version 2>&1`;
+	if ($? == 0) {
+		$language_details{"language:java"} = "$java_version ($operating_system)";
+		print "Found Java: $java_version\n";
+	} else {
+		print "Did not find Java\n";
+		undef $java_version;
+	}
 
-my ($cpp_version) = `g++ --version`;
-if ($? == 0) {
-	$language_details{"language:cpp"} = "$cpp_version ($operating_system)";
-	print "Found G++: $cpp_version\n";
-} else {
-	print "Did not find G++\n";
-	undef $cpp_version;
-}
+	my ($cpp_version) = `g++ --version`;
+	if ($? == 0) {
+		$language_details{"language:cpp"} = "$cpp_version ($operating_system)";
+		print "Found G++: $cpp_version\n";
+	} else {
+		print "Did not find G++\n";
+		undef $cpp_version;
+	}
 
-my ($py_version) = `python -V 2>&1`;
-if ($? == 0) {
-	$language_details{"language:py"} = "$py_version ($operating_system)";
-	print "Found Python: $py_version\n";
-} else {
-	print "Did not find Python\n";
-	undef $py_version;
-}
+	my ($py_version) = `python -V 2>&1`;
+	if ($? == 0) {
+		$language_details{"language:py"} = "$py_version ($operating_system)";
+		print "Found Python: $py_version\n";
+	} else {
+		print "Did not find Python\n";
+		undef $py_version;
+	}
 
-my ($perl_version) = `perl -e 'print $^V' 2>&1`;
-if ($? == 0) {
-	$language_details{"language:pl"} = "$perl_version ($operating_system)";
-	print "Found Perl: $perl_version\n";
-} else {
-	print "Did not find Perl\n";
-	undef $perl_version;
-}
+	my ($perl_version) = `perl -e 'print $^V' 2>&1`;
+	if ($? == 0) {
+		$language_details{"language:pl"} = "$perl_version ($operating_system)";
+		print "Found Perl: $perl_version\n";
+	} else {
+		print "Did not find Perl\n";
+		undef $perl_version;
+	}
 
-my ($ruby_version) = `ruby -v 2>&1`;
-if ($? == 0) {
-	$language_details{"language:rb"} = "$ruby_version ($operating_system)";
-	print "Found Ruby: $ruby_version\n";
-} else {
-	print "Did not find Ruby\n";
-	undef $ruby_version;
-}
+	my ($ruby_version) = `ruby -v 2>&1`;
+	if ($? == 0) {
+		$language_details{"language:rb"} = "$ruby_version ($operating_system)";
+		print "Found Ruby: $ruby_version\n";
+	} else {
+		print "Did not find Ruby\n";
+		undef $ruby_version;
+	}
 
-my ($csharp_version) = `csc 2>&1`;
-if ($? == 0) {
-	$language_details{"language:cs"} = $csharp_version;
-	print "Found C-Sharp: $csharp_version\n";
-} else {
-	print "Did not find C-Sharp\n";
-	undef $csharp_version;
-}
+	my ($csharp_version) = `csc 2>&1`;
+	if ($? == 0) {
+		$language_details{"language:cs"} = $csharp_version;
+		print "Found C-Sharp: $csharp_version\n";
+	} else {
+		print "Did not find C-Sharp\n";
+		undef $csharp_version;
+	}
 
-my %accepted_languages = (
-	($cpp_version ?
-		("c" => "PlainOldC",
-		"cc" => "CPlusPlus",
-		"cpp" => "CPlusPlus") : ()),
-	($java_version ? (java => "Java") : ()),
-	($py_version ? (py => "Python") : ()),
-	($perl_version ? (pl => "Perl") : ()),
-	($ruby_version ? (rb => "Ruby") : ()),
-	);
-
-my $resp = $ua->post("$contest_url/register_worker",
-		[
-		"action:register" => 1,
-		"languages" => join(',',keys %accepted_languages),
-		%language_details,
-		"system" => $operating_system,
-		"name" => $worker_name,
-		"description" => $operating_system . $java_version . $cpp_version,
-		],
+	%accepted_languages = (
+		($cpp_version ?
+			("c" => "PlainOldC",
+			"cc" => "CPlusPlus",
+			"cpp" => "CPlusPlus") : ()),
+		($java_version ? (java => "Java") : ()),
+		($py_version ? (py => "Python") : ()),
+		($perl_version ? (pl => "Perl") : ()),
+		($ruby_version ? (rb => "Ruby") : ()),
 		);
-$resp->is_success
-	or die "Error: not a contest URL: $contest_url\n";
+	my $languages_str = join(',', keys %accepted_languages);
 
-my $feed_url = read_response($resp)->{feed_url}
-	or die "Error: incompatible service at $contest_url\n";
+	my $description = join("\n",
+		$operating_system,
+		($java_version ? ($java_version) : ()),
+		($cpp_version ? ($cpp_version) : ()),
+		);
 
-print "feed url is $feed_url\n";
+	my $resp = $ua->post("$contest_url/register_worker",
+			[
+			"action:register" => 1,
+			"languages" => $languages_str,
+			%language_details,
+			"system" => $operating_system,
+			"name" => $worker_name,
+			"description" => $description,
+			],
+			);
+	$resp->is_success
+		or die "Error: not a contest URL: $contest_url\n";
+
+	$feed_url = read_response($resp)->{feed_url}
+		or die "Error: incompatible service at $contest_url\n";
+
+	print "feed url is $feed_url\n";
+}
+register_worker();
 
 my $spinner = "|/-\\";
 my $spinner_idx = 0;
@@ -137,7 +152,7 @@ for (;;)
 		[
 		"action:claim" => 1,
 		"worker_status" => make_worker_status_string(),
-		"languages" => join(',',keys %accepted_languages),
+		"languages" => $languages_str,
 		],
 		Content_Type => "form-data",
 		);
