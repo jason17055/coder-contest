@@ -16,6 +16,14 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		renderTemplate(req, resp, getTemplate());
 	}
 
+	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
+		throws IOException, ServletException
+	{
+		String [] messages = new String[] { errorMessage };
+		Map<String,Object> args = new HashMap<String,Object>();
+		renderTemplate(req, resp, getTemplate(), args);
+	}
+
 	@Override
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
 		throws EntityNotFoundException, IOException

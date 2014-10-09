@@ -23,6 +23,8 @@ Please note it may take a few minutes for your solution to be judged.
 In the meantime, continue working on other problems.
 </p>
 
+[% INCLUDE 'form_messages.inc' %]
+
 <form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
 <table>
 <tr>

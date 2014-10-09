@@ -31,15 +31,26 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 	void doCreateSubmission(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String contestId = req.getParameter("contest");
 		if (requireContest(req, resp)) { return; }
 
+		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("problem");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
 
-		@SuppressWarnings("unchecked")
-		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
+		File sourceFile = POST.handleFileContent("source");
+
+		if (sourceFile == null) {
+			doFormError(req, resp, "Error: no file provided");
+			return;
+		}
 
 		// TODO- check parameters
 		// TODO- check permission to submit solution to this problem at this time
