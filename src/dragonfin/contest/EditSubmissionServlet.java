@@ -12,6 +12,8 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
+import static dragonfin.contest.TemplateVariables.makeSubmissionId;
+
 public class EditSubmissionServlet extends CoreServlet
 {
 	private static final Logger log = Logger.getLogger(EditSubmissionServlet.class.getName());
@@ -79,9 +81,10 @@ public class EditSubmissionServlet extends CoreServlet
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
+		Entity ent;
 		Key problemKey;
 		try {
-			Entity ent = ds.get(submissionKey);
+			ent = ds.get(submissionKey);
 
 			problemKey = (Key) ent.getProperty("problem");
 
@@ -108,6 +111,10 @@ public class EditSubmissionServlet extends CoreServlet
 		}
 
 		if (statusChanged) {
+
+			// send a message to the submitter
+			notifyJudgment(ds, userKey, ent);
+
 			// enqueue a task for processing this submission status change
 			Queue taskQueue = QueueFactory.getDefaultQueue();
 			taskQueue.add(UpdateResultTask.makeUrl()
@@ -117,6 +124,33 @@ public class EditSubmissionServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
+	}
+
+	void notifyJudgment(DatastoreService ds, Key userKey, Entity subEnt)
+	{
+		String contestId = (String) subEnt.getProperty("contest");
+		Key problemKey = (Key) subEnt.getProperty("problem");
+
+		String problemName;
+		try {
+			Entity problemEnt = ds.get(problemKey);
+			problemName = (String) problemEnt.getProperty("name");
+		}
+		catch (EntityNotFoundException e) {
+			problemName = "Problem "+Long.toString(problemKey.getId());
+		}
+
+		String url = makeContestUrl(
+			contestId, "submission",
+			String.format("id=%s", makeSubmissionId(subEnt.getKey()))
+			);
+
+		Entity messageEnt = new Entity("Message", userKey);
+		messageEnt.setProperty("created", new Date());
+		messageEnt.setProperty("message", "Your solution for "
+			+ problemName + " has been judged.");
+		messageEnt.setProperty("url", url);
+		ds.put(messageEnt);
 	}
 
 	void updateFromForm(Entity ent, Map<String,String> POST)

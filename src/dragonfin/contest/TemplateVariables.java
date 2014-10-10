@@ -409,6 +409,13 @@ public class TemplateVariables
 		return parts[1];
 	}
 
+	static String makeSubmissionId(Key submissionKey)
+	{
+		Key userKey = submissionKey.getParent();
+		String username = getUsernameFromUserKey(userKey);
+		return username + "/" + Long.toString(submissionKey.getId());
+	}
+
 	public class Submission
 	{
 		public final Key dsKey;
@@ -421,11 +428,7 @@ public class TemplateVariables
 		Submission(Key dsKey)
 		{
 			this.dsKey = dsKey;
-
-			Key userKey = dsKey.getParent();
-			String username = getUsernameFromUserKey(userKey);
-
-			this.id = username + "/" + Long.toString(dsKey.getId());
+			this.id = makeSubmissionId(dsKey);
 		}
 
 		public String getEdit_url()

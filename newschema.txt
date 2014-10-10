@@ -129,5 +129,7 @@ Announcement [ Contest / id* ]
 	message           String
 
 Message [ User / id* ]
+	(parent key)      Key(User) recipient of the message
 	created           Date
 	message           String
+	url               String
