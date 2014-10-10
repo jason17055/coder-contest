@@ -73,6 +73,7 @@ public class EditSubmissionServlet extends CoreServlet
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
 
 		boolean statusChanged;
+		boolean firstJudgment;
 
 		String contestId = req.getParameter("contest");
 		String id = req.getParameter("id");
@@ -89,7 +90,13 @@ public class EditSubmissionServlet extends CoreServlet
 			problemKey = (Key) ent.getProperty("problem");
 
 			String oldStatus = (String) ent.getProperty("status");
-			if (oldStatus == null) { oldStatus = ""; }
+			if (oldStatus == null) {
+				firstJudgment = true;
+				oldStatus = "";
+			}
+			else {
+				firstJudgment = false;
+			}
 
 			updateFromForm(ent, POST);
 
@@ -113,7 +120,7 @@ public class EditSubmissionServlet extends CoreServlet
 		if (statusChanged) {
 
 			// send a message to the submitter
-			notifyJudgment(ds, userKey, ent);
+			notifyJudgment(ds, ent, firstJudgment);
 
 			// enqueue a task for processing this submission status change
 			Queue taskQueue = QueueFactory.getDefaultQueue();
@@ -126,8 +133,9 @@ public class EditSubmissionServlet extends CoreServlet
 		doCancel(req, resp);
 	}
 
-	void notifyJudgment(DatastoreService ds, Key userKey, Entity subEnt)
+	void notifyJudgment(DatastoreService ds, Entity subEnt, boolean firstJudgment)
 	{
+		Key userKey = subEnt.getKey().getParent();
 		String contestId = (String) subEnt.getProperty("contest");
 		Key problemKey = (Key) subEnt.getProperty("problem");
 
@@ -140,6 +148,10 @@ public class EditSubmissionServlet extends CoreServlet
 			problemName = "Problem "+Long.toString(problemKey.getId());
 		}
 
+		String message = firstJudgment ?
+			String.format("Your solution for %s has been judged.", problemName) :
+			String.format("Your solution for %s has been re-judged.", problemName);
+
 		String url = makeContestUrl(
 			contestId, "submission",
 			String.format("id=%s", makeSubmissionId(subEnt.getKey()))
@@ -147,8 +159,7 @@ public class EditSubmissionServlet extends CoreServlet
 
 		Entity messageEnt = new Entity("Message", userKey);
 		messageEnt.setProperty("created", new Date());
-		messageEnt.setProperty("message", "Your solution for "
-			+ problemName + " has been judged.");
+		messageEnt.setProperty("message", message);
 		messageEnt.setProperty("url", url);
 		ds.put(messageEnt);
 	}
