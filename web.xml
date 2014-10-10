@@ -264,4 +264,22 @@
  <url-pattern>/_task/new_submission</url-pattern>
 </servlet-mapping>
 
+<servlet>
+ <servlet-name>UpdateResultTask</servlet-name>
+ <servlet-class>dragonfin.contest.UpdateResultTask</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>UpdateResultTask</servlet-name>
+ <url-pattern>/_task/update_result</url-pattern>
+</servlet-mapping>
+
+<servlet>
+ <servlet-name>UpdateScoreTask</servlet-name>
+ <servlet-class>dragonfin.contest.UpdateScoreTask</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>UpdateScoreTask</servlet-name>
+ <url-pattern>/_task/update_score</url-pattern>
+</servlet-mapping>
+
 </web-app>

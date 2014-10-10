@@ -4,6 +4,7 @@ import dragonfin.contest.common.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -11,10 +12,10 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
-import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
-
 public class EditSubmissionServlet extends CoreServlet
 {
+	private static final Logger log = Logger.getLogger(EditSubmissionServlet.class.getName());
+
 	String getTemplate()
 	{
 		return "edit_submission.tt";
@@ -78,8 +79,11 @@ public class EditSubmissionServlet extends CoreServlet
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
+		Key problemKey;
 		try {
 			Entity ent = ds.get(submissionKey);
+
+			problemKey = (Key) ent.getProperty("problem");
 
 			String oldStatus = (String) ent.getProperty("status");
 			if (oldStatus == null) { oldStatus = ""; }
@@ -106,9 +110,9 @@ public class EditSubmissionServlet extends CoreServlet
 		if (statusChanged) {
 			// enqueue a task for processing this submission status change
 			Queue taskQueue = QueueFactory.getDefaultQueue();
-			taskQueue.add(withUrl("/_task/submission_status_changed")
-				.param("submitter", userKey.getName())
-				.param("submission", Long.toString(submissionKey.getId()))
+			taskQueue.add(UpdateResultTask.makeUrl()
+				.param("user", userKey.getName())
+				.param("problem", Long.toString(problemKey.getId()))
 				);
 		}
 

@@ -395,6 +395,20 @@ public class TemplateVariables
 		}
 	}
 
+	static String getContestFromUserKey(Key userKey)
+	{
+		String id = userKey.getName();
+		String [] parts = id.split("/");
+		return parts[0];
+	}
+
+	static String getUsernameFromUserKey(Key userKey)
+	{
+		String id = userKey.getName();
+		String [] parts = id.split("/");
+		return parts[1];
+	}
+
 	public class Submission
 	{
 		public final Key dsKey;
@@ -408,9 +422,8 @@ public class TemplateVariables
 		{
 			this.dsKey = dsKey;
 
-			String submitterId = dsKey.getParent().getName();
-			String [] parts = submitterId.split("/");
-			String username = parts[1];
+			Key userKey = dsKey.getParent();
+			String username = getUsernameFromUserKey(userKey);
 
 			this.id = username + "/" + Long.toString(dsKey.getId());
 		}
@@ -926,5 +939,12 @@ public class TemplateVariables
 	public static String makeFileUrl(HttpServletRequest req, String id, String name)
 	{
 		return req.getContextPath()+"/_f/"+id+"/"+name;
+	}
+
+	public static Entity defaultResultEntity(Key resultKey)
+	{
+		Entity ent = new Entity(resultKey);
+		ent.setProperty("opened", new Date());
+		return ent;
 	}
 }

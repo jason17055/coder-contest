@@ -10,6 +10,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.TemplateVariables.defaultResultEntity;
+
 public class ProblemCoderServlet extends ProblemCoreServlet
 {
 	public String getTemplate() {
@@ -81,8 +83,7 @@ public class ProblemCoderServlet extends ProblemCoreServlet
 				ent = ds.get(resultKey);
 			}
 			catch (EntityNotFoundException e) {
-				ent = new Entity(resultKey);
-				ent.setProperty("opened", new Date());
+				ent = defaultResultEntity(resultKey);
 			}
 
 			ent.setProperty("source", sourceFileKey);

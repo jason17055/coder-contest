@@ -86,6 +86,7 @@ Submission [ User / id* ]
 	type              String 'submission', 'clarification'
   if type==submission:
 	source            Key(File)
+	minutes           Integer
   if type==clarification:
         request           String
 
