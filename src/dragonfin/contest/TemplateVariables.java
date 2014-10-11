@@ -120,16 +120,6 @@ public class TemplateVariables
 		return list;
 	}
 
-	ArrayList<User> getAll_users()
-	{
-		String contestId = req.getParameter("contest");
-		if (contestId == null) {
-			return null;
-		}
-
-		return enumerateUsers(contestId);
-	}
-
 	ArrayList<User> enumerateUsers(String contestId)
 	{
 		Query q = new Query("User");
