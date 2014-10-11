@@ -33,6 +33,11 @@ public class CheckMessageServlet extends HttpServlet
 			}
 		}
 
+		String dismissMessage = req.getParameter("dismiss_message");
+		if (dismissMessage != null) {
+			m.dismissMessage(dismissMessage);
+		}
+
 		if (m.checkForMessage(req, resp)) {
 			return;
 		}
@@ -58,6 +63,12 @@ public class CheckMessageServlet extends HttpServlet
 		CheckMessage()
 		{
 			this.ds = DatastoreServiceFactory.getDatastoreService();
+		}
+
+		void dismissMessage(String messageId)
+		{
+			Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
+			ds.delete(messageKey);
 		}
 
 		boolean checkForMessage(HttpServletRequest req, HttpServletResponse resp)

@@ -4,10 +4,6 @@ function doReload()
 }
 var count = 0;
 var last_message_id = sessionStorage.getItem("lastmessage");
-if (last_message_id == null) {
-	last_message_id = 0;
-	sessionStorage.setItem("lastmessage", last_message_id);
-}
 var current_announcement = null;
 var orig_title = null;
 var blinking = false;
@@ -81,6 +77,7 @@ function displayAnnouncement(data)
 	$("#announcementContent").html(data.message);
 	document.getElementById('announcementOpenBtn').style.display =
 		data.url != null ? 'inline' : 'none';
+
 	$("#announcementPopup").fadeIn(1000, delayThenHide);
 }
 function checkForAnnouncement()
@@ -182,7 +179,10 @@ function checkForAnnouncement()
 	});
 
 	var url_base = $('body').attr('data-checkmessage-url');
-	var url = url_base+"?timeout=60&type=N&after=" + escape(last_message_id) + xtra;
+	var url = url_base+"?timeout=60&type=N" + xtra;
+	if (last_message_id) {
+		url += '&dismiss_message='+escape(last_message_id);
+	}
 	$.ajax({
 		url: url,
 		dataType: 'json',
