@@ -66,6 +66,11 @@
 </servlet>
 
 <servlet>
+ <servlet-name>EditAnnouncement</servlet-name>
+ <servlet-class>dragonfin.contest.EditAnnouncementServlet</servlet-class>
+</servlet>
+
+<servlet>
  <servlet-name>DefineProblem</servlet-name>
  <servlet-class>dragonfin.contest.DefineProblemServlet</servlet-class>
 </servlet>
@@ -213,6 +218,11 @@
 <servlet-mapping>
  <servlet-name>ContestRules</servlet-name>
  <url-pattern>/_p/rules</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>EditAnnouncement</servlet-name>
+ <url-pattern>/_p/announcement</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

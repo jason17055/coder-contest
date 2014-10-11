@@ -128,7 +128,7 @@
 <a href="[% contest_links.edit_contest |html %]">Contest Options</a> |
 <a href="[% contest_links.problems_list |html %]">Define Problems</a> |
 <a href="[% contest_links.users_list |html %]">Define Users</a> |
-<a href="[% contest_links.send_message |html %]">Send Message</a> |
+<a href="[% contest_links.new_announcement |html %]">Send Message</a> |
 <a href="[% contest_links.submissions_list |html %]">View Submissions</a> |
 <a href="[% contest_links.scoreboard |html %]">Live Scoreboard</a>
 | <a href="[% contest_links.test_solution |html %]">Test a Solution</a>

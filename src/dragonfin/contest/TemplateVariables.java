@@ -127,6 +127,11 @@ public class TemplateVariables
 			return null;
 		}
 
+		return enumerateUsers(contestId);
+	}
+
+	ArrayList<User> enumerateUsers(String contestId)
+	{
 		Query q = new Query("User");
 		q.setFilter(Query.FilterOperator.EQUAL.of("contest", contestId));
 
@@ -203,6 +208,15 @@ public class TemplateVariables
 				submissionsCached = enumerateSubmissions(id);
 			}
 			return submissionsCached;
+		}
+
+		ArrayList<User> usersCached;
+		public ArrayList<User> getUsers()
+		{
+			if (usersCached == null) {
+				usersCached = enumerateUsers(id);
+			}
+			return usersCached;
 		}
 	}
 
