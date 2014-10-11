@@ -13,7 +13,7 @@
 <script type="text/javascript" src="[%"$resources_prefix/$f"|html%]"></script>
 [% END %]
 </head>
-<body class="adminpage">
+<body class="adminpage" data-checkmessage-url="[% ajax_url|html %]/checkmessage">
 <div id="top_banner" style="border: 1px solid green">
 <h1>Programming Contest</h1>
 

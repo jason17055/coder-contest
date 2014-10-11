@@ -119,6 +119,17 @@
  <servlet-class>dragonfin.contest.AdminFileChunksServlet</servlet-class>
 </servlet>
 
+<!-- Used by AJAX
+  -->
+<servlet>
+ <servlet-name>CheckMessage</servlet-name>
+ <servlet-class>dragonfin.contest.CheckMessageServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+ <servlet-name>CheckMessage</servlet-name>
+ <url-pattern>/_a/checkmessage</url-pattern>
+</servlet-mapping>
+
 <!-- Used by Worker script.
   -->
 <servlet>

@@ -173,6 +173,7 @@ public class CoreServlet extends HttpServlet
 		SimpleBindings ctx = new SimpleBindings();
 		ctx.put("resources_prefix",req.getContextPath());
 		ctx.put("images_url",req.getContextPath()+"/images");
+		ctx.put("ajax_url",req.getContextPath()+"/_a");
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
 

@@ -181,18 +181,13 @@ function checkForAnnouncement()
 		}
 	});
 
-	var url = "checkmessage-js.php?timeout=60&type=N&after=" + escape(last_message_id) + xtra;
-	//url = 'http://home.messiah.edu:12626/wait?type=N&after='+escape(last_message_id)+xtra;
+	var url_base = $('body').attr('data-checkmessage-url');
+	var url = url_base+"?timeout=60&type=N&after=" + escape(last_message_id) + xtra;
 	$.ajax({
 		url: url,
 		dataType: 'json',
-	//	headers: {
-	//		cookie: document.cookie
-	//		},
-	//	xhrFields: { withCredentials: true },
 		success: callback,
 		error: onError
 		});
-	//jQuery.getJSON(url, null, callback);
 }
 $(checkForAnnouncement);

@@ -416,6 +416,13 @@ public class TemplateVariables
 		return username + "/" + Long.toString(submissionKey.getId());
 	}
 
+	static Key makeUserKey(String contestId, String username)
+	{
+		return KeyFactory.createKey("User",
+			String.format("%s/%s", contestId, username)
+			);
+	}
+
 	public class Submission
 	{
 		public final Key dsKey;
