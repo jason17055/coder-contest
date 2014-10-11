@@ -26,6 +26,7 @@ Contest [ "id" ]
 	created           Date
 	created_by        String
 	last_problem_id   Integer
+	last_announcement_id Integer
 
 User [ "Contest.id" / "username" ]
 	password          String
