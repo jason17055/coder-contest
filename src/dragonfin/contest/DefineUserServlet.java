@@ -43,6 +43,7 @@ public class DefineUserServlet extends CoreServlet
 			form.put("is_director", u.is_director);
 			form.put("is_judge", u.is_judge);
 			form.put("is_contestant", u.is_contestant);
+			form.put("visible", u.visible);
 
 			ctx.put("f", form);
 		}
@@ -51,6 +52,10 @@ public class DefineUserServlet extends CoreServlet
 			// creating a new record
 
 			Map<String,Object> form = new HashMap<String,Object>();
+			form.put("ordinal", "0");
+			form.put("visible", Boolean.TRUE);
+			form.put("is_contestant", Boolean.TRUE);
+
 			ctx.put("f", form);
 		}
 	}
@@ -172,10 +177,20 @@ public class DefineUserServlet extends CoreServlet
 			ent1.setProperty("password", tmpPass);
 		}
 
+		// integers
+		try {
+			int tmpX = Integer.parseInt(POST.get("ordinal"));
+			ent1.setProperty("ordinal", new Integer(tmpX));
+		}
+		catch (NumberFormatException e) {
+			ent1.setProperty("ordinal", new Integer(0));
+		}
+
 		// booleans
 		ent1.setProperty("is_director", Boolean.valueOf(POST.containsKey("is_director")));
 		ent1.setProperty("is_judge", Boolean.valueOf(POST.containsKey("is_judge")));
 		ent1.setProperty("is_contestant", Boolean.valueOf(POST.containsKey("is_contestant")));
+		ent1.setProperty("visible", Boolean.valueOf(POST.get("visible")));
 
 		updateFromForm_int(ent1, POST, "ordinal");
 	}

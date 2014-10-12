@@ -16,14 +16,14 @@
 <td><label for="ordinal_entry">Order:</label></td>
 <td><input type="text" name="ordinal" id="ordinal_entry" value="[% f.ordinal |html %]"></td>
 </tr>
+[% IF session.is_director %]
 <tr>
 <td><label for="visible_cb">Visible:</label></td>
 <td><select name="visible" id="visible_cb">
-<option value="Y"[% f.visible ? ' selected="selected"' : '' %]>Yes</option>
-<option value="N"[% !f.visible ? ' selected="selected"' : '' %]>No</option>
+<option value="true"[% f.visible ? ' selected="selected"' : '' %]>Yes</option>
+<option value="false"[% !f.visible ? ' selected="selected"' : '' %]>No</option>
 </select></td>
 </tr>
-[% IF session.is_director %]
 <tr>
 <td><label>Roles:</label></td>
 <td>
@@ -48,7 +48,7 @@
 <tr>
 <td><label for="password_entry">Password:</label></td>
 <td><input type="password" name="password" id="password_entry"
-	value="[% f.username |html %]">
+	value="[% f.password |html %]">
 </td>
 </tr>
 </table>

@@ -74,6 +74,7 @@ user
 .name
 .description
 .ordinal
+.is_contestant
 .is_director
 .is_judge
 .online

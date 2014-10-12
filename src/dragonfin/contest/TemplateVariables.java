@@ -856,22 +856,7 @@ public class TemplateVariables
 
 		Entity ent = ds.get(userKey);
 
-		User u = new User(userKey);
-		u.name = (String) ent.getProperty("name");
-		u.description = (String) ent.getProperty("description");
-		u.ordinal = ent.hasProperty("ordinal") ?
-			(int)((Long) ent.getProperty("ordinal")).longValue() :
-			0;
-		u.is_director = ent.hasProperty("is_director") ?
-			((Boolean) ent.getProperty("is_director")).booleanValue() :
-			false;
-		u.is_judge = ent.hasProperty("is_judge") ?
-			((Boolean) ent.getProperty("is_judge")).booleanValue() :
-			false;
-		u.is_contestant = ent.hasProperty("is_contestant") ?
-			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
-			false;
-
+		User u = handleUser(userKey, ent);
 		cachedUsers.put(userKey, u);
 		return u;
 	}
@@ -894,6 +879,12 @@ public class TemplateVariables
 			false;
 		u.is_contestant = ent.hasProperty("is_contestant") ?
 			((Boolean) ent.getProperty("is_contestant")).booleanValue() :
+			false;
+		u.visible = ent.hasProperty("visible") ?
+			((Boolean) ent.getProperty("visible")).booleanValue() :
+			false;
+		u.online = ent.hasProperty("online") ?
+			((Boolean) ent.getProperty("online")).booleanValue() :
 			false;
 		u.name = (String) ent.getProperty("name");
 		u.description = (String) ent.getProperty("description");
