@@ -1,0 +1,68 @@
+[% IF session.is_director || contest.scoreboard=='Y' %]
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>[% contest.title |html %] - [% contest.subtitle |html %]</title>
+<link rel="stylesheet" type="text/css" href="[%resources_prefix|html%]/scoreboard_live.css">
+<script type="text/javascript" src="[%resources_prefix|html%]/jquery-latest.min.js"></script>
+<script type="text/javascript" src="[%resources_prefix|html%]/scoreboard_live.js"></script>
+</head>
+<body data-checkmessage-url="[% ajax_url|html %]/checkmessage">
+
+<center>
+<table border="0">
+<tr>
+[% IF contest.logo %]
+<td><img src="[% contest.logo |html %]" alt="[Logo]"></td>
+[% END %]
+<td><center><h1>[% contest.title |html %]</h1>
+<h2>[% contest.subtitle |html %]</h2>
+<div>(Current Scores)</div>
+</center></td>
+[% IF contest.logo %]
+<td><img src="[% contest.logo |html %]" alt="[Logo]"></td>
+[% END %]
+</tr>
+</table>
+</center>
+
+<div id="announcementPopup">
+  <div id="announcementTitleBar" align="center">Message</div>
+  <div>&nbsp;</div>
+  <img id="announcementImage" src="[% images_url %]/balloons.png" align="left">
+  <div id="announcementContent">&nbsp;</div>
+  <div id="announcementButtons"></div>
+  <audio id="announcementAudio" src="[% resources_prefix %]/Medieval_Fanfare.ogg"></audio>
+</div>
+
+<center>
+<table border="1">
+<tr>
+<th>Contestant</th>
+[% FOREACH p IN contest.problems %]
+<th>[% p.name |html %]</th>
+[% END #each problem %]
+<th>TOTAL</th>
+</tr>
+[% FOREACH u IN all_contestants %]
+<tr>
+<td class="column1"><div class="team_name">[% u.name |html %]</div></td>
+</tr>
+[% END #each user %]
+</table>
+</center>
+
+</body>
+</html>
+[% ELSE #if scoreboard not enabled %]
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Scoreboard Disabled</title>
+<meta http-equiv="refresh" content="180">
+</head>
+<body>
+<h1>Scoreboard Disabled</h1>
+</body>
+</html>
+[% END %]

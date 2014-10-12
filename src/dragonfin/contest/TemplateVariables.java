@@ -51,7 +51,11 @@ public class TemplateVariables
 		if (contestId == null) {
 			return null;
 		}
+		return enumerateProblems(contestId);
+	}
 
+	ArrayList<Problem> enumerateProblems(String contestId)
+	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Query q = new Query("Problem")
 			.setAncestor(contestKey)
@@ -207,6 +211,15 @@ public class TemplateVariables
 				usersCached = enumerateUsers(id);
 			}
 			return usersCached;
+		}
+
+		ArrayList<Problem> problemsCached;
+		public ArrayList<Problem> getProblems()
+		{
+			if (problemsCached == null) {
+				problemsCached = enumerateProblems(id);
+			}
+			return problemsCached;
 		}
 	}
 

@@ -1,0 +1,45 @@
+body {
+	color: black;
+	background-color: white;
+}
+#announcementTitleBar {
+	width: 100%;
+	background-color: white;
+	color: black;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+#announcementPopup {
+	position: fixed;
+	height: 300px;
+	width: 50%;
+	background-color: #883333;
+	color: white;
+	border: 10px solid black;
+	margin-top: -50px;
+	z-index: 1;
+	left: 25%;
+	display: none;
+	font-size: 16pt;
+}
+
+.team_name {
+	white-space:nowrap;
+	text-align:left;
+}
+.team_description {
+	font-size: small;
+	text-align: left;
+}
+.correct {
+	background-color: #ccffcc;
+}
+.attempted {
+}
+td.column1 {
+	min-width: 2in;
+	height: 28pt;
+	}
+td.pcolumn {
+	min-width: 0.7in;
+	}
