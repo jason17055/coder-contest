@@ -1,5 +1,6 @@
 package dragonfin.templates;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 class MethodCall extends Expression
@@ -34,7 +35,22 @@ class MethodCall extends Expression
 		}
 		else
 		{
-			throw new TemplateRuntimeException("Invalid method call: "+methodName);
+			return doDynamicMethod(obj, args);
+		}
+	}
+
+	Object doDynamicMethod(Object subject, Object [] args)
+		throws TemplateRuntimeException
+	{
+		try {
+
+		Method m = subject.getClass().getMethod(methodName, args.getClass());
+		Object rv = m.invoke(subject, new Object[] { args });
+		return rv;
+
+		}
+		catch (Exception e) {
+			throw new TemplateRuntimeException("Bad method call: "+methodName, e);
 		}
 	}
 }
