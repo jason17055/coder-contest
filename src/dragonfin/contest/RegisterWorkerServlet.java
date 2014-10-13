@@ -60,15 +60,11 @@ public class RegisterWorkerServlet extends HttpServlet
 			ent.setProperty("name", workerName);
 			ent.setProperty("description", workerDescription);
 			ent.setProperty("system", systemDescription);
+			ent.setProperty("busy", Boolean.FALSE);
+			ent.setProperty("last_refreshed", new Date());
 
 			Key workerKey = ds.put(ent);
 			workerId = Long.toString(workerKey.getId());
-
-			Key statusKey = KeyFactory.createKey(workerKey, "WorkerStatus", 1);
-			Entity statusEnt = new Entity(statusKey);
-			statusEnt.setProperty("busy", Boolean.FALSE);
-			statusEnt.setProperty("last_refreshed", new Date());
-			ds.put(statusEnt);
 
 			txn.commit();
 		}

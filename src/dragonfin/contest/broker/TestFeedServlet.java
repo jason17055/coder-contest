@@ -79,15 +79,16 @@ public class TestFeedServlet extends HttpServlet
 		//
 		// update worker status
 		//
-		String newWorkerStatus = POST.get("worker_status");
-
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key workerKey = KeyFactory.createKey(contestKey, "Worker", Long.parseLong(workerId));
-		Key workerStatusKey = KeyFactory.createKey(workerKey, "WorkerStatus", 1);
-		Entity statusEnt = new Entity(workerStatusKey);
-		statusEnt.setProperty("last_refreshed", new Date());
-		statusEnt.setProperty("worker_status", newWorkerStatus);
-		ds.put(statusEnt);
+		try {
+			String newWorkerStatus = POST.get("worker_status");
+			postWorkerStatus(ds, workerKey, newWorkerStatus);
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
 
 		//
 		// look for (and possibly wait for) a job
@@ -111,6 +112,26 @@ public class TestFeedServlet extends HttpServlet
 		}
 
 		sendJobDetails(resp, ds, ent);
+	}
+
+	void postWorkerStatus(DatastoreService ds, Key workerKey, String newWorkerStatus)
+		throws EntityNotFoundException
+	{
+		Transaction txn = ds.beginTransaction();
+		try {
+
+			Entity ent = ds.get(workerKey);
+			ent.setProperty("last_refreshed", new Date());
+			ent.setProperty("worker_status", newWorkerStatus);
+			ds.put(ent);
+
+			txn.commit();
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
 	}
 
 	void sendJobDetails(HttpServletResponse resp, DatastoreService ds, Entity ent)

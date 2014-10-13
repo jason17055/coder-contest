@@ -333,37 +333,12 @@ public class TemplateVariables
 		public String name;
 		public String description;
 		public String system;
+		public String worker_status;
+		public boolean busy;
 
 		Worker(Key dsKey) {
 			this.dsKey = dsKey;
 			this.id = Long.toString(dsKey.getId());
-		}
-
-		Entity statusEnt;
-		void fetchStatus()
-		{
-			if (statusEnt != null) { return; }
-
-			Key statusKey = KeyFactory.createKey(dsKey, "WorkerStatus", 1);
-			try {
-				statusEnt = ds.get(statusKey);
-			}
-			catch (EntityNotFoundException e) {
-				statusEnt = new Entity(statusKey);
-			}
-		}
-
-		public String getWorker_status()
-		{
-			fetchStatus();
-			return (String) statusEnt.getProperty("worker_status");
-		}
-
-		public boolean getBusy()
-		{
-			fetchStatus();
-			Boolean b = (Boolean) statusEnt.getProperty("busy");
-			return (b != null && b.booleanValue());
 		}
 	}
 
@@ -803,6 +778,9 @@ public class TemplateVariables
 		w.name = (String) ent.getProperty("name");
 		w.description = (String) ent.getProperty("description");
 		w.system = (String) ent.getProperty("system");
+		w.busy = ent.hasProperty("busy") ?
+			((Boolean)ent.getProperty("busy")).booleanValue() : false;
+		w.worker_status = (String) ent.getProperty("worker_status");
 
 		return w;
 	}

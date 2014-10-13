@@ -121,10 +121,9 @@ Worker [ Contest / id* ]
 	description        String
 	system             String
 	accepted_languages String
-
-WorkerStatus [ Contest / Worker / 1 ]
-	last_refreshed    Date
-	worker_status     String
+	last_refreshed     Date
+	worker_status      String
+	busy               Boolean
 
 Announcement [ Contest / id* ]
 	created           Date
