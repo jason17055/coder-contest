@@ -33,6 +33,15 @@ public class CheckMessageServlet extends HttpServlet
 			}
 		}
 
+		String [] job_ids = req.getParameterValues("jobcompletion");
+		if (job_ids != null) {
+			for (String jobId : job_ids) {
+				if (m.checkForJobCompletion(jobId)) {
+					return;
+				}
+			}
+		}
+
 		String dismissMessage = req.getParameter("dismiss_message");
 		if (dismissMessage != null) {
 			m.dismissMessage(dismissMessage);
@@ -65,6 +74,24 @@ public class CheckMessageServlet extends HttpServlet
 			this.ds = DatastoreServiceFactory.getDatastoreService();
 		}
 
+		boolean checkForJobCompletion(String jobId)
+			throws IOException
+		{
+			Key jobKey = KeyFactory.createKey("TestJob", Long.parseLong(jobId));
+			try {
+
+				Entity ent = ds.get(jobKey);
+				Boolean b = (Boolean) ent.getProperty("finished");
+				if (b != null && b.booleanValue()) {
+					emitJobCompleted(ent);
+					return true;
+				}
+			}
+			catch (EntityNotFoundException e) {
+			}
+			return false;
+		}
+
 		void dismissMessage(String messageId)
 		{
 			Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
@@ -89,6 +116,18 @@ public class CheckMessageServlet extends HttpServlet
 			}
 
 			return false;
+		}
+
+		void emitJobCompleted(Entity ent)
+			throws IOException
+		{
+			resp.setContentType("text/json;charset=UTF-8");
+			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
+			out.writeStartObject();
+			out.writeStringField("class", "job_completed");
+			out.writeStringField("job_id", Long.toString(ent.getKey().getId()));
+			out.writeEndObject();
+			out.close();
 		}
 
 		void emitMessageDetails(Entity ent)

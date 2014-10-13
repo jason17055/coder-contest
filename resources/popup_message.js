@@ -91,7 +91,7 @@ function checkForAnnouncement()
 		{
 			displayAnnouncement(data);
 		}
-		else if (data['class'] == 'job_completion')
+		else if (data['class'] == 'job_completed')
 		{
 			location.reload();
 		}
@@ -110,7 +110,7 @@ function checkForAnnouncement()
 		}
 		else
 		{
-			var targetTime = startTime + 30000;
+			var targetTime = startTime + 5000;
 			var curTime = new Date().getTime();
 			var delay = targetTime - curTime;
 			if (delay < 1) { delay = 1; }
@@ -133,17 +133,14 @@ function checkForAnnouncement()
 
 	var xtra = "";
 	var job_incomplete_indicators = new Array();
-	$('.job-incomplete-indicator').each(function(idx)
+	$('.job-incomplete-indicator').each(function(idx,el)
 		{
-			var id = this.id;
-			if (id.match(/^ind_job_/))
-			{
-				job_incomplete_indicators.push(id.substr(8));
-			}
+			var job_id = el.getAttribute('data-job-id');
+			job_incomplete_indicators.push(job_id);
 		});
-	if (job_incomplete_indicators.length)
+	for (var j = 0; j < job_incomplete_indicators.length; j++)
 	{
-		xtra += "&jobcompletion=" + escape(job_incomplete_indicators.join(","));
+		xtra += "&jobcompletion=" + escape(job_incomplete_indicators[j]);
 	}
 
 	var online_indicators = new Array();
