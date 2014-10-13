@@ -2,22 +2,45 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.*;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
-public class DefineContestServlet extends CoreServlet
+public class DefineContestServlet extends AdminPageServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String contestId = req.getParameter("contest");
-		if (contestId != null) {
-			// TODO- check if the contest exists,
-			// and load its properties
+		if (requireAdmin(req, resp)) {
+			return;
 		}
 
-		renderTemplate(req, resp, "admin/define_contest.tt");
+		renderTemplate(req, resp, getTemplate());
+	}
+
+	String getTemplate() {
+		return "admin/define_contest.tt";
+	}
+
+	@Override
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws EntityNotFoundException
+	{
+		String contestId = tv.req.getParameter("contest");
+		if (contestId != null) {
+
+			TemplateVariables.Contest c = tv.fetchContest(contestId);
+			HashMap<String,String> form = new HashMap<String,String>();
+			form.put("id", c.id);
+			ctx.put("f", form);
+		}
+		else {
+
+			// default form
+			HashMap<String,String> form = new HashMap<String,String>();
+			ctx.put("f", form);
+		}
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
