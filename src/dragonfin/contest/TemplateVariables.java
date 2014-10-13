@@ -32,9 +32,15 @@ public class TemplateVariables
 
 	ArrayList<Worker> enumerateWorkers(String contestId)
 	{
+		Date curTime = new Date();
+		Date cutOffTime = new Date(curTime.getTime() - 10*60*1000); //10 minutes
+
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Query q = new Query("Worker")
 			.setAncestor(contestKey);
+		q.setFilter(
+			Query.FilterOperator.GREATER_THAN_OR_EQUAL.of("last_refreshed", cutOffTime)
+			);
 
 		PreparedQuery pq = ds.prepare(q);
 		ArrayList<Worker> list = new ArrayList<Worker>();
