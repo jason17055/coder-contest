@@ -19,7 +19,7 @@ public class JobBroker
 	{
 		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 		String v = modulesApi.getCurrentVersion();
-		return "http://" + modulesApi.getVersionHostname("job_broker", v);
+		return "http://" + modulesApi.getVersionHostname("job-broker", v);
 	}
 
 	public static String getFeedUrl(String contestId, String workerId)
@@ -39,7 +39,7 @@ public class JobBroker
 			inStream.close();
 		}
 		catch (Exception e) {
-			log.warning("unable to notify job_broker: "+e.getMessage());
+			log.warning("unable to notify job-broker: "+e.getMessage());
 		}
 	}
 }

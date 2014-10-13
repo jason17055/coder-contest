@@ -48,7 +48,7 @@
 	<webinf dir="." includes="templates/* templates/admin/*" />
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
-<war destfile="job_broker.war" webxml="job_broker/web.xml">
+<war destfile="job-broker.war" webxml="job-broker/web.xml">
 	<classes dir="build/classes" includes="
 		dragonfin/contest/TemplateVariables.class
 		dragonfin/contest/common/*
@@ -83,9 +83,9 @@
 <!--default module -->
 <unzip src="${warfile}" dest="deploy.appengine/default"/>
 <copy file="appengine-web.xml" todir="deploy.appengine/default/WEB-INF"/>
-<!--job_broker module -->
-<unzip src="job_broker.war" dest="deploy.appengine/job_broker"/>
-<copy file="job_broker/appengine-web.xml" todir="deploy.appengine/job_broker/WEB-INF"/>
+<!--job-broker module -->
+<unzip src="job-broker.war" dest="deploy.appengine/job-broker"/>
+<copy file="job-broker/appengine-web.xml" todir="deploy.appengine/job-broker/WEB-INF"/>
 <!--optional app-wide configuration files, go into the default/WEB-XML directory -->
 <copy file="datastore-indexes.xml" todir="deploy.appengine/default/WEB-INF"/>
 </target>

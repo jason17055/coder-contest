@@ -10,8 +10,8 @@
 </module>
 <module>
 	<web>
-		<web-uri>job_broker</web-uri>
-		<context-root>job_broker</context-root>
+		<web-uri>job-broker</web-uri>
+		<context-root>job-broker</context-root>
 	</web>
 </module>
 </application>

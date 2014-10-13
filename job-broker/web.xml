@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <web-app>
-<display-name>job_broker</display-name>
+<display-name>job-broker</display-name>
 <description>Coder Contest - Job Broker</description>
 
 <listener>
