@@ -26,9 +26,22 @@ public class DefineContestServlet extends CoreServlet
 		if (req.getParameter("action:create_contest") != null) {
 			doCreateContest(req, resp);
 		}
-		else {
-			throw new ServletException("invalid POST");
+		else if (req.getParameter("action:cancel") != null) {
+			doCancel(req, resp);
 		}
+		else {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "invalid POST");
+		}
+	}
+
+	void doCancel(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		String u = req.getParameter("next");
+		if (u == null) {
+			u = req.getContextPath()+"/_admin/contests";
+		}
+		resp.sendRedirect(u);
 	}
 
 	void doCreateContest(HttpServletRequest req, HttpServletResponse resp)
