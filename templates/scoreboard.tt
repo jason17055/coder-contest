@@ -47,6 +47,11 @@
 [% FOREACH u IN all_contestants %]
 <tr>
 <td class="column1"><div class="team_name">[% u.name |html %]</div></td>
+[% FOREACH p IN contest.problems %]
+[% r = u.result_by_problem(p) %]
+<td>[% r.score |html %]</td>
+[% END #each problem %]
+<td align="center">[% u.score_html %]</td>
 </tr>
 [% END #each user %]
 </table>

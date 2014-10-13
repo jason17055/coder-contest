@@ -30,7 +30,7 @@
 
 [% FOREACH prb IN all_problems %]
 [% prb_id = prb.id %]
-[% result = team.result_by_problem.$prb_id %]
+[% result = team.result_by_problem(prb) %]
 
 <td class="results_cell"><a href="[% result.url |html %]">
 [% IF result.score_html %]

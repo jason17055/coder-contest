@@ -380,7 +380,6 @@ public class TemplateVariables
 		public boolean online;
 		public boolean visible;
 		public String score_html;
-		public Map<String,Result> result_by_problem;
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;
@@ -393,6 +392,23 @@ public class TemplateVariables
 		{
 			return makeUrl("user?id="+username);
 		}
+
+		//public Map<String,Result> result_by_problem;
+		public Result result_by_problem(Object [] args)
+		{
+			if (args.length != 1) {
+				throw new UnsupportedOperationException();
+			}
+			Object o = args[0];
+			if (o instanceof Problem) {
+				Key problemKey = ((Problem)o).dsKey;
+				Key resultKey = KeyFactory.createKey(dsKey, "Result", problemKey.getId());
+				return fetchResultOptional(resultKey);
+			}
+			else {
+				throw new UnsupportedOperationException();
+			}
+		}
 	}
 
 	public class Result
@@ -400,6 +416,10 @@ public class TemplateVariables
 		public final Key dsKey;
 		public Date opened;
 		Key sourceFileKey;
+		int minutes;
+		int incorrect_submissions;
+		int score;
+		int score_alt;
 
 		Result(Key dsKey) {
 			this.dsKey = dsKey;
@@ -409,6 +429,20 @@ public class TemplateVariables
 			throws EntityNotFoundException
 		{
 			return sourceFileKey != null ? fetchFile(sourceFileKey) : null;
+		}
+
+		public String getUrl()
+		{
+			String username = getUsernameFromUserKey(dsKey.getParent());
+			String problemId = Long.toString(dsKey.getId());
+			return "result?result="+escapeUrl(
+				String.format("%s/%s", username, problemId)
+				);
+		}
+
+		public String getScore_html()
+		{
+			return String.format("%d", score);
 		}
 	}
 
@@ -774,17 +808,30 @@ public class TemplateVariables
 	}
 
 	HashMap<Key,Result> cachedResults = new HashMap<Key,Result>();
-	Result fetchResult(Key resultKey)
-		throws EntityNotFoundException
+	Result fetchResultOptional(Key resultKey)
 	{
 		if (cachedResults.containsKey(resultKey)) {
 			return cachedResults.get(resultKey);
 		}
 
-		Entity ent = ds.get(resultKey);
-		Result r = handleResult(resultKey, ent);
+		Result r;
+		try {
+			r = fetchResult(resultKey);
+		}
+		catch (EntityNotFoundException e) {
+			Entity ent = new Entity(resultKey);
+			r = handleResult(resultKey, ent);
+		}
+
 		cachedResults.put(resultKey, r);
 		return r;
+	}
+
+	Result fetchResult(Key resultKey)
+		throws EntityNotFoundException
+	{
+		Entity ent = ds.get(resultKey);
+		return handleResult(resultKey, ent);
 	}
 
 	Result handleResult(Key key, Entity ent)
@@ -792,6 +839,16 @@ public class TemplateVariables
 		Result r = new Result(key);
 		r.sourceFileKey = (Key) ent.getProperty("source");
 		r.opened = (Date) ent.getProperty("opened");
+
+		r.score = ent.hasProperty("score") ?
+			(int)((Long) ent.getProperty("score")).longValue() : 0;
+		r.score_alt = ent.hasProperty("score_alt") ?
+			(int)((Long) ent.getProperty("score_alt")).longValue() : 0;
+		r.minutes = ent.hasProperty("minutes") ?
+			(int)((Long) ent.getProperty("minutes")).longValue() : 0;
+		r.incorrect_submissions = ent.hasProperty("incorrect_submissions") ?
+			(int)((Long) ent.getProperty("incorrect_submissions")).longValue() : 0;
+
 		return r;
 	}
 
