@@ -2,11 +2,21 @@
 <datastore-indexes autoGenerate="true">
 
 <datastore-index kind="Problem" ancestor="true"><property name="name" direction="asc"/></datastore-index>
+<datastore-index kind="SystemTest" ancestor="true"><property name="created" direction="asc"/></datastore-index>
+<datastore-index kind="SystemTest" ancestor="true">
+	<property name="sample" direction="asc"/>
+	<property name="created" direction="asc"/>
+</datastore-index>
 
 <datastore-index kind="Worker" ancestor="true"><property name="last_refreshed" direction="asc"/></datastore-index>
 <datastore-index kind="Message" ancestor="true"><property name="created" direction="asc"/></datastore-index>
 <datastore-index kind="TestJob" ancestor="true">
 	<property name="claimed" direction="asc"/>
+	<property name="created" direction="asc"/>
+</datastore-index>
+
+<datastore-index kind="Submission" ancestor="false">
+	<property name="contest" direction="asc"/>
 	<property name="created" direction="asc"/>
 </datastore-index>
 
