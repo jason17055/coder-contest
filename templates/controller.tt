@@ -15,10 +15,10 @@
 [% tname = team.name || "(no name)" %]
 <tr><td height="32">
 [% IF team.online %]
-[%	online_img = "[% images_url %]/plus.png" %]
+[%	online_img = images_url _ "/plus.png" %]
 [%	online_lbl = "[Online]" %]
 [% ELSE %]
-[%	online_img = "[% images_url %]/minus.png" %]
+[%	online_img = images_url _ "/minus.png" %]
 [%	online_lbl = "[Offline]" %]
 [% END %]
 <div>
