@@ -1,5 +1,5 @@
 [% WRAPPER "common.inc"
-	page_title = 'Edit Submission'
+	page_title = submitter ? 'Edit Submission' : 'New Submission'
 %]
 
 <table border="0" cellspacing="0" width="100%">
@@ -10,11 +10,11 @@
 <table>
 <tr>
 <td valign="top">Contestant:</td>
-<td valign="top">[% submission.submitter.name |html %] ([% submission.submitter.username |html %])</td>
+<td valign="top">[% f.submitter.name |html %] ([% f.submitter.username |html %])</td>
 </tr>
 <tr>
 <td>Problem:</td>
-<td><a href="[% submission.problem.edit_url |html %]">[% submission.problem.name |html %]</a></td>
+<td><a href="[% f.problem.edit_url |html %]">[% f.problem.name |html %]</a></td>
 </tr>
 <tr>
 <td>Minutes:</td>
@@ -47,17 +47,24 @@
 </table>
 
 <div>
+[% IF submitter %]
 <button type="submit">Save Changes</button>
 <button type="submit" name="action:delete_submission" onclick='return confirm("Really delete this submission?")'>Delete</button>
+[% ELSE %]
+<button type="submit" name="action:create_submission">Create Submission</button>
+[% END %]
 <button type="submit" name="action:cancel">Cancel</button>
 </div>
 
 </form>
 
+[% IF submission %]
 <h3 class="submission_h3">Source Code:</h3>
 <iframe id="source_code_iframe" src="[% submission.source.inline_text_url |html %]"></iframe>
+[% END #if editing an existing submission %]
 
 </td>
+[% IF submission %]
 <td id="rhs_column" width="40%" valign="top">
 <h3 class="submission_h3">Test Results:</h3>
 <table border="1" width="100%">
@@ -79,6 +86,7 @@
 </form>
 
 </td>
+[% END #if editing an existing submission %]
 </tr>
 </table>
 

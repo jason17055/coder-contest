@@ -36,7 +36,24 @@ public class EditSubmissionServlet extends CoreServlet
 	{
 		String contestId = tv.req.getParameter("contest");
 		String id = tv.req.getParameter("id");
-		ctx.put("submission", tv.fetchSubmission(contestId, id));
+		if (id != null) {
+			TemplateVariables.Submission s = tv.fetchSubmission(contestId, id);
+			ctx.put("submission", s);
+
+			HashMap<String,Object> form = new HashMap<String,Object>();
+			form.put("submitter", s.getSubmitter());
+			form.put("problem", s.getProblem());
+			ctx.put("f", form);
+		}
+		else {
+			String submitterUsername = tv.req.getParameter("submitter");
+			String problemId = tv.req.getParameter("problem");
+
+			HashMap<String,Object> form = new HashMap<String,Object>();
+			form.put("submitter", tv.fetchUser(contestId, submitterUsername));
+			form.put("problem", tv.fetchProblem(contestId, problemId));
+			ctx.put("f", form);
+		}
 	}
 
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();
