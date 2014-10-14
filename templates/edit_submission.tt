@@ -1,5 +1,5 @@
 [% WRAPPER "common.inc"
-	page_title = submitter ? 'Edit Submission' : 'New Submission'
+	page_title = submission ? 'Edit Submission' : 'New Submission'
 %]
 
 <table border="0" cellspacing="0" width="100%">
@@ -47,7 +47,7 @@
 </table>
 
 <div>
-[% IF submitter %]
+[% IF submission %]
 <button type="submit">Save Changes</button>
 <button type="submit" name="action:delete_submission" onclick='return confirm("Really delete this submission?")'>Delete</button>
 [% ELSE %]
