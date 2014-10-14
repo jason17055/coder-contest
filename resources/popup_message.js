@@ -7,6 +7,7 @@ var last_message_id = sessionStorage.getItem("lastmessage");
 var current_announcement = null;
 var orig_title = null;
 var blinking = false;
+var pageLoadTime = new Date().getTime();
 
 function blinkTitle()
 {
@@ -84,6 +85,9 @@ function checkForAnnouncement()
 {
 	var d = new Date();
 	var startTime = d.getTime();
+	var curInterval = (startTime - pageLoadTime < 30000) ? 1000 :
+		(startTime - pageLoadTime < 300000) ? 5000 :
+		25000;
 
 	var callback = function(data, textStatus, xhr)
 	{
@@ -110,7 +114,7 @@ function checkForAnnouncement()
 		}
 		else
 		{
-			var targetTime = startTime + 5000;
+			var targetTime = startTime + curInterval;
 			var curTime = new Date().getTime();
 			var delay = targetTime - curTime;
 			if (delay < 1) { delay = 1; }
