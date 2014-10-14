@@ -52,7 +52,7 @@
 [% count = count+1 %]
 <tr>
 <td><a href="[% s.edit_url |html %]">[% count %]</a></td>
-<td>[% "Time $s.minutes" |html %]</td>
+<td>[% "Time ${s.minutes}" |html %]</td>
 <td><a href="[% s.source.url |html %]">[% s.source.name |html %]</a></td>
 <td>[% s.status |html %]</td>
 </tr>

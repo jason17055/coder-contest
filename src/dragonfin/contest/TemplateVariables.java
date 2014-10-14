@@ -507,6 +507,11 @@ public class TemplateVariables
 		return KeyFactory.createKey(contestKey, "Problem", problemNumber);
 	}
 
+	static Key makeProblemKey(String contestId, String problemId)
+	{
+		return makeProblemKey(contestId, Long.parseLong(problemId));
+	}
+
 	static Key makeUserKey(String contestId, String username)
 	{
 		return KeyFactory.createKey("User",

@@ -5,9 +5,24 @@ import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 public class NewSubmissionTask extends HttpServlet
 {
+	static void enqueueTask(Key submissionKey)
+	{
+		Key userKey = submissionKey.getParent();
+
+		Queue taskQueue = QueueFactory.getDefaultQueue();
+		taskQueue.add(withUrl("/_task/new_submission")
+			.param("submitter", userKey.getName())
+			.param("submission", Long.toString(submissionKey.getId()))
+			);
+	}
+
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException

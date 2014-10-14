@@ -9,8 +9,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import com.google.appengine.api.datastore.*;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
@@ -88,11 +86,7 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 		}
 
 		// enqueue a task for processing this new submission
-		Queue taskQueue = QueueFactory.getDefaultQueue();
-		taskQueue.add(withUrl("/_task/new_submission")
-			.param("submitter", userKey.getName())
-			.param("submission", Long.toString(submissionKey.getId()))
-			);
+		NewSubmissionTask.enqueueTask(submissionKey);
 
 		String url = "..";
 		resp.sendRedirect(url);

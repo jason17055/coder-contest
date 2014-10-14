@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import dragonfin.contest.common.*;
+import dragonfin.contest.common.File;
 
 import java.io.*;
 import java.util.*;
@@ -70,7 +71,7 @@ public class EditSubmissionServlet extends CoreServlet
 			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
 		}
 		else if (POST.containsKey("action:create_submission")) {
-			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
+			doCreateSubmission(req, resp);
 		}
 		else {
 			doUpdateSubmission(req, resp);
@@ -85,6 +86,36 @@ public class EditSubmissionServlet extends CoreServlet
 			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
 		}
 		resp.sendRedirect(u);
+	}
+
+	void doCreateSubmission(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		// url parameters
+		String contestId = req.getParameter("contest");
+		String submitterUsername = req.getParameter("submitter");
+		String problemId = req.getParameter("problem");
+
+		Key userKey = TemplateVariables.makeUserKey(contestId, submitterUsername);
+		Key problemKey = TemplateVariables.makeProblemKey(contestId, problemId);
+
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)req.getAttribute("POST");
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Entity ent = new Entity("Submission", userKey);
+		ent.setProperty("created", new Date());
+		ent.setProperty("type", "submission");
+		ent.setProperty("problem", problemKey);
+		ent.setProperty("contest", contestId);
+
+		updateFromForm(ent, POST);
+
+		Key submissionKey = ds.put(ent);
+
+		// enqueue a task for processing this new submission
+		NewSubmissionTask.enqueueTask(submissionKey);
 	}
 
 	void doUpdateSubmission(HttpServletRequest req, HttpServletResponse resp)
