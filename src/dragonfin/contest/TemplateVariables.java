@@ -440,6 +440,14 @@ public class TemplateVariables
 				);
 		}
 
+		public String getNew_submission_url()
+		{
+			return String.format("submission?submitter=%s&problem=%s",
+				escapeUrl(getUsernameFromUserKey(dsKey.getParent())),
+				escapeUrl(Long.toString(dsKey.getId()))
+				);
+		}
+
 		public String getScore_html()
 		{
 			return String.format("%d", score);

@@ -61,7 +61,7 @@
 [% END #if any submissions %]
 
 <p>
-<a href="[% add_submission_url |html %]">Add Submission</a>
+<a href="[% result.new_submission_url |html %]">Add Submission</a>
 |
 <a href="[% contest_links.controller |html %]">Back to Controller</a>
 </p>

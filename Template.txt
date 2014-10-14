@@ -95,6 +95,7 @@ result
 .minutes
 .submissions           - Submission[]
 .contestant            - User
+.new_submission_url
 
 test_job
 .id
