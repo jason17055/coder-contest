@@ -66,6 +66,12 @@ public class EditSubmissionServlet extends CoreServlet
 		if (POST.containsKey("action:cancel")) {
 			doCancel(req, resp);
 		}
+		else if (POST.containsKey("action:delete_submission")) {
+			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
+		}
+		else if (POST.containsKey("action:create_submission")) {
+			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
+		}
 		else {
 			doUpdateSubmission(req, resp);
 		}
