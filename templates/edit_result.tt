@@ -1,0 +1,71 @@
+[% WRAPPER "common.inc"
+	page_title = 'Results for ' _ result.contestant.name
+%]
+
+[% INCLUDE 'form_messages.inc' %]
+
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<table>
+<tr>
+<td><label>Contestant:</label></td>
+<td>[% result.contestant.name |html %]</td>
+</tr>
+<tr>
+<td><label>Problem:</label></td>
+<td><a href="[% result.problem.edit_url |html %]">[% result.problem.name |html %]</a></td>
+</tr>
+<tr>
+<td><label>Opened:</label></td>
+<td>[% IF result.opened %]
+	Yes, at [% result.opened |html %]
+	(<a href="[% reset_opened_url |html %]">Reset</a>)
+[% ELSE %]
+	No
+[% END %]</td>
+</tr>
+<tr>
+<td><label>Solved:</label></td>
+<td>[% IF result.minutes %]Yes, in [% result.minutes|html %] minutes
+[% ELSE %]No
+[% END %]</td>
+</tr>
+<tr>
+<td><label>Incorrect Submissions:</label></td>
+<td>[% result.incorrect_submissions || 0 |html %]</td>
+</tr>
+<tr>
+<td><label>Score:</label></td>
+<td>[% result.score |html %]</td>
+</tr>
+</table>
+
+[% IF result.submissions.size %]
+<table border="1">
+<tr>
+<th>Count</th>
+<th>Submitted</th>
+<th>Source Code</th>
+<th>Status</th>
+</tr>
+[% count = 0 %]
+[% FOREACH s IN result.submissions %]
+[% count = count+1 %]
+<tr>
+<td><a href="[% s.edit_url |html %]">[% count %]</a></td>
+<td>[% "Time $s.minutes" |html %]</td>
+<td><a href="[% s.source.url |html %]">[% s.source.name |html %]</a></td>
+<td>[% s.status |html %]</td>
+</tr>
+[% END #each submission %]
+</table>
+[% END #if any submissions %]
+
+<p>
+<a href="[% add_submission_url |html %]">Add Submission</a>
+|
+<a href="[% contest_links.controller |html %]">Back to Controller</a>
+</p>
+
+</form>
+
+[% END #wrapper %]

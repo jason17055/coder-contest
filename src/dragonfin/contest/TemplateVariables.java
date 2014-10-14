@@ -95,6 +95,24 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<Submission> enumerateSubmissionsByUserAndProblem(Key userKey, Key problemKey)
+	{
+		Query q = new Query("Submission");
+		q.setAncestor(userKey);
+		q.setFilter(
+			Query.FilterOperator.EQUAL.of("problem", problemKey)
+			);
+		q.addSort("created");
+
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<Submission> list = new ArrayList<Submission>();
+		for (Entity ent : pq.asIterable()) {
+			Submission s = handleSubmission(ent.getKey(), ent);
+			list.add(s);
+		}
+		return list;
+	}
+
 	ArrayList<User> getAll_contestants()
 	{
 		String contestId = req.getParameter("contest");
@@ -396,11 +414,12 @@ public class TemplateVariables
 	{
 		public final Key dsKey;
 		public Date opened;
+		public int minutes;
+		public int incorrect_submissions;
+		public int score;
+		public int score_alt;
+
 		Key sourceFileKey;
-		int minutes;
-		int incorrect_submissions;
-		int score;
-		int score_alt;
 
 		Result(Key dsKey) {
 			this.dsKey = dsKey;
@@ -425,6 +444,32 @@ public class TemplateVariables
 		{
 			return String.format("%d", score);
 		}
+
+		public User getContestant()
+			throws EntityNotFoundException
+		{
+			return fetchUser(dsKey.getParent());
+		}
+
+		public Problem getProblem()
+			throws EntityNotFoundException
+		{
+			String contestId = getContestFromUserKey(dsKey.getParent());
+			String problemId = Long.toString(dsKey.getId());
+			return fetchProblem(contestId, problemId);
+		}
+
+		ArrayList<Submission> submissionsCached;
+		public ArrayList<Submission> getSubmissions()
+		{
+			if (submissionsCached == null) {
+				Key userKey = dsKey.getParent();
+				String contestId = getContestFromUserKey(userKey);
+				Key problemKey = makeProblemKey(contestId, dsKey.getId());
+				submissionsCached = enumerateSubmissionsByUserAndProblem(userKey, problemKey);
+			}
+			return submissionsCached;
+		}
 	}
 
 	static String getContestFromUserKey(Key userKey)
@@ -446,6 +491,12 @@ public class TemplateVariables
 		Key userKey = submissionKey.getParent();
 		String username = getUsernameFromUserKey(userKey);
 		return username + "/" + Long.toString(submissionKey.getId());
+	}
+
+	static Key makeProblemKey(String contestId, long problemNumber)
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		return KeyFactory.createKey(contestKey, "Problem", problemNumber);
 	}
 
 	static Key makeUserKey(String contestId, String username)
@@ -789,6 +840,17 @@ public class TemplateVariables
 		w.worker_status = (String) ent.getProperty("worker_status");
 
 		return w;
+	}
+
+	Result fetchResult(String contestId, String resultName)
+	{
+		String [] parts = resultName.split("/");
+		String username = parts[0];
+		String problemId = parts[1];
+
+		Key userKey = makeUserKey(contestId, username);
+		Key resultKey = KeyFactory.createKey(userKey, "Result", Long.parseLong(problemId));
+		return fetchResultOptional(resultKey);
 	}
 
 	HashMap<Key,Result> cachedResults = new HashMap<Key,Result>();

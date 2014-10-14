@@ -85,15 +85,16 @@ user
 .result_by_problem
 
 result
-.opened
-.source
-.problem
+.opened                - Date
+.source                - File
+.problem               - Problem
 .incorrect_submissions
 .score
 .score_alt
 .score_html
 .minutes
-.submissions
+.submissions           - Submission[]
+.contestant            - User
 
 test_job
 .id
