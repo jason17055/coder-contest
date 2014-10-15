@@ -131,6 +131,10 @@
  <servlet-name>AdminFileChunks</servlet-name>
  <servlet-class>dragonfin.contest.AdminFileChunksServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>AdminModules</servlet-name>
+ <servlet-class>dragonfin.contest.AdminModulesServlet</servlet-class>
+</servlet>
 
 <!-- Used by AJAX
   -->
@@ -282,6 +286,10 @@
 <servlet-mapping>
  <servlet-name>AdminFileChunks</servlet-name>
  <url-pattern>/_admin/chunks</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>AdminModules</servlet-name>
+ <url-pattern>/_admin/modules</url-pattern>
 </servlet-mapping>
 
 <servlet>
