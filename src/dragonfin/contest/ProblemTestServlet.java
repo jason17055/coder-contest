@@ -30,19 +30,6 @@ public class ProblemTestServlet extends ProblemCoreServlet
 		doCreateTestJob(req, resp);
 	}
 
-	static String fileExtensionOf(String fileName)
-	{
-		if (fileName == null) {
-			return null;
-		}
-		int period = fileName.lastIndexOf('.');
-		if (period == -1) {
-			return null;
-		}
-
-		return fileName.substring(period+1);
-	}
-
 	void doCreateTestJob(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -95,6 +82,7 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			ent.setProperty("type", "U");
 			ent.setProperty("claimed", Boolean.FALSE);
 			ent.setProperty("finished", Boolean.FALSE);
+			ent.setProperty("owner", null);
 			ent.setProperty("problem", problemKey);
 			Key resultKey = ds.put(ent);
 

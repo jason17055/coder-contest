@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
+import static dragonfin.contest.common.CommonFunctions.*;
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 public class NewSubmissionTask extends HttpServlet
@@ -37,6 +38,7 @@ public class NewSubmissionTask extends HttpServlet
 		Entity submissionEnt;
 		Entity problemEnt;
 		Entity contestEnt;
+		String contestId;
 
 		try {
 			submissionEnt = ds.get(submissionKey);
@@ -46,6 +48,7 @@ public class NewSubmissionTask extends HttpServlet
 
 			Key contestKey = problemKey.getParent();
 			contestEnt = ds.get(contestKey);
+			contestId = contestKey.getName();
 		}
 		catch (EntityNotFoundException e) {
 
@@ -99,6 +102,52 @@ public class NewSubmissionTask extends HttpServlet
 			if (txn.isActive()) {
 				txn.rollback();
 			}
+		}
+
+		//
+		// create TestResult entities and enqueue associated jobs
+		//
+		Key sourceFileKey = (Key) submissionEnt.getProperty("source");
+		String sourceFileExt = null;
+		if (sourceFileKey != null) {
+			try {
+				Entity fileEnt = ds.get(sourceFileKey);
+				sourceFileExt = fileExtensionOf((String)fileEnt.getProperty("given_name"));
+			}
+			catch (EntityNotFoundException e) {
+				//ignore
+			}
+		}
+
+		Query q = new Query("SystemTest");
+		q.setAncestor(problemEnt.getKey());
+
+		PreparedQuery pq = ds.prepare(q);
+		for (Entity systemTestEnt : pq.asIterable()) {
+
+			Key resultKey = KeyFactory.createKey(submissionKey, "TestResult", systemTestEnt.getKey().getId());
+			Entity rEnt = new Entity(resultKey);
+
+			rEnt.setProperty("result_status", null);
+			ds.put(rEnt);
+
+			Key inputFileKey = (Key) systemTestEnt.getProperty("input");
+
+			Entity ent = new Entity("TestJob");
+			ent.setProperty("created", new Date());
+			ent.setProperty("source", sourceFileKey);
+			ent.setProperty("source_extension", sourceFileExt);
+			ent.setProperty("input", inputFileKey);
+			ent.setProperty("type", "S");
+			ent.setProperty("contest", contestId);
+			ent.setProperty("claimed", Boolean.FALSE);
+			ent.setProperty("finished", Boolean.FALSE);
+			ent.setProperty("owner", null);
+			ent.setProperty("problem", problemEnt.getKey());
+
+			Key jobKey = ds.put(ent);
+
+			
 		}
 
 		resp.setStatus(HttpServletResponse.SC_OK);

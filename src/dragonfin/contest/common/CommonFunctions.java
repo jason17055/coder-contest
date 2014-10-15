@@ -14,4 +14,17 @@ public class CommonFunctions
 			throw new Error("unexpected: "+e.getMessage(), e);
 		}
 	}
+
+	public static String fileExtensionOf(String fileName)
+	{
+		if (fileName == null) {
+			return null;
+		}
+		int period = fileName.lastIndexOf('.');
+		if (period == -1) {
+			return null;
+		}
+
+		return fileName.substring(period+1);
+	}
 }
