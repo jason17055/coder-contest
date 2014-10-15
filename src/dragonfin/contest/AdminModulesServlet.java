@@ -10,6 +10,8 @@ import com.google.appengine.api.modules.*;
 
 public class AdminModulesServlet extends AdminPageServlet
 {
+	ModulesService modules = ModulesServiceFactory.getModulesService();
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -21,8 +23,25 @@ public class AdminModulesServlet extends AdminPageServlet
 		out.println("<html>");
 		out.println("<body>");
 		out.println("<form method='post'>");
+
+		String curInstanceCount = "";
+		try {
+			int instances = modules.getNumInstances("job-broker", "1");
+			curInstanceCount = Integer.toString(instances);
+			out.println("<p>Current NumInstances: "+curInstanceCount+"</p>");
+
+			String brokerHost = modules.getVersionHostname("job-broker", "1");
+			out.println("<p>Broker: "+(brokerHost != null ? brokerHost : "null!")+"</p>");
+
+			String defVersion = modules.getDefaultVersion("job-broker");
+			out.println("<p>Default version: " +defVersion + "</p>");
+
+		}
+		catch (Throwable e) {
+			out.println("<p>Error: "+e.toString()+"</p>");
+		}
 		out.println("<p>Instances:");
-		out.println("<input type='text' name='instance_count'>");
+		out.println("<input type='text' name='instance_count' value='"+curInstanceCount+"'>");
 		out.println("<button type='submit' name='action:set_instances'>Set Num Instances</button>");
 		out.println("</p>");
 		out.println("<p>");
@@ -42,7 +61,6 @@ public class AdminModulesServlet extends AdminPageServlet
 			return;
 		}
 
-		ModulesService modules = ModulesServiceFactory.getModulesService();
 		if (req.getParameter("action:set_instances") != null) {
 
 			int instances = Integer.parseInt(req.getParameter("instance_count"));
