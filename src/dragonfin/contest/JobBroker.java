@@ -3,6 +3,7 @@ package dragonfin.contest;
 import java.io.*;
 import java.net.URL;
 import java.util.logging.Logger;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.modules.*;
 
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
@@ -29,8 +30,9 @@ public class JobBroker
 			+ "worker=" + escapeUrl(workerId);
 	}
 
-	public static void notifyNewJob(String jobId)
+	public static void notifyNewJob(Key jobKey)
 	{
+		String jobId = Long.toString(jobKey.getId());
 		String url = getJobBrokerUrl()+"/notify?job="+escapeUrl(jobId);
 		try {
 			InputStream inStream = new URL(url).openStream();

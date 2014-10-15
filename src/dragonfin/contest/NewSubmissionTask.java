@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -26,7 +27,7 @@ public class NewSubmissionTask extends HttpServlet
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException
+		throws IOException, ServletException
 	{
 		String userId = req.getParameter("submitter");
 		String submissionId = req.getParameter("submission");
@@ -126,11 +127,6 @@ public class NewSubmissionTask extends HttpServlet
 		for (Entity systemTestEnt : pq.asIterable()) {
 
 			Key resultKey = KeyFactory.createKey(submissionKey, "TestResult", systemTestEnt.getKey().getId());
-			Entity rEnt = new Entity(resultKey);
-
-			rEnt.setProperty("result_status", null);
-			ds.put(rEnt);
-
 			Key inputFileKey = (Key) systemTestEnt.getProperty("input");
 
 			Entity ent = new Entity("TestJob");
@@ -146,10 +142,50 @@ public class NewSubmissionTask extends HttpServlet
 			ent.setProperty("problem", problemEnt.getKey());
 
 			Key jobKey = ds.put(ent);
+			JobBroker.notifyNewJob(jobKey);
 
-			
+			madeNewJobFor(ds, resultKey, jobKey);
 		}
 
 		resp.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	void madeNewJobFor(DatastoreService ds, Key resultKey, Key jobKey)
+		throws ServletException
+	{
+		for (int attempt = 0; attempt < 10; attempt++) {
+
+		Transaction txn = ds.beginTransaction();
+		try {
+
+			Entity ent;
+			try {
+				ent = ds.get(resultKey);
+			}
+			catch (EntityNotFoundException e) {
+
+				ent = new Entity(resultKey);
+			}
+
+			ent.setProperty("job", jobKey);
+			ent.setProperty("result_status", null);
+
+			ds.put(ent);
+			txn.commit();
+
+			return;
+		}
+		catch (ConcurrentModificationException e) {
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		} // each attempt
+
+		// if here, then we tried 10 times but got concurrent modification each time
+		throw new ServletException("unable to modify TestResult entity");
 	}
 }

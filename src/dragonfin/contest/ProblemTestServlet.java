@@ -84,14 +84,13 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			ent.setProperty("finished", Boolean.FALSE);
 			ent.setProperty("owner", null);
 			ent.setProperty("problem", problemKey);
-			Key resultKey = ds.put(ent);
+			Key jobKey = ds.put(ent);
 
 			txn.commit();
 
-			String jobId = Long.toString(resultKey.getId());
+			JobBroker.notifyNewJob(jobKey);
 
-			JobBroker.notifyNewJob(jobId);
-
+			String jobId = Long.toString(jobKey.getId());
 			String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/test_result?id="+escapeUrl(jobId);
 			resp.sendRedirect(url);
 		}
