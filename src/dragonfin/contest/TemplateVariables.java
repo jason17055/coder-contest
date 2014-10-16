@@ -514,6 +514,14 @@ public class TemplateVariables
 		return username + "/" + Long.toString(submissionKey.getId());
 	}
 
+	static String makeTestResultId(Key testResultKey)
+	{
+		return String.format("%s/%d",
+			makeSubmissionId(testResultKey.getParent()),
+			testResultKey.getId()
+			);
+	}
+
 	static Key makeProblemKey(String contestId, long problemNumber)
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
@@ -605,6 +613,11 @@ public class TemplateVariables
 			this.dsKey = key;
 		}
 
+		public String getId()
+		{
+			return makeTestResultId(dsKey);
+		}
+
 		public int getTest_number()
 		{
 			return (int) dsKey.getId();
@@ -612,8 +625,7 @@ public class TemplateVariables
 
 		public String getUrl()
 		{
-			return "test_result?submission="+escapeUrl(makeSubmissionId(dsKey.getParent()))
-			+"&test_number="+getTest_number();
+			return "test_result?id="+escapeUrl(getId());
 		}
 	}
 

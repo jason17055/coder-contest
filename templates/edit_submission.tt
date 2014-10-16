@@ -73,7 +73,7 @@
 <tr>
 <td><a href="[% tr.url |html %]">[% name %]</a></td>
 <td>[% IF tr.result_status %]
-[% ELSE %]<img src="[% images_url %]/ajax-loader.gif"> Pending
+[% ELSE %]<img src="[% images_url %]/ajax-loader.gif" class="test-result-incomplete-indicator" data-test-result-id="[% tr.id|html %]"> Pending
 [% END %]</td>
 </tr>
 [% END #each test result %]
