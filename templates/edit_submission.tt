@@ -79,8 +79,11 @@
 [% END #each test result %]
 </table>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
 <p>
+[% IF submission.test_results.size %]
+<button type="submit" name="action:redo_tests">Redo Tests</button>
+[% END #if any test results %]
 <button type="button" onclick="doCustomTest()">Custom Test</button>
 </p>
 </form>
