@@ -113,6 +113,19 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<TestResult> enumerateTestResults(Key submissionKey)
+	{
+		Query q = new Query("TestResult");
+		q.setAncestor(submissionKey);
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<TestResult> list = new ArrayList<TestResult>();
+		for (Entity ent : pq.asIterable()) {
+			TestResult tr = handleTestResult(ent.getKey(), ent);
+			list.add(tr);
+		}
+		return list;
+	}
+
 	ArrayList<User> getAll_contestants()
 	{
 		String contestId = req.getParameter("contest");
@@ -572,15 +585,36 @@ public class TemplateVariables
 			return sourceKey != null ? fetchFile(sourceKey) : null;
 		}
 
+		ArrayList<TestResult> testResultsCached;
 		public ArrayList<TestResult> getTest_results()
 		{
-			return null;
+			if (testResultsCached == null) {
+				testResultsCached = enumerateTestResults(dsKey);
+			}
+			return testResultsCached;
 		}
 	}
 
 	public class TestResult
 	{
-	//TODO
+		public final Key dsKey;
+		public String result_status;
+
+		TestResult(Key key)
+		{
+			this.dsKey = key;
+		}
+
+		public int getTest_number()
+		{
+			return (int) dsKey.getId();
+		}
+
+		public String getUrl()
+		{
+			return "test_result?submission="+escapeUrl(makeSubmissionId(dsKey.getParent()))
+			+"&test_number="+getTest_number();
+		}
 	}
 
 	public class SystemTest
@@ -777,6 +811,15 @@ public class TemplateVariables
 			false;
 
 		return j;
+	}
+
+	TestResult handleTestResult(Key key, Entity ent)
+	{
+		TestResult tr = new TestResult(key);
+
+		tr.result_status = (String) ent.getProperty("result_status");
+
+		return tr;
 	}
 
 	HashMap<Key,Problem> cachedProblems = new HashMap<Key,Problem>();

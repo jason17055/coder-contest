@@ -53,6 +53,7 @@ submission    - the currently-selected submission
 .type         - either 'submission' or 'clarification'
 .edit_url     - takes user to submission edit page
 .minutes
+.test_results - TestResult[]
 
 system_test
 .edit_url
@@ -67,6 +68,11 @@ clarification
 .id           - number
 .edit_url
 .problem      - Problem
+
+test_result
+.test_number
+.result_status
+.url
 
 user
 .edit_url
