@@ -6,17 +6,18 @@ session      - properties of the current session
 .is_director
 .is_judge
 
-contest      - properties of the current contest
-.problems    - Problem[] problems visible to the current user
-.contestants - User[] contestants of this contest
-.judges      - User[] judges in this contest
+contest         - properties of the current contest
+.problems       - Problem[] problems visible to the current user
+.contestants    - User[] contestants of this contest
+.judges         - User[] judges in this contest
 .id
 .title
 .current_phase_name
 .current_phase_timeleft
-.config_url  - takes user to Admin Contest definition page
-.workers     - Worker[]
-.scoreboard  - 'Y'=enabled, 'N'=disabled
+.config_url     - takes user to Admin Contest definition page
+.workers        - Worker[]
+.scoreboard     - 'Y'=enabled, 'N'=disabled
+.status_choices - String[]
 
 problem      - properties of the currently-selected problem
 .name        - name of the problem
