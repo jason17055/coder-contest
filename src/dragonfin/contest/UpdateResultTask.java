@@ -146,10 +146,7 @@ public class UpdateResultTask extends HttpServlet
 
 		if (anyChange) {
 			// enqueue a task for updating this contestant's overall score
-			Queue taskQueue = QueueFactory.getDefaultQueue();
-			taskQueue.add(UpdateScoreTask.makeUrl()
-				.param("user", userKey.getName())
-				);
+			UpdateScoreTask.enqueueTask(userKey);
 		}
 
 		resp.setStatus(HttpServletResponse.SC_OK);
