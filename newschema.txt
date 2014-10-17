@@ -114,6 +114,7 @@ TestJob [ id* ]
 	claimed           Boolean
 	contest           String
 	problem           Key(Problem)
+	test_result       Key(TestResult) used when type='S'
 
 TestResult [ Submission / SystemTest.id ]
 	(parent key)       Key(Submission)

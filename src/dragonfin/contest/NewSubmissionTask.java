@@ -140,6 +140,7 @@ public class NewSubmissionTask extends HttpServlet
 			ent.setProperty("finished", Boolean.FALSE);
 			ent.setProperty("owner", null);
 			ent.setProperty("problem", problemEnt.getKey());
+			ent.setProperty("test_result", resultKey);
 
 			Key jobKey = ds.put(ent);
 			JobBroker.notifyNewJob(jobKey);

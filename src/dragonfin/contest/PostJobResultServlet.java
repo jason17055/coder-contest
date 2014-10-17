@@ -80,6 +80,7 @@ public class PostJobResultServlet extends HttpServlet
 			}
 		}
 
+		JobCompletedTask.enqueueTask(jobId);
 		resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 	}
 }
