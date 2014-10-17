@@ -55,6 +55,7 @@ submission    - the currently-selected submission
 .edit_url     - takes user to submission edit page
 .minutes
 .test_results - TestResult[]
+.correct      - Boolean- true iff status is a "correct" status
 
 system_test
 .edit_url

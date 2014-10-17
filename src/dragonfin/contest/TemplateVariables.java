@@ -444,6 +444,11 @@ public class TemplateVariables
 			return sourceFileKey != null ? fetchFile(sourceFileKey) : null;
 		}
 
+		public boolean getCorrect()
+		{
+			return minutes != 0;
+		}
+
 		public String getUrl()
 		{
 			String username = getUsernameFromUserKey(dsKey.getParent());
