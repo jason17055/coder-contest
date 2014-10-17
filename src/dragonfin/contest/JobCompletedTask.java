@@ -38,7 +38,11 @@ public class JobCompletedTask extends HttpServlet
 		final HttpServletRequest req;
 		final HttpServletResponse resp;
 		DatastoreService ds;
-		Entity ent;
+		Entity ent; //job entity
+
+		Key problemKey;
+		Key testResultKey;
+		Entity systemTestEnt;
 
 		MyHandler(HttpServletRequest req, HttpServletResponse resp) {
 			this.req = req;
@@ -46,15 +50,30 @@ public class JobCompletedTask extends HttpServlet
 			this.ds = DatastoreServiceFactory.getDatastoreService();
 		}
 
-		void doPost()
-			throws IOException
+		void gatherEntities()
+			throws EntityNotFoundException
 		{
 			String jobId_s = req.getParameter("job");
 			long jobId = Long.parseLong(jobId_s);
 
 			Key jobKey = KeyFactory.createKey("TestJob", jobId);
+			this.ent = ds.get(jobKey);
+
+			this.problemKey = (Key)ent.getProperty("problem");
+			this.testResultKey = (Key)ent.getProperty("test_result");
+
+			if (testResultKey != null) {
+				long systemTestNumber = testResultKey.getId();
+				Key systemTestKey = KeyFactory.createKey(problemKey, "SystemTest", systemTestNumber);
+				this.systemTestEnt = ds.get(systemTestKey);
+			}
+		}
+
+		void doPost()
+			throws IOException
+		{
 			try {
-				this.ent = ds.get(jobKey);
+				gatherEntities();
 			}
 			catch (EntityNotFoundException e) {
 				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -71,15 +90,48 @@ public class JobCompletedTask extends HttpServlet
 		void systemTest_step1()
 			throws IOException
 		{
-			Key testResultKey = (Key)ent.getProperty("test_result");
-			if (testResultKey == null) {
+			if (this.testResultKey == null) {
 				return;
 			}
 
 			String resultStatus = (String)ent.getProperty("result_status");
-			//if (!"No Error".equals(resultStatus)) {
+			if (!"No Error".equals(resultStatus)) {
+				// user program generated an error result
 				resolveSystemTest(testResultKey, resultStatus);
-			//}
+				return;
+			}
+
+			// compare output with expected output
+			Key outputFileKey = (Key)ent.getProperty("output");
+			Key expectedFileKey = (Key)systemTestEnt.getProperty("expected");
+			if (filesEqual(outputFileKey, expectedFileKey)) {
+				resolveSystemTest(testResultKey, "Correct");
+			}
+			else {
+				resolveSystemTest(testResultKey, "Wrong Answer");
+			}
+		}
+
+		boolean filesEqual(Key file1, Key file2)
+		{
+			if (file1 == null || file2 == null) {
+				return file1 == file2;
+			}
+
+			try {
+
+				Entity ent1 = ds.get(file1);
+				Entity ent2 = ds.get(file2);
+
+				Key chunk1 = (Key) ent1.getProperty("head_chunk");
+				Key chunk2 = (Key) ent2.getProperty("head_chunk");
+
+				return chunk1 != null && chunk1.equals(chunk2);
+			}
+			catch (EntityNotFoundException e) {
+
+				return false;
+			}
 		}
 
 		void resolveSystemTest(Key testResultKey, String status)
