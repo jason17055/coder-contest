@@ -391,7 +391,8 @@ public class TemplateVariables
 		public boolean is_contestant;
 		public boolean online;
 		public boolean visible;
-		public String score_html;
+		public int score;
+		public int score_alt;
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;
@@ -419,6 +420,19 @@ public class TemplateVariables
 			}
 			else {
 				throw new UnsupportedOperationException();
+			}
+		}
+
+		public String getScore_html()
+		{
+			if (score_alt > 0) {
+				return String.format("%d (+%d)", score, score_alt);
+			}
+			else if (score_alt != 0) {
+				return String.format("%d (%d)", score, -score_alt);
+			}
+			else {
+				return String.format("%d", score);
 			}
 		}
 	}
@@ -1066,6 +1080,12 @@ public class TemplateVariables
 		u.description = (String) ent.getProperty("description");
 		u.ordinal = ent.hasProperty("ordinal") ?
 			(int)((Long)ent.getProperty("ordinal")).longValue() :
+			0;
+		u.score = ent.hasProperty("score") ?
+			(int)((Long)ent.getProperty("score")).longValue() :
+			0;
+		u.score_alt = ent.hasProperty("score_alt") ?
+			(int)((Long)ent.getProperty("score_alt")).longValue() :
 			0;
 		return u;
 	}
