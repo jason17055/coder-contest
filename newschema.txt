@@ -123,6 +123,10 @@ TestResult [ Submission / SystemTest.id ]
 	job                Key(TestJob)
 	check_job          Key(TestJob)
 	result_status      String
+	input              Key(File) from corresponding SystemTest
+	expected           Key(File) from corresponding SystemTest
+	output             Key(File) from corresponding Job
+	error_output       Key(File) from corresponding Job
 
 Worker [ Contest / id* ]
 	created            Date

@@ -9,7 +9,47 @@ Problem: <a href="[% test_result.problem.edit_url |html %]">[% test_result.probl
 
 Submission:
 <a href="[% test_result.submission.edit_url |html %]">[% test_result.submission.id |html %]</a>
+
+[% IF test_result.system_test %]
+System Test:
+<a href="[% test_result.system_test.edit_url |html %]">[% test_result.test_number |html %]</a>
+[% END #if system_test available %]
 </p>
+
+<p class="test_result_actions">
+<button type="button" onclick="window.open('[% test_result.submission.source.inline_text_url |html %]')">Source Code</button>
+
+<button type="button" onclick="location.href='[% test_result.submission.edit_url |html %]'">Done</button>
+</p>
+
+<div style="clear:both"></div>
+
+<table width="100%">
+<tr>
+<td width="50%" valign="top">
+<b>Input File</b><br>
+<iframe src="[% test_result.input.inline_text_url |html %]" width="100%"></iframe>
+</td>
+<td width="50%" valign="top">
+<b>Compiler/Error Output</b><br>
+<iframe src="[% test_result.error_output.inline_text_url |html %]" width="100%"></iframe>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+[% IF test_result.expected %]
+<iframe id="expected_output_frame" src="[% test_result.expected.inline_text_url |html %]" width="100%"></iframe>
+[% ELSE %]
+n/a
+[% END %]
+</td>
+<td width="50%" valign="top">
+<div><b>Actual Output</b>
+Coming soon
+</div>
+</td>
+</tr>
+</table>
 
 </body>
 </html>

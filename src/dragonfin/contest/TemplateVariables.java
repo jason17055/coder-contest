@@ -643,6 +643,11 @@ public class TemplateVariables
 		public final Key dsKey;
 		public String result_status;
 
+		Key inputFileKey;
+		Key expectedFileKey;
+		Key outputFileKey;
+		Key errorOutputFileKey;
+
 		TestResult(Key key)
 		{
 			this.dsKey = key;
@@ -675,13 +680,38 @@ public class TemplateVariables
 			return getSubmission().getProblem();
 		}
 
-		public SystemTest getSystemTest()
+		public SystemTest getSystem_test()
 			throws EntityNotFoundException
 		{
 			Submission s = getSubmission();
 			Key problemKey = s.problemKey;
 			Key systemTestKey = KeyFactory.createKey(problemKey, "SystemTest", dsKey.getId());
 			return fetchSystemTest(systemTestKey);
+		}
+
+		public File getInput()
+			throws EntityNotFoundException
+		{
+			return inputFileKey != null ? fetchFile(inputFileKey) : null;
+		}
+
+		public File getExpected()
+			throws EntityNotFoundException
+		{
+			return expectedFileKey != null ? fetchFile(expectedFileKey) : null;
+		}
+
+		public File getOutput()
+			throws EntityNotFoundException
+		{
+			return outputFileKey != null ? fetchFile(outputFileKey) : null;
+		}
+
+		public File getError_output()
+			throws EntityNotFoundException
+		{
+			return errorOutputFileKey != null ?
+				fetchFile(errorOutputFileKey) : null;
 		}
 	}
 
@@ -893,6 +923,10 @@ public class TemplateVariables
 		TestResult tr = new TestResult(key);
 
 		tr.result_status = (String) ent.getProperty("result_status");
+		tr.inputFileKey = (Key) ent.getProperty("input");
+		tr.expectedFileKey = (Key) ent.getProperty("expected");
+		tr.outputFileKey = (Key) ent.getProperty("output");
+		tr.errorOutputFileKey = (Key) ent.getProperty("error_output");
 
 		return tr;
 	}

@@ -78,6 +78,10 @@ test_result
 .problem      - refers to Problem this result is associated with
 .submission   - refers to Submission this result is associated with
 .system_test  - refers to SystemTest this result is associated with
+.input
+.expected
+.output
+.error_output
 
 user
 .edit_url
