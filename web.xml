@@ -72,6 +72,10 @@
  <servlet-name>DefineSystemTest</servlet-name>
  <servlet-class>dragonfin.contest.DefineSystemTestServlet</servlet-class>
 </servlet>
+<servlet>
+ <servlet-name>ShowTestResult</servlet-name>
+ <servlet-class>dragonfin.contest.ShowTestResultServlet</servlet-class>
+</servlet>
 
 <servlet>
  <servlet-name>EditAnnouncement</servlet-name>
@@ -224,6 +228,10 @@
 <servlet-mapping>
  <servlet-name>DefineSystemTest</servlet-name>
  <url-pattern>/_p/system_test</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>ShowTestResult</servlet-name>
+ <url-pattern>/_p/test_result</url-pattern>
 </servlet-mapping>
 
 <servlet-mapping>

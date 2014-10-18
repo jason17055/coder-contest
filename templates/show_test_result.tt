@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="[%resources_prefix|html%]/scoreboard.css">
+</head>
+<body>
+<p class="test_result_properties">
+Problem: <a href="[% test_result.problem.edit_url |html %]">[% test_result.problem.name |html %]</a>
+
+Submission:
+<a href="[% test_result.submission.edit_url |html %]">[% test_result.submission.id |html %]</a>
+</p>
+
+</body>
+</html>

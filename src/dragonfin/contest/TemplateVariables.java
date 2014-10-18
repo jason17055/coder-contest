@@ -541,6 +541,22 @@ public class TemplateVariables
 			);
 	}
 
+	static Key parseTestResultId(String contestId, String testResultId)
+	{
+		String [] parts = testResultId.split("/");
+		if (parts.length != 3) {
+			throw new RuntimeException("Invalid test result id");
+		}
+		String username = parts[0];
+		long submissionId = Long.parseLong(parts[1]);
+		long testNumber = Long.parseLong(parts[2]);
+
+		Key userKey = makeUserKey(contestId, username);
+		Key submissionKey = KeyFactory.createKey(userKey, "Submission", submissionId);
+		Key testResultKey = KeyFactory.createKey(submissionKey, "TestResult", testNumber);
+		return testResultKey;
+	}
+
 	static Key makeProblemKey(String contestId, long problemNumber)
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
@@ -842,6 +858,13 @@ public class TemplateVariables
 			false;
 
 		return j;
+	}
+
+	TestResult fetchTestResult(Key testResultKey)
+		throws EntityNotFoundException
+	{
+		Entity ent = ds.get(testResultKey);
+		return handleTestResult(testResultKey, ent);
 	}
 
 	TestResult handleTestResult(Key key, Entity ent)
