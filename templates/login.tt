@@ -6,8 +6,6 @@
 <p class="error">[% message |html %]</p>
 [% END %]
 
-<div>[% r.uri %]</div>
-
 <form method="post" action="[% r.uri |html %]">
 <table>
 <tr>
