@@ -75,6 +75,9 @@ test_result
 .test_number
 .result_status
 .url
+.problem      - refers to Problem this result is associated with
+.submission   - refers to Submission this result is associated with
+.system_test  - refers to SystemTest this result is associated with
 
 user
 .edit_url

@@ -662,6 +662,27 @@ public class TemplateVariables
 		{
 			return "test_result?id="+escapeUrl(getId());
 		}
+
+		public Submission getSubmission()
+			throws EntityNotFoundException
+		{
+			return fetchSubmission(dsKey.getParent());
+		}
+
+		public Problem getProblem()
+			throws EntityNotFoundException
+		{
+			return getSubmission().getProblem();
+		}
+
+		public SystemTest getSystemTest()
+			throws EntityNotFoundException
+		{
+			Submission s = getSubmission();
+			Key problemKey = s.problemKey;
+			Key systemTestKey = KeyFactory.createKey(problemKey, "SystemTest", dsKey.getId());
+			return fetchSystemTest(systemTestKey);
+		}
 	}
 
 	public class SystemTest
