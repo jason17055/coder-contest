@@ -45,6 +45,25 @@ public class File
 		return getUrl() + "?type=text";
 	}
 
+	public String diff_url(Object [] args)
+	{
+		if (args.length != 1) {
+			throw new UnsupportedOperationException("diff_url: wrong number of arguments");
+		}
+
+		if (args[0] == null) {
+			return servletRequest.getContextPath()+"/_f/diff?b="+escapeUrl(this.id);
+		}
+
+		if (args[0] instanceof File) {
+			File refFile = (File) args[0];
+			return servletRequest.getContextPath()+"/_f/diff?a="+escapeUrl(refFile.id)+"&b="+escapeUrl(this.id);
+		}
+		else {
+			throw new UnsupportedOperationException("diff_url: wrong argument type: "+args[0].getClass().getName());
+		}
+	}
+
 	public Key getKey()
 	{
 		return KeyFactory.createKey("File", id);

@@ -1,5 +1,7 @@
 package dragonfin.contest;
 
+import dragonfin.contest.common.File;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -19,8 +21,14 @@ public class GetFileServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
+		if ("/diff".equals(req.getPathInfo())) {
+			doDiff(req, resp);
+			return;
+		}
+
 		Matcher m = PATTERN.matcher(req.getPathInfo());
 		if (!m.matches()) {
+			log.info("bad request path-info \""+req.getPathInfo()+"\"");
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -47,6 +55,48 @@ public class GetFileServlet extends CoreServlet
 
 		OutputStream out = resp.getOutputStream();
 		outputChunk(out, ds, (Key) fileEnt.getProperty("head_chunk"));
+		out.close();
+	}
+
+	public void doDiff(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		File file1 = File.byId(req, req.getParameter("a"));
+		File file2 = File.byId(req, req.getParameter("b"));
+
+		String content1;
+		String content2;
+		try {
+			content1 = file1.getText_content();
+			content2 = file2.getText_content();
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		resp.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = resp.getWriter();
+		out.println("<!DOCTYPE HTML>");
+		out.println("<html>");
+		out.println("<head>");
+		out.println("<style type=\"text/css\">");
+		out.println(".o div { border-left: 3px solid #4f4; padding-left: 6px; white-space: pre; font-family: monospace; }");
+		out.println(".o div.xxx { border-left: 3px solid #f00; color: #c00;}");
+		out.println(".o div.missing { border-left: 3px solid #fff; color: #f00; font-style: italic; font-family: serif; }");
+		out.println(".o div.hilited { background-color: #dfd; }");
+		out.println(".o div.xxx.hilited { background-color: #fdd; }");
+		out.println(".o div.xxx.hilited span { background-color: #fbb; }");
+		out.println(".o div.missing.hilited { background-color: #fdd; }");
+		out.println("</style>");
+		out.println("</head>");
+		out.println("<body>");
+		out.print("<div class='o'>");
+
+		out.print(content2);
+		out.println("</div>");
+		out.println("</body>");
+		out.println("</html>");
 		out.close();
 	}
 }

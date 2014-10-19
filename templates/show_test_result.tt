@@ -47,7 +47,7 @@ n/a
 <td width="50%" valign="top">
 <div><b>Actual Output</b></div>
 [% IF test_result.output %]
-<iframe id="actual_output_frame" src="[% test_result.output.inline_text_url |html %]" width="100%"></iframe>
+<iframe id="actual_output_frame" src="[% test_result.output.diff_url(test_result.expected) |html %]" width="100%"></iframe>
 [% ELSE %]
 n/a
 [% END %]
