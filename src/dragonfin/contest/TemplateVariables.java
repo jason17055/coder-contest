@@ -1220,17 +1220,10 @@ public class TemplateVariables
 
 	File handleFile(Key key, Entity ent)
 	{
-		File f = new File();
+		File f = new File(req);
 		f.id = key.getName();
 		f.name = (String) ent.getProperty("given_name");
-		f.url = makeFileUrl(req, f.id, f.name);
-		f.inline_text_url = makeFileUrl(req, f.id, f.name)+"?type=text";
 		return f;
-	}
-
-	public static String makeFileUrl(HttpServletRequest req, String id, String name)
-	{
-		return req.getContextPath()+"/_f/"+id+"/"+name;
 	}
 
 	public static Entity defaultResultEntity(Key resultKey)

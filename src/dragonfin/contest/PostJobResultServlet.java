@@ -9,7 +9,6 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
 import dragonfin.contest.common.FileUploadFormHelper;
-import static dragonfin.contest.TemplateVariables.makeFileUrl;
 
 public class PostJobResultServlet extends HttpServlet
 {

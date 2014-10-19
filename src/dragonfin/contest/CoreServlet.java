@@ -20,14 +20,6 @@ public class CoreServlet extends HttpServlet
 {
 	TemplateToolkit engine;
 
-	File checkFileUrl(File inFile)
-	{
-		if (inFile != null && inFile.id != null) {
-			inFile.url = getServletContext().getContextPath()+"/_f/"+inFile.id+"/"+inFile.name;
-		}
-		return inFile;
-	}
-
 	@Override
 	public void init()
 		throws ServletException

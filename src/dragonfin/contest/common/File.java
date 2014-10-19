@@ -6,19 +6,44 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import com.google.appengine.api.datastore.*;
+
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class File
 {
+	final HttpServletRequest servletRequest;
+
 	public String id;
-	public String url;
 	public String name;
-	public String inline_text_url;
 	private String text_content_cached;
 
 	private static Charset UTF8 = Charset.forName("UTF-8");
 	private static final Logger log = Logger.getLogger(
 			File.class.getName());
+
+	public static File byId(HttpServletRequest req, String id)
+	{
+		File f = new File(req);
+		f.id = id;
+		return f;
+	}
+
+	public File(HttpServletRequest req)
+	{
+		this.servletRequest = req;
+	}
+
+	public String getUrl()
+	{
+		return servletRequest.getContextPath()+"/_f/"+escapeUrl(this.id)+"/"+escapeUrl(this.name);
+	}
+
+	public String getInline_text_url()
+	{
+		return getUrl() + "?type=text";
+	}
 
 	public Key getKey()
 	{

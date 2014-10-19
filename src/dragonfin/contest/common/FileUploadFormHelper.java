@@ -191,7 +191,7 @@ public class FileUploadFormHelper
 		String digestHex;
 	}
 
-	File handleFileUpload(FileItemStream item)
+	File handleFileUpload(HttpServletRequest req, FileItemStream item)
 		throws ServletException, IOException
 	{
 		String fileName = item.getName();
@@ -206,10 +206,10 @@ public class FileUploadFormHelper
 		}
 
 		InputStream stream = item.openStream();
-		return finishFileUpload(stream, fileName, contentType);
+		return finishFileUpload(req, stream, fileName, contentType);
 	}
 
-	private File finishFileUpload(InputStream stream, String fileName, String contentType)
+	private File finishFileUpload(HttpServletRequest req, InputStream stream, String fileName, String contentType)
 		throws IOException
 	{
 		UploadHelper helper = new UploadHelper();
@@ -238,19 +238,19 @@ public class FileUploadFormHelper
 		
 		helper.ds.put(ent);
 
-		File f = new File();
+		File f = new File(req);
 		f.id = digestHex;
 		f.name = fileName;
 		return f;
 	}
 
-	File convertTextToFile(String textContent, String fileName)
+	File convertTextToFile(HttpServletRequest req, String textContent, String fileName)
 		throws IOException
 	{
 		ByteArrayInputStream bytes = new ByteArrayInputStream(
 				textContent.getBytes(UTF8)
 			);
-		return finishFileUpload(bytes, fileName, "text/plain");
+		return finishFileUpload(req, bytes, fileName, "text/plain");
 	}
 
 	public class FormData extends HashMap<String,String>
@@ -287,9 +287,7 @@ public class FileUploadFormHelper
 					fileName = fieldName+".txt";
 				}
 
-				File f = convertTextToFile(contentString, fileName);
-				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
-				f.inline_text_url = f.url + "?type=text";
+				File f = convertTextToFile(req, contentString, fileName);
 
 				put(fieldName+"_upload", f.id);
 				put(fieldName+"_upload.name", f.name);
@@ -309,11 +307,9 @@ public class FileUploadFormHelper
 					fileName = fieldName+".txt";
 				}
 
-				File f = new File();
+				File f = new File(req);
 				f.id = fileHashRef;
 				f.name = fileName;
-				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
-				f.inline_text_url = f.url + "?type=text";
 
 				put(fieldName+"_upload", f.id);
 				put(fieldName+"_upload.name", f.name);
@@ -327,11 +323,9 @@ public class FileUploadFormHelper
 			throws IOException
 		{
 			if (containsKey(fieldName+"_upload") && containsKey(fieldName+"_upload.name")) {
-				File f = new File();
+				File f = new File(req);
 				f.id = get(fieldName+"_upload");
 				f.name = get(fieldName+"_upload.name");
-				f.url = req.getContextPath()+"/_f/"+escapeUrl(f.id)+"/"+escapeUrl(f.name);
-				f.inline_text_url = f.url + "?type=text";
 				return f;
 			}
 			else {
@@ -360,7 +354,7 @@ public class FileUploadFormHelper
 			else {
 				String name = item.getFieldName();
 				String fileName = item.getName();
-				File f = handleFileUpload(item);
+				File f = handleFileUpload(req, item);
 				formFields.put(name, f != null ? f.id : null);
 				if (f != null) {
 					formFields.put(name+".name", f.name);
