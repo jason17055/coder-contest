@@ -37,6 +37,7 @@ System Test:
 </tr>
 <tr>
 <td width="50%" valign="top">
+<div><b>Expected Output</b></div>
 [% IF test_result.expected %]
 <iframe id="expected_output_frame" src="[% test_result.expected.inline_text_url |html %]" width="100%"></iframe>
 [% ELSE %]
@@ -44,9 +45,12 @@ n/a
 [% END %]
 </td>
 <td width="50%" valign="top">
-<div><b>Actual Output</b>
-Coming soon
-</div>
+<div><b>Actual Output</b></div>
+[% IF test_result.output %]
+<iframe id="actual_output_frame" src="[% test_result.output.inline_text_url |html %]" width="100%"></iframe>
+[% ELSE %]
+n/a
+[% END %]
 </td>
 </tr>
 </table>

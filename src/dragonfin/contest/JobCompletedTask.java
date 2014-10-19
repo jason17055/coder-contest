@@ -137,12 +137,21 @@ public class JobCompletedTask extends HttpServlet
 		void resolveSystemTest(Key testResultKey, String status)
 			throws IOException
 		{
+			Key inputFileKey = (Key) ent.getProperty("input");
+			Key outputFileKey = (Key) ent.getProperty("output");
+			Key errorOutputFileKey = (Key) ent.getProperty("result_detail");
+			Key expectedFileKey = (Key) systemTestEnt.getProperty("expected");
+
 			Transaction txn = ds.beginTransaction();
 			try {
 
 				Entity resultEnt = ds.get(testResultKey);
 				resultEnt.setProperty("job", ent.getKey());
 				resultEnt.setProperty("result_status", status);
+				resultEnt.setProperty("input", inputFileKey);
+				resultEnt.setProperty("output", outputFileKey);
+				resultEnt.setProperty("error_output", errorOutputFileKey);
+				resultEnt.setProperty("expected", expectedFileKey);
 				ds.put(resultEnt);
 				txn.commit();
 
