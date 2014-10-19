@@ -25,6 +25,10 @@ public class File
 
 	public static File byId(HttpServletRequest req, String id)
 	{
+		if (id == null) {
+			return null;
+		}
+
 		File f = new File(req);
 		f.id = id;
 		return f;

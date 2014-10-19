@@ -63,6 +63,10 @@ public class GetFileServlet extends CoreServlet
 	{
 		File file1 = File.byId(req, req.getParameter("a"));
 		File file2 = File.byId(req, req.getParameter("b"));
+		if (file1 == null || file2 == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 
 		String content1;
 		String content2;
