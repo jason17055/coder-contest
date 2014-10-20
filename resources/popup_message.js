@@ -136,16 +136,29 @@ function checkForAnnouncement()
 	};
 
 	var xtra = "";
-	var job_incomplete_indicators = new Array();
+	var indicators_array = new Array();
 	$('.job-incomplete-indicator').each(function(idx,el)
 		{
 			var job_id = el.getAttribute('data-job-id');
-			job_incomplete_indicators.push(job_id);
+			indicators_array.push(job_id);
 		});
-	for (var j = 0; j < job_incomplete_indicators.length; j++)
+	for (var j = 0; j < indicators_array.length; j++)
 	{
-		xtra += "&jobcompletion=" + escape(job_incomplete_indicators[j]);
+		xtra += "&jobcompletion=" + escape(indicators_array[j]);
 	}
+
+	$('.test-result-incomplete-indicator').each(function(idx,el)
+		{
+			var test_result_id = el.getAttribute('data-test-result-id');
+			xtra += '&testresultcompletion=' + escape(test_result_id);
+		});
+
+	$('.test-result-status').each(function(idx, el)
+		{
+			var test_result_id = el.getAttribute('data-test-result-id');
+			var cur_status = el.getAttribute('data-test-result-status');
+			xtra += '&testresultstatus=' + escape(test_result_id+'-'+cur_status);
+		});
 
 	var online_indicators = new Array();
 	$('.online-indicator').each(function(el)
@@ -184,6 +197,7 @@ function checkForAnnouncement()
 	if (last_message_id) {
 		url += '&dismiss_message='+escape(last_message_id);
 	}
+	console.log('checking '+url);
 	$.ajax({
 		url: url,
 		dataType: 'json',
