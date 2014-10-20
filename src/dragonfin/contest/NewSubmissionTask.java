@@ -126,57 +126,48 @@ public class NewSubmissionTask extends HttpServlet
 		PreparedQuery pq = ds.prepare(q);
 		for (Entity systemTestEnt : pq.asIterable()) {
 
-			Key resultKey = KeyFactory.createKey(submissionKey, "TestResult", systemTestEnt.getKey().getId());
-			Key inputFileKey = (Key) systemTestEnt.getProperty("input");
+			long testNumber = systemTestEnt.getKey().getId();
+			Key resultKey = KeyFactory.createKey(submissionKey, "TestResult", testNumber);
 
-			Entity ent = new Entity("TestJob");
-			ent.setProperty("created", new Date());
-			ent.setProperty("source", sourceFileKey);
-			ent.setProperty("source_extension", sourceFileExt);
-			ent.setProperty("input", inputFileKey);
-			ent.setProperty("type", "S");
-			ent.setProperty("contest", contestId);
-			ent.setProperty("claimed", Boolean.FALSE);
-			ent.setProperty("finished", Boolean.FALSE);
-			ent.setProperty("owner", null);
-			ent.setProperty("problem", problemEnt.getKey());
-			ent.setProperty("test_result", resultKey);
-
-			Key jobKey = ds.put(ent);
-			JobBroker.notifyNewJob(jobKey);
-
-			madeNewJobFor(ds, resultKey, jobKey);
+			runSystemTest(ds, systemTestEnt, sourceFileKey, sourceFileExt, problemEnt, resultKey);
 		}
 
 		resp.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	void madeNewJobFor(DatastoreService ds, Key resultKey, Key jobKey)
-		throws ServletException
+	void runSystemTest(DatastoreService ds, Entity systemTestEnt, Key sourceFileKey, String sourceFileExt, Entity problemEnt, Key resultKey)
 	{
-		for (int attempt = 0; attempt < 10; attempt++) {
+		Key inputFileKey = (Key) systemTestEnt.getProperty("input");
+		String contestId = problemEnt.getKey().getParent().getName();
+
+		//
+		// create a job for this system test (but leave it not ready to start)
+		//
+		Entity ent = new Entity("TestJob");
+		ent.setProperty("created", new Date());
+		ent.setProperty("source", sourceFileKey);
+		ent.setProperty("source_extension", sourceFileExt);
+		ent.setProperty("input", inputFileKey);
+		ent.setProperty("type", "S");
+		ent.setProperty("contest", contestId);
+		ent.setProperty("problem", problemEnt.getKey());
+		ent.setProperty("test_result", resultKey);
+		Key jobKey = ds.put(ent);
 
 		Transaction txn = ds.beginTransaction();
 		try {
-
-			Entity ent;
+			Entity resultEnt;
 			try {
-				ent = ds.get(resultKey);
+				resultEnt = ds.get(resultKey);
 			}
 			catch (EntityNotFoundException e) {
-
-				ent = new Entity(resultKey);
+				resultEnt = new Entity(resultKey);
 			}
 
-			ent.setProperty("job", jobKey);
-			ent.setProperty("result_status", null);
-
-			ds.put(ent);
+			resultEnt.setProperty("job", jobKey);
+			resultEnt.setProperty("result_status", null);
+			ds.put(resultEnt);
 			txn.commit();
-
-			return;
-		}
-		catch (ConcurrentModificationException e) {
 		}
 		finally {
 			if (txn.isActive()) {
@@ -184,9 +175,11 @@ public class NewSubmissionTask extends HttpServlet
 			}
 		}
 
-		} // each attempt
+		ent.setProperty("owner", null);
+		ent.setProperty("claimed", Boolean.FALSE);
+		ent.setProperty("finished", Boolean.FALSE);
+		ds.put(ent);
 
-		// if here, then we tried 10 times but got concurrent modification each time
-		throw new ServletException("unable to modify TestResult entity");
+		JobBroker.notifyNewJob(jobKey);
 	}
 }

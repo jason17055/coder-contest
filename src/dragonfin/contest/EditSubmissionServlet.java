@@ -14,6 +14,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
+import static dragonfin.contest.TemplateVariables.parseSubmissionId;
 
 public class EditSubmissionServlet extends CoreServlet
 {
@@ -73,9 +74,30 @@ public class EditSubmissionServlet extends CoreServlet
 		else if (POST.containsKey("action:create_submission")) {
 			doCreateSubmission(req, resp);
 		}
+		else if (POST.containsKey("action:redo_tests")) {
+			doRedoTests(req, resp);
+		}
 		else {
 			doUpdateSubmission(req, resp);
 		}
+	}
+
+	void doRedoTests(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		String contestId = req.getParameter("contest");
+		String submissionId = req.getParameter("id");
+		if (contestId == null || submissionId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		// enqueue a task for processing the submission
+		Key submissionKey = parseSubmissionId(contestId, submissionId);
+		NewSubmissionTask.enqueueTask(submissionKey);
+
+		// show the current page again
+		doGet(req, resp);
 	}
 
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
@@ -116,6 +138,9 @@ public class EditSubmissionServlet extends CoreServlet
 
 		// enqueue a task for processing this new submission
 		NewSubmissionTask.enqueueTask(submissionKey);
+
+		// return user to where they came from
+		doCancel(req, resp);
 	}
 
 	void doUpdateSubmission(HttpServletRequest req, HttpServletResponse resp)
