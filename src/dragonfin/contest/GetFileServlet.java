@@ -1,5 +1,6 @@
 package dragonfin.contest;
 
+import dragonfin.Differencer;
 import dragonfin.contest.common.File;
 
 import java.io.*;
@@ -97,10 +98,42 @@ public class GetFileServlet extends CoreServlet
 		out.println("<body>");
 		out.print("<div class='o'>");
 
-		out.print(content2);
+		doDiffHelper(out, content1, content2);
 		out.println("</div>");
 		out.println("</body>");
 		out.println("</html>");
 		out.close();
+	}
+
+	void doDiffHelper(PrintWriter out, String content1, String content2)
+	{
+		String [] lines1 = content1.split("\r?\n");
+		String [] lines2 = content2.split("\r?\n");
+
+		Differencer diff = new Differencer(lines1, lines2);
+		Differencer.DiffSegment seg;
+		int lineCount = 0;
+		while ( (seg=diff.nextSegment()) != null ) {
+
+			if (seg.type == '-') {
+				out.print("<div class='missing' id='line"+lineCount+"m'\n>*** "+seg.length+(seg.length==1 ? " line" : " lines") + " missing here ***</div>");
+			}
+			else {
+				for (int i = 0; i < seg.length; i++) {
+					if (seg.type == '=') {
+						out.print("<div id='line"+lineCount+"'\n>" + escapeHtml(seg.getLine(i)) + "</div>");
+					}
+					else {
+						out.print("<div id='line"+lineCount+"' class='xxx'\n><span>" + escapeHtml(seg.getLine(i)) + "</span>&nbsp;</div>");
+					}
+					lineCount++;
+				}
+			}
+		}
+	}
+
+	static String escapeHtml(String s)
+	{
+		return s;
 	}
 }
