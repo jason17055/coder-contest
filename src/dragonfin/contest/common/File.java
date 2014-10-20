@@ -51,12 +51,12 @@ public class File
 
 	public String diff_url(Object [] args)
 	{
-		if (args.length != 1) {
-			throw new UnsupportedOperationException("diff_url: wrong number of arguments");
+		if (args.length == 0 || args[0] == null) {
+			return servletRequest.getContextPath()+"/_f/diff?b="+escapeUrl(this.id);
 		}
 
-		if (args[0] == null) {
-			return servletRequest.getContextPath()+"/_f/diff?b="+escapeUrl(this.id);
+		if (args.length != 1) {
+			throw new UnsupportedOperationException("diff_url: wrong number of arguments");
 		}
 
 		if (args[0] instanceof File) {

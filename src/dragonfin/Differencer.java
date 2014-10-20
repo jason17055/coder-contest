@@ -13,22 +13,30 @@ public class Differencer
 	public class DiffSegment
 	{
 		public final char type;
-		final int offset;
-		public final int length;
+		public final int offset1;
+		public final int length1;
+		public final int offset2;
+		public final int length2;
 
-		DiffSegment(char type, int offset, int length)
+		DiffSegment(char type, int offset1, int length1, int offset2, int length2)
 		{
 			this.type = type;
-			this.offset = offset;
-			this.length = length;
+			this.offset1 = offset1;
+			this.length1 = length1;
+			this.offset2 = offset2;
+			this.length2 = length2;
+		}
+
+		public int getLength() {
+			return length2;
 		}
 
 		public String getLine(int i) {
 			if (type == '-') {
-				return lines1[offset+i];
+				return lines1[offset1+i];
 			}
 			else {
-				return lines2[offset+i];
+				return lines2[offset2+i];
 			}
 		}
 	}
@@ -45,12 +53,12 @@ public class Differencer
 			if (off2 >= lines2.length) {
 				return null;
 			}
-			DiffSegment seg = new DiffSegment('+', off2, lines2.length-off2);
+			DiffSegment seg = new DiffSegment('+', off1, 0, off2, lines2.length-off2);
 			off2 = lines2.length;
 			return seg;
 		}
 		if (off2 >= lines2.length) {
-			DiffSegment seg = new DiffSegment('-', off1, lines1.length-off1);
+			DiffSegment seg = new DiffSegment('-', off1, lines1.length-off1, off2, 0);
 			off1 = lines1.length;
 			return seg;
 		}
@@ -61,7 +69,7 @@ public class Differencer
 			while (off1+len < lines1.length && off2+len < lines2.length && lines1[off1+len].equals(lines2[off2+len])) {
 				len++;
 			}
-			DiffSegment seg = new DiffSegment('=', off2, len);
+			DiffSegment seg = new DiffSegment('=', off1, len, off2, len);
 			off1 += len;
 			off2 += len;
 			return seg;
@@ -75,17 +83,17 @@ public class Differencer
 				{
 					if (i==j) {
 						// file2 has extra lines
-						DiffSegment seg = new DiffSegment('+', off2, j);
+						DiffSegment seg = new DiffSegment('+', off1, 0, off2, j);
 						off2 += j;
 						return seg;
 					}
 					else if (j == 0) {
 						// file2 is missing lines
-						DiffSegment seg = new DiffSegment('-', off1, i);
+						DiffSegment seg = new DiffSegment('-', off1, i, off2, 0);
 						off1 += i;
 						return seg;
 					}
-					DiffSegment seg = new DiffSegment('!', off2, j);
+					DiffSegment seg = new DiffSegment('!', off1, i-j, off2, j);
 					off1 += i-j;
 					off2 += j;
 					return seg;
@@ -94,7 +102,7 @@ public class Differencer
 		}
 
 		// rest of file has no common lines
-		DiffSegment seg = new DiffSegment('!', off2, lines2.length-off2);
+		DiffSegment seg = new DiffSegment('!', off1, lines1.length-off1, off2, lines2.length-off2);
 		off1 = lines1.length;
 		off2 = lines2.length;
 		return seg;
@@ -105,7 +113,7 @@ public class Differencer
 		DiffSegment seg;
 		while ( (seg = nextSegment()) != null )
 		{
-			for (int i = 0; i < seg.length; i++) {
+			for (int i = 0; i < seg.getLength(); i++) {
 				System.out.printf("%c%s\n",
 					seg.type,
 					seg.getLine(i)

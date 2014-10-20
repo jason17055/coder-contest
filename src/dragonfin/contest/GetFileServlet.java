@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+import com.fasterxml.jackson.core.*;
 
 import static dragonfin.contest.common.File.outputChunk;
 
@@ -64,16 +65,17 @@ public class GetFileServlet extends CoreServlet
 	{
 		File file1 = File.byId(req, req.getParameter("a"));
 		File file2 = File.byId(req, req.getParameter("b"));
-		if (file1 == null || file2 == null) {
+		if (file1 == null && file2 == null) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
 		String content1;
 		String content2;
+
 		try {
-			content1 = file1.getText_content();
-			content2 = file2.getText_content();
+			content1 = file1 != null ? file1.getText_content() : "";
+			content2 = file2 != null ? file2.getText_content() : "";
 		}
 		catch (EntityNotFoundException e) {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -98,28 +100,65 @@ public class GetFileServlet extends CoreServlet
 		out.println("<body>");
 		out.print("<div class='o'>");
 
-		doDiffHelper(out, content1, content2);
+		ArrayList<Differencer.DiffSegment> diffs = doDiffHelper(out, content1, content2);
 		out.println("</div>");
+
+		out.println("<script type=\"text/javascript\" src=\""+req.getContextPath()+"/diff.js\"></script>");
+
+		if (file1 != null && file2 != null) {
+
+		out.println("<script type=\"text/javascript\"><!--");
+		out.print("var tmpDiffInfo = ");
+
+		out.flush();
+
+		JsonGenerator j_out = new JsonFactory().createJsonGenerator(resp.getWriter());
+		j_out.writeStartArray();
+		for (Differencer.DiffSegment seg : diffs) {
+			j_out.writeStartObject();
+			j_out.writeFieldName("type");
+			j_out.writeString(String.format("%c", seg.type));
+			j_out.writeFieldName("lhs_start");
+			j_out.writeNumber(seg.offset1);
+			j_out.writeFieldName("lhs_end");
+			j_out.writeNumber(seg.offset1+seg.length1);
+			j_out.writeFieldName("rhs_start");
+			j_out.writeNumber(seg.offset2);
+			j_out.writeFieldName("rhs_end");
+			j_out.writeNumber(seg.offset2+seg.length2);
+			j_out.writeEndObject();
+		}
+		j_out.writeEndArray();
+		j_out.flush();
+
+		out.println(";");
+		out.println("setDiffInfo(tmpDiffInfo);");
+		out.println("//--></script>");
+		} //end if two files specified
+
 		out.println("</body>");
 		out.println("</html>");
 		out.close();
 	}
 
-	void doDiffHelper(PrintWriter out, String content1, String content2)
+	ArrayList<Differencer.DiffSegment> doDiffHelper(PrintWriter out, String content1, String content2)
 	{
 		String [] lines1 = content1.split("\r?\n");
 		String [] lines2 = content2.split("\r?\n");
 
 		Differencer diff = new Differencer(lines1, lines2);
 		Differencer.DiffSegment seg;
+		ArrayList<Differencer.DiffSegment> rv = new ArrayList<Differencer.DiffSegment>();
 		int lineCount = 0;
 		while ( (seg=diff.nextSegment()) != null ) {
 
+			rv.add(seg);
+			int segLen = seg.getLength();
 			if (seg.type == '-') {
-				out.print("<div class='missing' id='line"+lineCount+"m'\n>*** "+seg.length+(seg.length==1 ? " line" : " lines") + " missing here ***</div>");
+				out.print("<div class='missing' id='line"+lineCount+"m'\n>*** "+segLen+(segLen==1 ? " line" : " lines") + " missing here ***</div>");
 			}
 			else {
-				for (int i = 0; i < seg.length; i++) {
+				for (int i = 0; i < segLen; i++) {
 					if (seg.type == '=') {
 						out.print("<div id='line"+lineCount+"'\n>" + escapeHtml(seg.getLine(i)) + "</div>");
 					}
@@ -130,6 +169,8 @@ public class GetFileServlet extends CoreServlet
 				}
 			}
 		}
+
+		return rv;
 	}
 
 	static String escapeHtml(String s)

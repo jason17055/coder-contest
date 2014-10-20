@@ -39,13 +39,19 @@ System Test:
 <td width="50%" valign="top">
 <div><b>Expected Output</b></div>
 [% IF test_result.expected %]
-<iframe id="expected_output_frame" src="[% test_result.expected.inline_text_url |html %]" width="100%"></iframe>
+<iframe id="expected_output_frame" src="[% test_result.expected.diff_url() |html %]" width="100%"></iframe>
 [% ELSE %]
 n/a
 [% END %]
 </td>
 <td width="50%" valign="top">
-<div><b>Actual Output</b></div>
+<div><b>Actual Output</b>
+<span id="diffControls" style="display:none">
+	<span id="diffCount">FOO</span>
+	<a id="hilite_first_btn" href="#">First</a>
+	<a id="hilite_next_btn" href="#">Next</a>
+</span>
+</div>
 [% IF test_result.output %]
 <iframe id="actual_output_frame" src="[% test_result.output.diff_url(test_result.expected) |html %]" width="100%"></iframe>
 [% ELSE %]
@@ -54,6 +60,76 @@ n/a
 </td>
 </tr>
 </table>
+
+<script type="text/javascript"><!--
+var diffs = null;
+var diffIdx = 0;
+function showDiff(idx)
+{
+	var rhs_frame = document.getElementById('actual_output_frame');
+	var lhs_frame = document.getElementById('expected_output_frame');
+
+	if (lhs_frame.contentWindow
+		&& lhs_frame.contentWindow.hiliteLines
+		&& rhs_frame.contentWindow
+		&& rhs_frame.contentWindow.hiliteLines)
+	{
+	if (idx >= 0 && idx < diffs.length)
+	{
+		rhs_frame.contentWindow.hiliteLines(diffs[idx].rhs_start,diffs[idx].rhs_end);
+
+		lhs_frame.contentWindow.hiliteLines(diffs[idx].lhs_start,diffs[idx].lhs_end);
+	}
+	else
+	{
+		rhs_frame.contentWindow.hiliteLines(0,0);
+		lhs_frame.contentWindow.hiliteLines(0,0);
+	}
+	diffIdx = idx;
+	}
+	else
+	{
+	}
+}
+
+function reportDiffInformation(diffInfo)
+{
+	diffs = diffInfo;
+
+	var countLabel = diffInfo.length == 1 ? "1 difference" : (diffInfo.length + " differences");
+	document.getElementById('diffCount').innerHTML = countLabel;
+
+	document.getElementById('diffControls').style.display = 'inline';
+
+	showDiff(0);
+}
+
+document.getElementById('hilite_first_btn').onclick = function()
+	{
+		showDiff(0);
+	};
+document.getElementById('hilite_next_btn').onclick = function()
+	{
+		showDiff((diffIdx+1) % diffs.length);
+	};
+
+var pageHeight = window.innerHeight;
+if (pageHeight)
+{
+	var ifr = document.getElementById('actual_output_frame');
+	var obj = ifr;
+	var iframeTop = 0;
+	while (obj != null)
+	{
+		iframeTop += obj.offsetTop;
+		obj = obj.offsetParent;
+	}
+
+	var remain = pageHeight - iframeTop - 12;
+	document.getElementById('expected_output_frame').style.height = remain;
+	document.getElementById('actual_output_frame').style.height = remain;
+}
+//--></script>
 
 </body>
 </html>
