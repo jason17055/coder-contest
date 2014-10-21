@@ -95,11 +95,9 @@ function checkForAnnouncement()
 		{
 			displayAnnouncement(data);
 		}
-		else if (data['class'] == 'job_completed')
-		{
-			location.reload();
-		}
-		else if (data['class'] == 'online_status_change')
+		else if (data['class'] == 'job_completed' ||
+			data['class'] == 'test_result_completed' ||
+			data['class'] == 'online_status_change')
 		{
 			location.reload();
 		}
@@ -157,7 +155,7 @@ function checkForAnnouncement()
 		{
 			var test_result_id = el.getAttribute('data-test-result-id');
 			var cur_status = el.getAttribute('data-test-result-status');
-			xtra += '&testresultstatus=' + escape(test_result_id+'-'+cur_status);
+			xtra += '&testresultstatus=' + escape(test_result_id+'//'+cur_status);
 		});
 
 	var online_indicators = new Array();

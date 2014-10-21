@@ -9,6 +9,8 @@ import com.google.appengine.api.datastore.*;
 import com.fasterxml.jackson.core.*;
 
 import static dragonfin.contest.TemplateVariables.makeUserKey;
+import static dragonfin.contest.TemplateVariables.makeTestResultId;
+import static dragonfin.contest.TemplateVariables.parseTestResultId;
 
 public class CheckMessageServlet extends HttpServlet
 {
@@ -26,20 +28,40 @@ public class CheckMessageServlet extends HttpServlet
 		m.userKey = null;
 		HttpSession sess = req.getSession(false);
 		if (sess != null) {
-			String sesContestId = (String) sess.getAttribute("contest");
+			m.contestId = (String) sess.getAttribute("contest");
 			String username = (String) sess.getAttribute("username");
-			if (sesContestId != null && username != null) {
-				m.userKey = makeUserKey(sesContestId, username);
+			if (m.contestId != null && username != null) {
+				m.userKey = makeUserKey(m.contestId, username);
 			}
 		}
 
 		String [] job_ids = req.getParameterValues("jobcompletion");
 		if (job_ids != null) {
 			for (String jobId : job_ids) {
-				if (m.checkForJobCompletion(jobId)) {
-					return;
-				}
+				m.addJobCompletionCheck(jobId);
 			}
+		}
+
+		String [] test_ids = req.getParameterValues("testresultcompletion");
+		if (test_ids != null) {
+			for (String testResultId : test_ids) {
+				m.addTestResultCompletionCheck(testResultId);
+			}
+		}
+
+		String [] test_status = req.getParameterValues("testresultstatus");
+		if (test_status != null) {
+			for (String status_info : test_status) {
+				int sep = status_info.indexOf("//");
+				if (sep == -1) { continue; }
+				String testResultId = status_info.substring(0,sep);
+				String statusStr = status_info.substring(sep+2);
+				m.addTestResultStatusCheck(testResultId, statusStr);
+			}
+		}
+
+		if (m.checkMultiple()) {
+			return;
 		}
 
 		String dismissMessage = req.getParameter("dismiss_message");
@@ -62,6 +84,7 @@ public class CheckMessageServlet extends HttpServlet
 	{
 		HttpServletRequest req;
 		HttpServletResponse resp;
+		String contestId;
 		Key userKey;
 		DatastoreService ds;
 
@@ -69,27 +92,45 @@ public class CheckMessageServlet extends HttpServlet
 		String type;
 		String after;
 
+		ArrayList<Check> checks = new ArrayList<Check>();
+
 		CheckMessage()
 		{
 			this.ds = DatastoreServiceFactory.getDatastoreService();
 		}
 
-		boolean checkForJobCompletion(String jobId)
+		boolean checkMultiple()
 			throws IOException
 		{
-			Key jobKey = KeyFactory.createKey("TestJob", Long.parseLong(jobId));
-			try {
-
-				Entity ent = ds.get(jobKey);
-				Boolean b = (Boolean) ent.getProperty("finished");
-				if (b != null && b.booleanValue()) {
-					emitJobCompleted(ent);
+			for (Check ch : checks) {
+				boolean rv = ch.doCheck();
+				if (rv) {
+					
+					resp.setContentType("text/json;charset=UTF-8");
+					JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
+					ch.emitMessage(out);
+					out.close();
 					return true;
 				}
 			}
-			catch (EntityNotFoundException e) {
-			}
 			return false;
+		}
+
+		void addJobCompletionCheck(String jobId)
+		{
+			checks.add(new JobCompletionCheck(ds, jobId));
+		}
+
+		void addTestResultCompletionCheck(String testResultId)
+		{
+			if (contestId == null) { return; }
+			checks.add(new TestResultStatusCheck(ds, contestId, testResultId, null));
+		}
+
+		void addTestResultStatusCheck(String testResultId, String status)
+		{
+			if (contestId == null) { return; }
+			checks.add(new TestResultStatusCheck(ds, contestId, testResultId, status));
 		}
 
 		void dismissMessage(String messageId)
@@ -118,18 +159,6 @@ public class CheckMessageServlet extends HttpServlet
 			return false;
 		}
 
-		void emitJobCompleted(Entity ent)
-			throws IOException
-		{
-			resp.setContentType("text/json;charset=UTF-8");
-			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
-			out.writeStartObject();
-			out.writeStringField("class", "job_completed");
-			out.writeStringField("job_id", Long.toString(ent.getKey().getId()));
-			out.writeEndObject();
-			out.close();
-		}
-
 		void emitMessageDetails(Entity ent)
 			throws IOException
 		{
@@ -142,6 +171,101 @@ public class CheckMessageServlet extends HttpServlet
 			out.writeStringField("messagetype", "N");
 			out.writeEndObject();
 			out.close();
+		}
+	}
+
+	static abstract class Check
+	{
+		public abstract boolean doCheck();
+		public abstract void emitMessage(JsonGenerator out)
+			throws IOException;
+	}
+
+	static class JobCompletionCheck extends Check
+	{
+		final DatastoreService ds;
+		final String jobId;
+		Entity ent;
+
+		JobCompletionCheck(DatastoreService ds, String jobId)
+		{
+			this.ds = ds;
+			this.jobId = jobId;
+		}
+
+		@Override
+		public boolean doCheck()
+		{
+			Key jobKey = KeyFactory.createKey("TestJob", Long.parseLong(jobId));
+			try {
+
+				this.ent = ds.get(jobKey);
+				Boolean b = (Boolean) ent.getProperty("finished");
+				if (b != null && b.booleanValue()) {
+					return true;
+				}
+			}
+			catch (EntityNotFoundException e) {
+			}
+			return false;
+		}
+
+		@Override
+		public void emitMessage(JsonGenerator out) throws IOException
+		{
+			out.writeStartObject();
+			out.writeStringField("class", "job_completed");
+			out.writeStringField("job_id", Long.toString(ent.getKey().getId()));
+			out.writeEndObject();
+		}
+	}
+
+	static class TestResultStatusCheck extends Check
+	{
+		final DatastoreService ds;
+		final Key testResultKey;
+		final String expectedStatus;
+		Entity ent;
+
+		TestResultStatusCheck(DatastoreService ds, String contestId, String testResultId, String expectedStatus)
+		{
+			this.ds = ds;
+			this.testResultKey = parseTestResultId(contestId, testResultId);
+			this.expectedStatus = expectedStatus;
+		}
+
+		@Override
+		public boolean doCheck()
+		{
+			String foundStatus;
+			try {
+
+				this.ent = ds.get(testResultKey);
+				foundStatus = (String) ent.getProperty("result_status");
+			}
+			catch (EntityNotFoundException e) {
+
+				foundStatus = null;
+			}
+
+			if (foundStatus == expectedStatus) {
+				return false;
+			}
+			else if (foundStatus == null) {
+				return true;
+			}
+			else {
+				return !foundStatus.equals(expectedStatus);
+			}
+		}
+
+		@Override
+		public void emitMessage(JsonGenerator out) throws IOException
+		{
+			out.writeStartObject();
+			out.writeStringField("class", "test_result_completed");
+			out.writeStringField("test_result_id", makeTestResultId(testResultKey));
+			out.writeEndObject();
 		}
 	}
 }

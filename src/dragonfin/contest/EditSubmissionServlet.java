@@ -97,7 +97,7 @@ public class EditSubmissionServlet extends CoreServlet
 		NewSubmissionTask.enqueueTask(submissionKey);
 
 		// show the current page again
-		doGet(req, resp);
+		resp.sendRedirect(getMyUrl(req));
 	}
 
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)

@@ -146,10 +146,7 @@ public class CoreServlet extends HttpServlet
 
 		public String getUri()
 		{
-			String s = request.getRequestURI();
-			String q = request.getQueryString();
-			String u = s + (q != null ? "?"+q : "");
-			return fixUrl(request, u);
+			return getMyUrl(request);
 		}
 
 		public String get(String param)
@@ -266,7 +263,7 @@ public class CoreServlet extends HttpServlet
 		renderTemplate(req, resp, templateName, null);
 	}
 
-	String getMyUrl(HttpServletRequest req)
+	public static String getMyUrl(HttpServletRequest req)
 	{
 		String u = req.getRequestURI();
 		String q = req.getQueryString();
