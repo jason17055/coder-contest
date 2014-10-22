@@ -115,8 +115,8 @@ Change password</label>
 	[% key2 = 'phase' _ ph _ '_ends' %]
 	<tr>
 	<td>[% ph |html %]</td>
-	<td><input type="text" name="[% key1 |html %]" value="[% f.$key1 |html %]"></td>
-	<td><input type="text" name="[% key2 |html %]" value="[% f.$key2 |html %]"></td>
+	<td><input type="text" name="[% key1 |html %]" value="[% f.get(key1) |html %]"></td>
+	<td><input type="text" name="[% key2 |html %]" value="[% f.get(key2) |html %]"></td>
 	</tr>
 	[% END #foreach phase %]
 	</table>
