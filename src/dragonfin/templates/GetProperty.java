@@ -23,10 +23,10 @@ class GetProperty extends Expression
 		if (obj == null)
 			return null;
 
-		return evalHelper(obj);
+		return getPropertyValueOf(obj, propertyName);
 	}
 
-	private Object evalHelper(Object obj)
+	static Object getPropertyValueOf(Object obj, String propertyName)
 		throws TemplateRuntimeException
 	{
 		if (obj instanceof Map)
@@ -104,7 +104,7 @@ class GetProperty extends Expression
 			Callable<?> asCallable = (Callable<?>) obj;
 			try
 			{
-			return evalHelper(asCallable.call());
+			return getPropertyValueOf(asCallable.call(), propertyName);
 			}
 			catch (Exception e)
 			{

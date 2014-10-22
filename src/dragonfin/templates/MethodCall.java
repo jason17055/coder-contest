@@ -33,6 +33,14 @@ class MethodCall extends Expression
 			int b = Value.asInt(args[1]);
 			return s.substring(a,a+b);
 		}
+		else if (methodName.equals("get") && args.length == 1)
+		{
+			String pname = args[0].toString();
+			if (pname == null) {
+				throw new TemplateRuntimeException("get vmethod: argument cannot be null");
+			}
+			return GetProperty.getPropertyValueOf(obj, pname);
+		}
 		else
 		{
 			return doDynamicMethod(obj, args);
