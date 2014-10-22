@@ -3,6 +3,8 @@ package dragonfin.contest;
 import dragonfin.contest.common.File;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
@@ -46,6 +48,15 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("scoreboard_popups", c.scoreboard_popups);
 		form.put("scoreboard_order", c.scoreboard_order);
 		form.put("scoreboard_fanfare", c.scoreboard_fanfare);
+		form.put("phase1_name", c.phase1_name);
+		form.put("phase2_name", c.phase2_name);
+		form.put("phase3_name", c.phase3_name);
+		form.put("phase4_name", c.phase4_name);
+		form.put("phase1_ends", fromDate(c.phase1_ends));
+		form.put("phase2_ends", fromDate(c.phase2_ends));
+		form.put("phase3_ends", fromDate(c.phase3_ends));
+		form.put("phase4_ends", fromDate(c.phase4_ends));
+		form.put("started", fromDate(c.started));
 
 		ctx.put("f", form);
 	}
@@ -89,6 +100,18 @@ public class ContestRulesServlet extends CoreServlet
 			ent.setProperty("subtitle", req.getParameter("subtitle"));
 			ent.setProperty("logo", req.getParameter("logo"));
 
+			ent.setProperty("started", asDate(req.getParameter("started")));
+
+			ent.setProperty("phase1_name", req.getParameter("phase1_name"));
+			ent.setProperty("phase2_name", req.getParameter("phase2_name"));
+			ent.setProperty("phase3_name", req.getParameter("phase3_name"));
+			ent.setProperty("phase4_name", req.getParameter("phase4_name"));
+
+			ent.setProperty("phase1_ends", asDate(req.getParameter("phase1_ends")));
+			ent.setProperty("phase2_ends", asDate(req.getParameter("phase2_ends")));
+			ent.setProperty("phase3_ends", asDate(req.getParameter("phase3_ends")));
+			ent.setProperty("phase4_ends", asDate(req.getParameter("phase4_ends")));
+
 			//TODO- the remaining parameters on this form.
 
 			ds.put(ent);
@@ -103,5 +126,31 @@ public class ContestRulesServlet extends CoreServlet
 				txn.rollback();
 			}
 		}
+
+		doCancel(req, resp);
+	}
+
+	static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static Date asDate(String s)
+	{
+		if (s == null || s.equals("")) {
+			return null;
+		}
+
+		try {
+			return DATE_FMT.parse(s);
+		}
+		catch (ParseException e) {
+			return null;
+		}
+	}
+
+	static String fromDate(Date d)
+	{
+		if (d == null) {
+			return null;
+		}
+
+		return DATE_FMT.format(d);
 	}
 }

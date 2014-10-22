@@ -199,6 +199,15 @@ public class TemplateVariables
 		public boolean scoreboard_images;
 		public boolean scoreboard_popups;
 		public boolean scoreboard_fanfare;
+		public String phase1_name;
+		public String phase2_name;
+		public String phase3_name;
+		public String phase4_name;
+		public Date phase1_ends;
+		public Date phase2_ends;
+		public Date phase3_ends;
+		public Date phase4_ends;
+		public Date started;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -868,6 +877,18 @@ public class TemplateVariables
 		c.scoreboard_fanfare = ent.hasProperty("scoreboard_fanfare") ?
 			((Boolean)ent.getProperty("scoreboard_fanfare")).booleanValue() :
 			true;
+
+		c.phase1_name = (String) ent.getProperty("phase1_name");
+		c.phase2_name = (String) ent.getProperty("phase2_name");
+		c.phase3_name = (String) ent.getProperty("phase3_name");
+		c.phase4_name = (String) ent.getProperty("phase4_name");
+
+		c.phase1_ends = (Date) ent.getProperty("phase1_ends");
+		c.phase2_ends = (Date) ent.getProperty("phase2_ends");
+		c.phase3_ends = (Date) ent.getProperty("phase3_ends");
+		c.phase4_ends = (Date) ent.getProperty("phase4_ends");
+
+		c.started = (Date) ent.getProperty("started");
 
 		return c;
 	}

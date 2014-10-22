@@ -27,6 +27,14 @@ Contest [ "id" ]
 	created_by        String
 	last_problem_id   Integer
 	last_announcement_id Integer
+	phase1_name       String
+	phase1_ends       Date
+	phase2_name       String
+	phase2_ends       Date
+	phase3_name       String
+	phase3_ends       Date
+	phase4_name       String
+	phase4_ends       Date
 
 User [ "Contest.id" / "username" ]
 	password          String
