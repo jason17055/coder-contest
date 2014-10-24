@@ -187,8 +187,6 @@ public class TemplateVariables
 		public String score_system;
 		public String scoreboard;
 		public String scoreboard_order;
-		public String current_phase_name = "CODING";
-		public String current_phase_timeleft = "foo";
 		public String [] status_choices;
 		public boolean contestants_can_change_name;
 		public boolean contestants_can_change_description;
@@ -266,6 +264,66 @@ public class TemplateVariables
 				problemsCached = enumerateProblems(id);
 			}
 			return problemsCached;
+		}
+
+		int getCurrent_phase()
+		{
+			final Date [] endTimes = new Date[5];
+			endTimes[1] = phase1_ends;
+			endTimes[2] = phase2_ends;
+			endTimes[3] = phase3_ends;
+			endTimes[4] = phase4_ends;
+
+			ArrayList<Integer> phaseNumbers = new ArrayList<Integer>();
+			if (phase1_ends!=null) { phaseNumbers.add(new Integer(1)); }
+			if (phase2_ends!=null) { phaseNumbers.add(new Integer(2)); }
+			if (phase3_ends!=null) { phaseNumbers.add(new Integer(3)); }
+			if (phase4_ends!=null) { phaseNumbers.add(new Integer(4)); }
+
+			Collections.sort(phaseNumbers, new Comparator<Integer>() {
+			public int compare(Integer o1, Integer o2) {
+				int a = o1;
+				int b = o2;
+				return endTimes[a].compareTo(endTimes[b]);
+			}
+			});
+
+			Date now = new Date();
+			for (int ord : phaseNumbers) {
+				if (now.compareTo(endTimes[ord]) < 0) {
+					return ord;
+				}
+			}
+			return 0;
+		}
+
+		public String getCurrent_phase_name()
+		{
+			int curPhase = getCurrent_phase();
+			return curPhase == 1 ? phase1_name :
+				curPhase == 2 ? phase2_name :
+				curPhase == 3 ? phase3_name :
+				curPhase == 4 ? phase4_name :
+				null;
+		}
+
+		public Date getCurrent_phase_ends()
+		{
+			int curPhase = getCurrent_phase();
+			return curPhase == 1 ? phase1_ends :
+				curPhase == 2 ? phase2_ends :
+				curPhase == 3 ? phase3_ends :
+				curPhase == 4 ? phase4_ends :
+				null;
+		}
+
+		public int getCurrent_phase_timeleft()
+		{
+			Date endTime = getCurrent_phase_ends();
+			if (endTime == null) {
+				return 0;
+			}
+			return (int)((endTime.getTime() - new Date().getTime())/1000);
 		}
 	}
 
