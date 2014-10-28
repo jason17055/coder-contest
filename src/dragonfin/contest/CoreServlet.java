@@ -155,6 +155,17 @@ public class CoreServlet extends HttpServlet
 		}
 	}
 
+	static final String ATTR_TEMPLATE = "dragonfin.contest.TemplateVariables";
+	TemplateVariables makeTemplateVariables(HttpServletRequest req)
+	{
+		TemplateVariables tv = (TemplateVariables) req.getAttribute(ATTR_TEMPLATE);
+		if (tv == null) {
+			tv = new TemplateVariables(req);
+			req.setAttribute(ATTR_TEMPLATE, tv);
+		}
+		return tv;
+	}
+
 	protected Bindings makeVars(HttpServletRequest req,
 			Map<String,Object> args)
 		throws Exception
@@ -166,7 +177,7 @@ public class CoreServlet extends HttpServlet
 		ctx.put("r", new RequestAdapter(req));
 		ctx.put("g", new TemplateGlobals());
 
-		final TemplateVariables tv = new TemplateVariables(req);
+		final TemplateVariables tv = makeTemplateVariables(req);
 		ctx.put("contest", tv.getContest());
 
 		Callable< ArrayList<TemplateVariables.Problem> > c1 = new Callable< ArrayList<TemplateVariables.Problem> >() {

@@ -879,8 +879,21 @@ public class TemplateVariables
 		throws EntityNotFoundException
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		return fetchContest(contestKey);
+	}
+
+	HashMap<Key,Contest> cachedContests = new HashMap<Key,Contest>();
+	Contest fetchContest(Key contestKey)
+		throws EntityNotFoundException
+	{
+		if (cachedContests.containsKey(contestKey)) {
+			return cachedContests.get(contestKey);
+		}
+
 		Entity ent = ds.get(contestKey);
-		return handleContest(contestKey, ent);
+		Contest c = handleContest(contestKey, ent);
+		cachedContests.put(contestKey, c);
+		return c;
 	}
 
 	Contest handleContest(Key key, Entity ent)

@@ -6,17 +6,17 @@
 <p class="error">[% message |html %]</p>
 [% END %]
 
-<form method="post" action="[% r.uri |html %]">
+<form method="post" action="[% r.uri |html %]" autocomplete="off">
 <table>
 <tr>
 <td><label>Contest:</label></td>
 <td>[% contest.title |html %]</td>
 </tr>
+[% IF session.is_director %]
 <tr>
 <td><label for="ordinal_entry">Order:</label></td>
 <td><input type="text" name="ordinal" id="ordinal_entry" value="[% f.ordinal |html %]"></td>
 </tr>
-[% IF session.is_director %]
 <tr>
 <td><label for="visible_cb">Visible:</label></td>
 <td><select name="visible" id="visible_cb">
@@ -35,26 +35,31 @@
 [% END #if is_director %]
 <tr>
 <td><label for="name_entry">Display Name:</label></td>
-<td><input type="text" name="name" id="name_entry"
-	value="[% f.name |html %]">
+<td>[% IF can_change_name %]
+	<input type="text" name="name" id="name_entry"
+		value="[% f.name |html %]">
+[% ELSE %][% f.name |html %][% END %]
 </td>
 </tr>
 <tr>
 <td><label for="description_entry">Description:</label></td>
-<td><input type="text" name="description" id="description_entry"
-	value="[% f.description |html %]">
+<td>[% IF can_change_description %]
+	<input type="text" name="description" id="description_entry"
+		value="[% f.description |html %]">
+[% ELSE %][% f.description |html %][% END %]
 </td>
 </tr>
 <tr>
 <td><label for="username_entry">Username:</label></td>
-<td><input type="text" name="username" id="username_entry"
-	value="[% f.username |html %]">
+<td>[% f.username |html %]
 </td>
 </tr>
 <tr>
 <td><label for="password_entry">Password:</label></td>
-<td><input type="password" name="password" id="password_entry"
-	value="[% f.password |html %]">
+<td>[% IF can_change_password %]
+	<input type="password" name="password" id="password_entry"
+		value="[% f.password |html %]">
+[% ELSE %][% f.password |html %][% END %]
 </td>
 </tr>
 </table>

@@ -13,28 +13,35 @@ public class DefineUserServlet extends CoreServlet
 		return "define_user.tt";
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException, ServletException
+	boolean checkAuthorized(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
 	{
-		if (requireContest(req, resp)) { return; }
-
 		String frmUsername = req.getParameter("id");
 		String sesUsername = (String) req.getSession(false).getAttribute("username");
 
 		if (isDirector(req, resp) || (
 			frmUsername != null && sesUsername != null && frmUsername.equals(sesUsername))
 		) {
-
-			renderTemplate(req, resp, getTemplate());
+			return false;
 		}
 		else {
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the contest director can see another user's properties");
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the contest director can edit another user's properties");
+			return true;
 		}
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireContest(req, resp)) { return; }
+		if (checkAuthorized(req, resp)) { return; }
+
+		renderTemplate(req, resp, getTemplate());
 	}
 
 	@Override
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
-		throws EntityNotFoundException
+		throws EntityNotFoundException,ServletException
 	{
 		String contestId = tv.req.getParameter("contest");
 		String username = tv.req.getParameter("id");
@@ -70,6 +77,62 @@ public class DefineUserServlet extends CoreServlet
 
 			ctx.put("f", form);
 		}
+
+		FormPermissions p = getFormPermissions(tv.req);
+		ctx.put("can_change_name", p.can_change_name);
+		ctx.put("can_change_description", p.can_change_description);
+		ctx.put("can_change_password", p.can_change_password);
+	}
+
+	static class FormPermissions
+	{
+		public boolean can_change_name;
+		public boolean can_change_description;
+		public boolean can_change_password;
+		public boolean can_change_ordinal;
+		public boolean can_change_flags;
+	}
+
+	FormPermissions getFormPermissions(HttpServletRequest req)
+		throws ServletException
+	{
+		FormPermissions p = new FormPermissions();
+
+		String username = (String)req.getSession(false).getAttribute("username");
+		if (username == null) {
+			return p;
+		}
+
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Contest c;
+		TemplateVariables.User u;
+		try {
+			c = tv.getContest();
+			u = tv.fetchUser(c.id, username);
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("invalid contest or session");
+		}
+
+		if (u.is_director) {
+			p.can_change_name = true;
+			p.can_change_description = true;
+			p.can_change_password = true;
+			p.can_change_ordinal = true;
+			p.can_change_flags = true;
+			return p;
+		}
+
+		if (u.is_contestant) {
+			p.can_change_name = p.can_change_name || c.contestants_can_change_name;
+			p.can_change_description = p.can_change_description || c.contestants_can_change_description;
+			p.can_change_password = p.can_change_password || c.contestants_can_change_password;
+		}
+		if (u.is_judge) {
+			p.can_change_name = p.can_change_name || c.judges_can_change_name;
+			p.can_change_password = p.can_change_password || c.judges_can_change_password;
+		}
+		return p;
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -99,10 +162,13 @@ public class DefineUserServlet extends CoreServlet
 	void doUpdateUser(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireContest(req, resp)) { return; }
+		if (checkAuthorized(req, resp)) { return; }
+
+		FormPermissions p = getFormPermissions(req);
 
 		String contestId = req.getParameter("contest");
-		String username = req.getParameter("username");
+		String username = req.getParameter("id");
 
 		// TODO- check parameters
 
@@ -120,7 +186,7 @@ public class DefineUserServlet extends CoreServlet
 			Key userKey = KeyFactory.createKey("User",
 				contestId+"/"+username);
 			Entity ent1 = ds.get(userKey);
-			updateFromForm(ent1, params);
+			updateFromForm(ent1, params, p);
 			ds.put(ent1);
 
 			txn.commit();
@@ -142,6 +208,8 @@ public class DefineUserServlet extends CoreServlet
 		throws IOException, ServletException
 	{
 		if (requireDirector(req, resp)) { return; }
+
+		FormPermissions p = getFormPermissions(req);
 
 		String contestId = req.getParameter("contest");
 		String username = req.getParameter("username");
@@ -165,7 +233,7 @@ public class DefineUserServlet extends CoreServlet
 			userEnt.setProperty("created", new Date());
 			userEnt.setProperty("contest", contestId);
 			userEnt.setProperty("username", username);
-			updateFromForm(userEnt, params);
+			updateFromForm(userEnt, params, p);
 			ds.put(userEnt);
 
 			txn.commit();
@@ -179,32 +247,33 @@ public class DefineUserServlet extends CoreServlet
 		doCancel(req, resp);
 	}
 
-	void updateFromForm(Entity ent1, Map<String,String> POST)
+	void updateFromForm(Entity ent1, Map<String,String> POST, FormPermissions p)
 	{
-		ent1.setProperty("name", POST.get("name"));
-		ent1.setProperty("description", POST.get("description"));
+		if (p.can_change_name) {
+			ent1.setProperty("name", POST.get("name"));
+		}
+		if (p.can_change_description) {
+			ent1.setProperty("description", POST.get("description"));
+		}
 
 		String tmpPass = POST.get("password");
-		if (tmpPass != null && tmpPass.length() != 0) {
+		if (tmpPass != null && tmpPass.length() != 0 && p.can_change_password) {
 			ent1.setProperty("password", tmpPass);
 		}
 
 		// integers
-		try {
-			int tmpX = Integer.parseInt(POST.get("ordinal"));
-			ent1.setProperty("ordinal", new Integer(tmpX));
-		}
-		catch (NumberFormatException e) {
-			ent1.setProperty("ordinal", new Integer(0));
+		if (p.can_change_ordinal) {
+			updateFromForm_int(ent1, POST, "ordinal");
 		}
 
 		// booleans
-		ent1.setProperty("is_director", Boolean.valueOf(POST.containsKey("is_director")));
-		ent1.setProperty("is_judge", Boolean.valueOf(POST.containsKey("is_judge")));
-		ent1.setProperty("is_contestant", Boolean.valueOf(POST.containsKey("is_contestant")));
-		ent1.setProperty("visible", Boolean.valueOf(POST.get("visible")));
+		if (p.can_change_flags) {
+			ent1.setProperty("is_director", Boolean.valueOf(POST.containsKey("is_director")));
+			ent1.setProperty("is_judge", Boolean.valueOf(POST.containsKey("is_judge")));
+			ent1.setProperty("is_contestant", Boolean.valueOf(POST.containsKey("is_contestant")));
+			ent1.setProperty("visible", Boolean.valueOf(POST.get("visible")));
+		}
 
-		updateFromForm_int(ent1, POST, "ordinal");
 	}
 
 	void updateFromForm_int(Entity ent1, Map<String,String> POST, String propName)
