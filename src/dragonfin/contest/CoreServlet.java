@@ -365,6 +365,20 @@ public class CoreServlet extends HttpServlet
 		return KeyFactory.createKey("User", sesContestId + "/" + username);
 	}
 
+	boolean isDirector(HttpServletRequest req, HttpServletResponse resp)
+	{
+		Key userKey = getLoggedInUserKey(req);
+
+		try {
+			TemplateVariables tv = new TemplateVariables(req);
+			TemplateVariables.User user = tv.fetchUser(userKey);
+			return user.is_director;
+		}
+		catch (EntityNotFoundException e) {
+			return false;
+		}
+	}
+
 	/** @return true if response has been sent. */
 	boolean requireDirector(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException

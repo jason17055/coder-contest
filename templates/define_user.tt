@@ -40,6 +40,12 @@
 </td>
 </tr>
 <tr>
+<td><label for="description_entry">Description:</label></td>
+<td><input type="text" name="description" id="description_entry"
+	value="[% f.description |html %]">
+</td>
+</tr>
+<tr>
 <td><label for="username_entry">Username:</label></td>
 <td><input type="text" name="username" id="username_entry"
 	value="[% f.username |html %]">

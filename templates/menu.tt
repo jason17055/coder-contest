@@ -3,7 +3,7 @@
 %]
 
 <p>
-Your name: <a href="[% contest_links.edit_self |html %]">[% session.user.name |html %]</a>
+Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |html %]</a>
 </p>
 
 [% SET problems = all_results %]

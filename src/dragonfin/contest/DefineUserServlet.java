@@ -16,8 +16,20 @@ public class DefineUserServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
-		renderTemplate(req, resp, getTemplate());
+		if (requireContest(req, resp)) { return; }
+
+		String frmUsername = req.getParameter("id");
+		String sesUsername = (String) req.getSession(false).getAttribute("username");
+
+		if (isDirector(req, resp) || (
+			frmUsername != null && sesUsername != null && frmUsername.equals(sesUsername))
+		) {
+
+			renderTemplate(req, resp, getTemplate());
+		}
+		else {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Only the contest director can see another user's properties");
+		}
 	}
 
 	@Override
