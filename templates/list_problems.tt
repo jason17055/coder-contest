@@ -26,7 +26,7 @@
 <td>[% prb.judged_by |html %]</td>
 <td align="center">
 [% IF prb.solution %]
-    <img src="images/text_file.png" alt="On file">
+    <img src="[% images_url %]/text_file.png" alt="On file">
 [% ELSE %]
     -
 [% END %]
