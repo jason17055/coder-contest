@@ -2,6 +2,7 @@ package dragonfin.templates;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 class MethodCall extends Expression
 {
@@ -21,6 +22,20 @@ class MethodCall extends Expression
 		throws TemplateRuntimeException
 	{
 		Object obj = objectExpr.evaluate(ctx);
+
+		while (obj instanceof Callable)
+		{
+			Callable<?> asCallable = (Callable<?>) obj;
+			try
+			{
+				obj = asCallable.call();
+			}
+			catch (Exception e)
+			{
+				throw new TemplateRuntimeException("Exception thrown by "+obj.getClass().getName()+".call() method", e);
+			}
+		}
+
 		Object [] args = new Object[arguments.size()];
 		for (int i = 0; i < args.length; i++)
 		{
