@@ -144,6 +144,9 @@ public class DefineUserServlet extends CoreServlet
 		else if (req.getParameter("action:create_user") != null) {
 			doCreateUser(req, resp);
 		}
+		else if (req.getParameter("action:delete_user") != null) {
+			doDeleteUser(req, resp);
+		}
 		else {
 			doUpdateUser(req, resp);
 		}
@@ -157,6 +160,14 @@ public class DefineUserServlet extends CoreServlet
 			u = makeContestUrl(req.getParameter("contest"), "users", null);
 		}
 		resp.sendRedirect(u);
+	}
+
+	void doDeleteUser(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 
 	void doUpdateUser(HttpServletRequest req, HttpServletResponse resp)
