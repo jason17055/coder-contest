@@ -67,7 +67,9 @@
 <div>
 [% IF r.id %]
 <button type="submit">Save Changes</button>
+[% IF session.is_director %]
 <button type="submit" name="action:delete_user" onclick="return confirm('Really delete this user?')">Delete User</button>
+[% END #if is_director %]
 [% ELSE %]
 <button type="submit" name="action:create_user">Create</button>
 [% END %]
