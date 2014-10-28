@@ -22,7 +22,9 @@ contest         - properties of the current contest
 problem      - properties of the currently-selected problem
 .name        - name of the problem
 .spec        - File the pdf description of the problem
-.edit_url    - takes user to Problem Definition page
+.difficulty          - int
+.url                 - Url where user can work on problem
+.edit_url            - Url problem definition page
 .system_tests - SystemTest[]
 .clarifications - Clarification[]
 .new_system_test_url
@@ -38,8 +40,6 @@ contest_links
 .users_list
 .new_problem
 .new_user
-
-my_results    - Result[] current user's results
 
 all_submissions - Submission[]
 all_users       - User[]
@@ -103,14 +103,15 @@ result
 .opened                - Date
 .source                - File
 .problem               - Problem
-.incorrect_submissions
+.incorrect_submissions - int
 .score
 .score_alt
 .score_html
-.minutes
+.minutes               - int
 .submissions           - Submission[]
 .contestant            - User
 .new_submission_url
+.correct               - boolean
 
 test_job
 .id

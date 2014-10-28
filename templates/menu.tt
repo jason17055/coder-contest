@@ -6,19 +6,20 @@
 Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |html %]</a>
 </p>
 
-[% SET problems = all_results %]
+<h3>Problems</h3>
+[% SET problems = contest.problems %]
 [% IF problems.size %]
 
-<h3>Problems</h3>
 <table border="1">
 <tr><th>Problem</th><th>Status</th></tr>
 [% FOREACH p IN problems %]
-	[% IF p.solution_time %]
+	[% SET r = session.user.result_by_problem(p) %]
+	[% IF r.correct%]
 		[% status = 'Solved' %]
-	[% ELSIF p.incorrect_submissions %]
+	[% ELSIF r.incorrect_submissions %]
 		[% status = 'Attempted' %]
-	[% ELSIF p.opened %]
-		[% status = "Opened at ${p.opened}" %]
+	[% ELSIF r.opened %]
+		[% status = "Opened at ${r.opened}" %]
 	[% ELSE %]
 		[% status = 'Unopened' %]
 	[% END %]
@@ -29,7 +30,9 @@ Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |htm
 [% END #foreach %]
 </table>
 
-[% END #if problems.size %]
+[% ELSE #if problems.size==0 %]
+<p>No problems are available at this time.</p>
+[% END #if problems.size==0 %]
 
 <h3 page-reload-safe="page-reload-safe">Submissions/Responses</h3>
 
