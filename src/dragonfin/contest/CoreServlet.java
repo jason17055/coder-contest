@@ -38,7 +38,7 @@ public class CoreServlet extends HttpServlet
 	public static class SessionAdapter
 	{
 		HttpSession session;
-		Callable<TemplateVariables.User> user;
+		public Callable<TemplateVariables.User> user;
 
 		SessionAdapter(HttpSession session)
 		{
