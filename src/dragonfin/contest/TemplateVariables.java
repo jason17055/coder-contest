@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import dragonfin.contest.common.*;
+import static dragonfin.contest.CoreServlet.getMyUrl;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 import java.util.*;
@@ -470,7 +471,7 @@ public class TemplateVariables
 
 		public String getEdit_url()
 		{
-			return makeUrl("user?id="+username);
+			return makeUrl("user?id="+escapeUrl(username)+"&next="+escapeUrl(getMyUrl(req)));
 		}
 
 		//public Map<String,Result> result_by_problem;
