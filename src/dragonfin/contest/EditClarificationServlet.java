@@ -60,8 +60,7 @@ public class EditClarificationServlet extends CoreServlet
 			doCancel(req, resp);
 		}
 		else if (req.getParameter("id") != null) {
-			// not implemented
-			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+			doUpdateClarification(req, resp);
 		}
 		else {
 			// new clarification
@@ -122,6 +121,55 @@ public class EditClarificationServlet extends CoreServlet
 
 			submissionKey = ds.put(ent);
 			txn.commit();
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		doCancel(req, resp);
+	}
+
+	void doUpdateClarification(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+		if (contestId == null || id == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+
+		//
+		// TODO- check form parameters
+		//
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
+
+		// TODO- check permission to submit question
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+
+		try {
+
+			Entity ent = ds.get(submissionKey);
+
+			ent.setProperty("question", POST.get("question"));
+			ent.setProperty("answer", POST.get("answer"));
+			ent.setProperty("answer_type", POST.get("answer_type"));
+
+			ds.put(ent);
+			txn.commit();
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
 		}
 		finally {
 			if (txn.isActive()) {

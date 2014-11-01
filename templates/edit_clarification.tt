@@ -12,19 +12,19 @@
 </tr>
 <tr>
 <td valign="top"><label>Message:</label></td>
-<td valign="top"><textarea name="request" rows="10" cols="72">[% f.request|html %]</textarea></td>
+<td valign="top"><textarea name="question" rows="10" cols="72">[% f.question|html %]</textarea></td>
 </tr>
 <tr>
 <td valign="top"><label>Response Type:</label></td>
-<td valign="top"><select name="status">
-<option value=""[% !f.status ? ' selected="selected"' : '' %]>--choose--</option>
-<option value="reply-one"[% f.status=='REPLY_ONE' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
-<option value="reply-all"[% f.status=='REPLY_ALL' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
+<td valign="top"><select name="answer_type">
+<option value=""[% !f.answer_type ? ' selected="selected"' : '' %]>--choose--</option>
+<option value="REPLY_ONE"[% f.answer_type=='REPLY_ONE' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
+<option value="REPLY_ALL"[% f.answer_type=='REPLY_ALL' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
 </select></td>
 </tr>
 <tr>
 <td valign="top"><label>Response Message:</label></td>
-<td valign="top"><textarea name="response" rows="10" cols="72">[% f.response |html %]</textarea></td>
+<td valign="top"><textarea name="answer" rows="10" cols="72">[% f.answer |html %]</textarea></td>
 </tr>
 </table>
 
