@@ -663,7 +663,7 @@ public class TemplateVariables
 
 		public String getEdit_url()
 		{
-			if ("clarification".equals(type)) {
+			if ("question".equals(type)) {
 				return "clarification?id="+id;
 			}
 			else {
