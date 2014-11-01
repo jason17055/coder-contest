@@ -1,3 +1,6 @@
+* clarifications: allow "general" clarification questions and answers
+
+--OLD--
 * scoreboard: show time remaining in current round
 * config option for "Write Code" tab
    - let director disable the "Write Code" tab for all contestants

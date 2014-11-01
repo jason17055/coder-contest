@@ -651,6 +651,9 @@ public class TemplateVariables
 		public Date created;
 		public String type;
 		public int minutes;
+		public String question;
+		public String answer;
+		public String answer_type;
 
 		Submission(Key dsKey)
 		{
@@ -1308,6 +1311,9 @@ public class TemplateVariables
 			0;
 		s.sourceKey = (Key) ent.getProperty("source");
 		s.type = (String) ent.getProperty("type");
+		s.question = (String) ent.getProperty("question");
+		s.answer = (String) ent.getProperty("answer");
+		s.answer_type = (String) ent.getProperty("answer_type");
 		return s;
 	}
 

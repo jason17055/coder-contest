@@ -96,12 +96,14 @@ Submission [ User / id* ]
         problem           Key(Problem)
 	status            String
 	judge             Key(User)
-	type              String 'submission', 'clarification'
+	type              String 'submission', 'question'
   if type==submission:
 	source            Key(File)
 	minutes           Integer
   if type==clarification:
-        request           String
+        question          String
+	answer            String
+	answer_type       String 'REPLY_ONE', 'REPLY_ALL'
 
 TestJob [ id* ]
 	type              String S=system test of submission, E=generate expected output, U=user test,

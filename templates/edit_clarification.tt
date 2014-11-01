@@ -18,8 +18,8 @@
 <td valign="top"><label>Response Type:</label></td>
 <td valign="top"><select name="status">
 <option value=""[% !f.status ? ' selected="selected"' : '' %]>--choose--</option>
-<option value="reply-one"[% f.status=='reply-one' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
-<option value="reply-all"[% f.status=='reply-all' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
+<option value="reply-one"[% f.status=='REPLY_ONE' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
+<option value="reply-all"[% f.status=='REPLY_ALL' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
 </select></td>
 </tr>
 <tr>

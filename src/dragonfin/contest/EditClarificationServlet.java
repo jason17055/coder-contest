@@ -35,6 +35,9 @@ public class EditClarificationServlet extends CoreServlet
 
 			HashMap<String,Object> form = new HashMap<String,Object>();
 			form.put("problem", s.getProblem());
+			form.put("question", s.question);
+			form.put("answer", s.answer);
+			form.put("answer_type", s.answer_type);
 			ctx.put("f", form);
 		}
 		else {
@@ -56,8 +59,13 @@ public class EditClarificationServlet extends CoreServlet
 		if (POST.containsKey("action:cancel")) {
 			doCancel(req, resp);
 		}
+		else if (req.getParameter("id") != null) {
+			// not implemented
+			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		}
 		else {
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			// new clarification
+			doCreateClarification(req, resp);
 		}
 	}
 
@@ -71,4 +79,56 @@ public class EditClarificationServlet extends CoreServlet
 		resp.sendRedirect(u);
 	}
 
+	void doCreateClarification(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireContest(req, resp)) { return; }
+
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("problem");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
+
+		//
+		// check form parameters
+		//
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
+
+		// TODO- check permission to submit question
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+
+		Key userKey = getLoggedInUserKey(req);
+		Key submissionKey;
+		try {
+
+			Entity ent = new Entity("Submission", userKey);
+
+			ent.setProperty("created", new Date());
+			ent.setProperty("type", "question");
+			ent.setProperty("problem", problemKey);
+			ent.setProperty("contest", contestId);
+
+			ent.setProperty("question", POST.get("question"));
+			ent.setProperty("answer", POST.get("answer"));
+			ent.setProperty("answer_type", POST.get("answer_type"));
+
+			submissionKey = ds.put(ent);
+			txn.commit();
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		doCancel(req, resp);
+	}
 }
