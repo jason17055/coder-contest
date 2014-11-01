@@ -13,7 +13,36 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		throws IOException, ServletException
 	{
 		if (requireContest(req, resp)) { return; }
+		if (checkProblemAccess(req, resp)) { return; }
 		renderTemplate(req, resp, getTemplate());
+	}
+
+	boolean checkProblemAccess(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("problem");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return true;
+		}
+
+		try {
+
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
+		if (!p.visible) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return true;
+		}
+
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return true;
+		}
+
+		return false;
 	}
 
 	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
