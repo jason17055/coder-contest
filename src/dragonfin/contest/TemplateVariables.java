@@ -2,6 +2,7 @@ package dragonfin.contest;
 
 import dragonfin.contest.common.*;
 import static dragonfin.contest.CoreServlet.getMyUrl;
+import static dragonfin.contest.CoreServlet.getLoggedInUserKey;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 import java.util.*;
@@ -416,9 +417,82 @@ public class TemplateVariables
 			return list;
 		}
 
-		public ArrayList<Clarification> getClarifications()
+		public ArrayList<Submission> getBroadcasted_clarifications()
 		{
-			return new ArrayList<Clarification>();
+			Query q = new Query("Submission");
+			q.setFilter(Query.CompositeFilterOperator.and(
+				Query.FilterOperator.EQUAL.of("problem", dsKey),
+				Query.FilterOperator.EQUAL.of("type", "question"),
+				Query.FilterOperator.EQUAL.of("answer_type", "REPLY_ALL")
+				));
+			q.addSort("created");
+
+			PreparedQuery pq = ds.prepare(q);
+			ArrayList<Submission> list = new ArrayList<Submission>();
+			for (Entity ent : pq.asIterable()) {
+				Submission s = handleSubmission(ent.getKey(), ent);
+				list.add(s);
+			}
+			return list;
+		}
+
+		public ArrayList<Submission> getMy_clarifications()
+		{
+			Key userKey = getLoggedInUserKey(req);
+			Query q = new Query("Submission");
+			q.setAncestor(userKey);
+			q.setFilter(Query.CompositeFilterOperator.and(
+				Query.FilterOperator.EQUAL.of("problem", dsKey),
+				Query.FilterOperator.EQUAL.of("type", "question")
+				));
+			q.addSort("created");
+
+			PreparedQuery pq = ds.prepare(q);
+			ArrayList<Submission> list = new ArrayList<Submission>();
+			for (Entity ent : pq.asIterable()) {
+				Submission s = handleSubmission(ent.getKey(), ent);
+				list.add(s);
+			}
+
+			return list;
+		}
+
+		public ArrayList<Submission> getClarifications()
+		{
+			ArrayList<Submission> mine = getMy_clarifications();
+			ArrayList<Submission> others = getBroadcasted_clarifications();
+
+			ArrayList<Submission> list = new ArrayList<Submission>();
+			int i = 0, j = 0;
+			while (i < mine.size() || j < others.size()) {
+				if (i == mine.size()) {
+					list.add(others.get(j));
+					j++;
+				}
+				else if (j == others.size()) {
+					list.add(mine.get(i));
+					i++;
+				}
+				else {
+					Submission a = mine.get(i);
+					Submission b = others.get(j);
+
+					if (a.dsKey.equals(b.dsKey)) {
+						list.add(a);
+						i++;
+						j++;
+					}
+					else if (a.created.compareTo(b.created) < 0) {
+						list.add(a);
+						i++;
+					}
+					else {
+						list.add(b);
+						j++;
+					}
+				}
+			}
+			return list;
 		}
 	}
 

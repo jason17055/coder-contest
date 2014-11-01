@@ -359,7 +359,7 @@ public class CoreServlet extends HttpServlet
 		return false;
 	}
 
-	Key getLoggedInUserKey(HttpServletRequest req)
+	static Key getLoggedInUserKey(HttpServletRequest req)
 	{
 		String contestId = req.getParameter("contest");
 		HttpSession s = req.getSession(false);

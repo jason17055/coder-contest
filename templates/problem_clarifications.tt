@@ -12,22 +12,22 @@
 [% FOREACH c IN problem.clarifications %]
 [% cl = 'own-question' %]
 <div class="clarification-question [% cl %]">
-<div class="clarification-author"><span class="author">[% c.author.name |html %]</span> asked:</div>
-<p>[% c.request |html %]</p>
+<div class="clarification-author"><span class="author">[% c.submitter.name |html %]</span> asked:</div>
+<p>[% c.question |html %]</p>
 </div>
 
-[% IF c.response %]
+[% IF c.answer %]
 
-[% IF c.status == 'reply-all'
+[% IF c.answer_type == 'REPLY_ALL'
 	cl = 'reply-all'
    ELSE
 	cl = 'reply-one'
    END %]
 <div class="clarification-answer [%cl%]">
 <div class="clarification-author"><span class="author">[%
-	IF !c.request || c.status == 'reply-all' %]A clarification has been issued[%
+	IF !c.question || c.answer_type == 'REPLY_ALL' %]A clarification has been issued[%
 	ELSE %]Judge's Reply:[% END %]</span></div>
-<p>[% c.response |html %]</p>
+<p>[% c.answer |html %]</p>
 </div>
 [% ELSE # clarification has no response %]
 <div class="clarification-answer-none">No response at this time.</div>

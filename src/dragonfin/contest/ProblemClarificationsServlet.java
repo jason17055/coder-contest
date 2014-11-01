@@ -65,11 +65,11 @@ public class ProblemClarificationsServlet extends ProblemCoreServlet
 			Entity ent = new Entity("Submission", userKey);
 
 			ent.setProperty("created", new Date());
-			ent.setProperty("type", "clarification");
+			ent.setProperty("type", "question");
 			ent.setProperty("problem", problemKey);
 			ent.setProperty("contest", contestId);
 
-			ent.setProperty("request", message);
+			ent.setProperty("question", message);
 
 			submissionKey = ds.put(ent);
 			txn.commit();
