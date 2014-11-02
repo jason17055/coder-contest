@@ -37,6 +37,7 @@ Change description</label>
 <label><input type="checkbox" name="contestants_can_change_password"[% f.contestants_can_change_password ? ' selected="selected"' : '' %]>
 Change password</label>
 <label><input type="checkbox" name="contestants_can_write_code"[% f.contestants_can_write_code ? ' selected="selected"' : '' %]>
+Write Code</label>
 </td>
 </tr>
 <tr>
