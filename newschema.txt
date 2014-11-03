@@ -65,6 +65,12 @@ Problem [ Contest / id ]
 	solution              Key(File)
 	last_system_test_id   Integer
 	last_clarification_id Integer
+	pp_scoreboard         String[] list of phase numbers
+	pp_read_problem       String[] list of phase numbers
+	pp_submit             String[] list of phase numbers
+	pp_read_opponent      String[] list of phase numbers
+	pp_challenge          String[] list of phase numbers
+	pp_read_solution      String[] list of phase numbers
 
 SystemTest [ Problem / id ]
 	input             Key(File)

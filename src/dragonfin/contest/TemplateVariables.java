@@ -177,6 +177,7 @@ public class TemplateVariables
 		return list;
 	}
 
+	public static final int MAX_PHASE_NUMBER = 4;
 	public class Contest
 	{
 		public final Key dsKey;
@@ -327,6 +328,34 @@ public class TemplateVariables
 			}
 			return (int)((endTime.getTime() - new Date().getTime())/1000);
 		}
+
+		public List<Phase> getPhases()
+		{
+			Phase [] pp = new Phase[5];
+			pp[0] = new Phase();
+			pp[0].id = "0";
+			pp[1] = new Phase();
+			pp[1].id = "1";
+			pp[1].name = phase1_name;
+			pp[2] = new Phase();
+			pp[2].id = "2";
+			pp[2].name = phase2_name;
+			pp[3] = new Phase();
+			pp[3].id = "3";
+			pp[3].name = phase3_name;
+			pp[4] = new Phase();
+			pp[4].id = "4";
+			pp[4].name = phase4_name;
+			return Arrays.asList(pp);
+		}
+	}
+
+	public class Phase
+	{
+		public String id;
+		public String name;
+		public boolean current;
+		public boolean upcoming;
 	}
 
 	public class Problem
@@ -343,6 +372,12 @@ public class TemplateVariables
 		public boolean visible;
 		public boolean allow_submissions;
 		public boolean score_by_access_time;
+		public boolean [] pp_scoreboard;
+		public boolean [] pp_read_problem;
+		public boolean [] pp_submit;
+		public boolean [] pp_read_opponent;
+		public boolean [] pp_challenge;
+		public boolean [] pp_read_solution;
 		Key specFileKey;
 		Key solutionFileKey;
 
@@ -1158,7 +1193,32 @@ public class TemplateVariables
 		p.runtime_limit = ent.hasProperty("runtime_limit") ?
 			(int)((Long)ent.getProperty("runtime_limit")).longValue() :
 			0;
+
+		p.pp_scoreboard = handlePhaseOptionsProperty(ent, "pp_scoreboard");
+		p.pp_read_problem = handlePhaseOptionsProperty(ent, "pp_read_problem");
+		p.pp_submit = handlePhaseOptionsProperty(ent, "pp_submit");
+		p.pp_read_opponent = handlePhaseOptionsProperty(ent, "pp_read_opponent");
+		p.pp_challenge = handlePhaseOptionsProperty(ent, "pp_challenge");
+		p.pp_read_solution = handlePhaseOptionsProperty(ent, "pp_read_solution");
+
 		return p;
+	}
+
+	boolean [] handlePhaseOptionsProperty(Entity ent, String propName)
+	{
+		boolean [] rv = new boolean[MAX_PHASE_NUMBER+1];
+
+		@SuppressWarnings("unchecked")
+		List<String> list = (List<String>) ent.getProperty(propName);
+		if (list != null) {
+			for (String phaseNumber : list) {
+				int i = Integer.parseInt(phaseNumber);
+				if (i >= 0 && i <= MAX_PHASE_NUMBER) {
+					rv[i] = true;
+				}
+			}
+		}
+		return rv;
 	}
 
 	Worker handleWorker(Key key, Entity ent)

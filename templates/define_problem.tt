@@ -56,6 +56,37 @@ Allow contestants to submit solutions</label></div>
 <td><input type="text" name="difficulty" id="difficulty_entry" value="[% f.difficulty || "" |html %]"></td>
 </tr>
 <tr>
+<td valign="top"><label>Per-Phase Options:</label></td>
+<td valign="top">
+	<table class="problem_per_phase_options">
+	<tr>
+	<th></th>
+	[% FOREACH ph IN contest.phases %]
+	<th valign="top" class="phase_header">[% ph.id |html %]<div class="phase_name">[% ph.name |html %]</div></th>
+	[% END #each phase %]
+	</tr>
+[% PER_PHASE_OPTIONS = [
+	{ name = 'pp_scoreboard', label = 'On scoreboard' },
+	{ name = 'pp_read_problem', label = 'Problem statement visible' },
+	{ name = 'pp_submit', label = 'Submit solutions' },
+	{ name = 'pp_read_opponent', label = "See other contestants' solutions" },
+	{ name = 'pp_challenge', label = 'Challenge phase' },
+	{ name = 'pp_read_solution', label = "See judge's solution" }
+	]
+FOREACH ppo IN PER_PHASE_OPTIONS %]
+	<tr>
+	<th class="attr">[% ppo.label |html %]</th>
+	[% FOREACH ph IN contest.phases %]
+	<td class="[% ph.current ? 'current_phase' : ph.upcoming ? 'next_phase' : '' %]">
+		<input type="checkbox" name="[% ppo.name |html %]_[% ph.id |html %]"[% f.get("${ppo.name}_${ph.id}") ? ' checked="checked"' : '' %]>
+	</td>
+	[% END %]
+	</tr>
+[% END #each ppo %]
+	</table>
+</td>
+</tr>
+<tr>
 <td valign="top"><label>Scoring Basis:</label></td>
 <td valign="top">
 <div><label><input type="radio" name="score_by_access_time" value="Y"[% f.score_by_access_time == 'Y' ? ' checked="checked"' : '' %]>

@@ -1,4 +1,13 @@
+* controller: show online/offline status of users and judges
 * clarifications: allow "general" clarification questions and answers
+* edit_judge: select which problems the judge can see
+* list_users: add ability to bulk-create teams
+* controller: remove "test a solution" link
+* menu: hide problems that aren't "open"
+* contestants: should not see Solutions tab
+* contestants: should see Write Code tab only if that option is enabled
+* file_upload: canonicalize lind-endings on upload
+* Logout link doesn't work when working on a problem
 
 --OLD--
 * scoreboard: show time remaining in current round

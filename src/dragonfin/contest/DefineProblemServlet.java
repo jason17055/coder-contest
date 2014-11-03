@@ -9,6 +9,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.TemplateVariables.MAX_PHASE_NUMBER;
+
 public class DefineProblemServlet extends CoreServlet
 {
 	String getTemplate() {
@@ -49,6 +51,13 @@ public class DefineProblemServlet extends CoreServlet
 			form.put("score_by_access_time", p.score_by_access_time ? "1" : "");
 			form.put("start_time", p.start_time);
 
+			putPhaseOptions(form, "pp_scoreboard", p.pp_scoreboard);
+			putPhaseOptions(form, "pp_read_problem", p.pp_read_problem);
+			putPhaseOptions(form, "pp_submit", p.pp_submit);
+			putPhaseOptions(form, "pp_read_opponent", p.pp_read_opponent);
+			putPhaseOptions(form, "pp_challenge", p.pp_challenge);
+			putPhaseOptions(form, "pp_read_solution", p.pp_read_solution);
+
 			ctx.put("f", form);
 		}
 		else {
@@ -57,6 +66,19 @@ public class DefineProblemServlet extends CoreServlet
 
 			Map<String,Object> form = new HashMap<String,Object>();
 			ctx.put("f", form);
+		}
+	}
+
+	void putPhaseOptions(Map<String,Object> form, String pp_name, boolean [] list)
+	{
+		if (list == null) {
+			return;
+		}
+
+		for (int i = 0; i < list.length; i++) {
+			if (list[i]) {
+				form.put(pp_name+"_"+i, "on");
+			}
 		}
 	}
 
@@ -149,6 +171,25 @@ public class DefineProblemServlet extends CoreServlet
 
 		updateFromForm_file(ent1, POST, "spec");
 		updateFromForm_file(ent1, POST, "solution");
+
+		updateFromForm_phases(ent1, POST, "pp_scoreboard");
+		updateFromForm_phases(ent1, POST, "pp_read_problem");
+		updateFromForm_phases(ent1, POST, "pp_submit");
+		updateFromForm_phases(ent1, POST, "pp_read_opponent");
+		updateFromForm_phases(ent1, POST, "pp_challenge");
+		updateFromForm_phases(ent1, POST, "pp_read_solution");
+	}
+
+	void updateFromForm_phases(Entity ent, Map<String,String> POST, String pp_option)
+	{
+		ArrayList<String> phases = new ArrayList<String>();
+		for (int i = 0; i <= MAX_PHASE_NUMBER; i++) {
+			String k = String.format("%s_%d", pp_option, i);
+			if (POST.containsKey(k)) {
+				phases.add(Integer.toString(i));
+			}
+		}
+		ent.setProperty(pp_option, phases);
 	}
 
 	void doUpdateProblem(HttpServletRequest req, HttpServletResponse resp)
