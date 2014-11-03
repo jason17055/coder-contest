@@ -55,6 +55,7 @@ Change password</label>
 <option value="N"[% f.collaboration=='N' ? ' selected="selected"' : '' %]>None</option>
 <option value="Y"[% f.collaboration=='Y' ? ' selected="selected"' : '' %]>Ad hoc</option>
 </select>
+<small class="not_implemented">(Not implemented.)</small>
 </td>
 </tr>
 <tr>
@@ -63,6 +64,7 @@ Change password</label>
 <option value="A"[% f.score_system=='A' ? ' selected="selected"' : '' %]>ACM</option>
 <option value="T"[% f.score_system=='T' ? ' selected="selected"' : '' %]>TopCoder</option>
 </select>
+<small>(Not implemented.)</small>
 </td>
 </tr>
 <tr>
@@ -81,13 +83,15 @@ Change password</label>
 </td>
 </tr>
 <tr>
-<td><label>Scoreboard sorting:</label></td>
+<td><label>Scoreboard sorting:</label>
+<div class="not_implemented"><small>(Not implemented.)</small></div></td>
 <td>
 <label><input type="radio" name="scoreboard_order" value="n"[% f.scoreboard_order=='n' ? ' checked="checked"' : '' %]>Team name</label>
 <label><input type="radio" name="scoreboard_order" value="o"[% f.scoreboard_order=='o' ? ' checked="checked"' : '' %]>Team ordinal</label>
 <label><input type="radio" name="scoreboard_order" value="s"[% f.scoreboard_order=='s' ? ' checked="checked"' : '' %]>Score</label>
 </td>
 </tr>
+<!--
 <tr>
 <td><label>Scoreboard audio:</label></td>
 <td>
@@ -100,6 +104,7 @@ Change password</label>
 <small>Used to calculate penalty points for team submissions.</small>
 </td>
 </tr>
+-->
 <tr>
 <td valign="top"><label>Contest phases:</label></td>
 <td valign="top">
@@ -111,11 +116,11 @@ Change password</label>
 		and also facilitate the display of a contest clock.</small>
 		</td>
 	</tr>
-	[% FOREACH ph IN [1,2,3,4] %]
-	[% key1 = 'phase' _ ph _ '_name' %]
-	[% key2 = 'phase' _ ph _ '_ends' %]
+	[% FOREACH ph IN contest.phases %]
+	[% key1 = 'phase' _ ph.id _ '_name' %]
+	[% key2 = 'phase' _ ph.id _ '_ends' %]
 	<tr>
-	<td>[% ph |html %]</td>
+	<td>[% ph.id |html %]</td>
 	<td><input type="text" name="[% key1 |html %]" value="[% f.get(key1) |html %]"></td>
 	<td><input type="text" name="[% key2 |html %]" value="[% f.get(key2) |html %]"></td>
 	</tr>

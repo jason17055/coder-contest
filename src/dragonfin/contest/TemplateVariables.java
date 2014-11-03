@@ -200,10 +200,12 @@ public class TemplateVariables
 		public boolean scoreboard_images;
 		public boolean scoreboard_popups;
 		public boolean scoreboard_fanfare;
+		public String phase0_name;
 		public String phase1_name;
 		public String phase2_name;
 		public String phase3_name;
 		public String phase4_name;
+		public Date phase0_ends;
 		public Date phase1_ends;
 		public Date phase2_ends;
 		public Date phase3_ends;
@@ -272,12 +274,14 @@ public class TemplateVariables
 		int getCurrent_phase()
 		{
 			final Date [] endTimes = new Date[5];
+			endTimes[0] = phase0_ends;
 			endTimes[1] = phase1_ends;
 			endTimes[2] = phase2_ends;
 			endTimes[3] = phase3_ends;
 			endTimes[4] = phase4_ends;
 
 			ArrayList<Integer> phaseNumbers = new ArrayList<Integer>();
+			if (phase0_ends!=null) { phaseNumbers.add(new Integer(0)); }
 			if (phase1_ends!=null) { phaseNumbers.add(new Integer(1)); }
 			if (phase2_ends!=null) { phaseNumbers.add(new Integer(2)); }
 			if (phase3_ends!=null) { phaseNumbers.add(new Integer(3)); }
@@ -303,7 +307,8 @@ public class TemplateVariables
 		public String getCurrent_phase_name()
 		{
 			int curPhase = getCurrent_phase();
-			return curPhase == 1 ? phase1_name :
+			return curPhase == 0 ? phase0_name :
+				curPhase == 1 ? phase1_name :
 				curPhase == 2 ? phase2_name :
 				curPhase == 3 ? phase3_name :
 				curPhase == 4 ? phase4_name :
@@ -313,7 +318,8 @@ public class TemplateVariables
 		public Date getCurrent_phase_ends()
 		{
 			int curPhase = getCurrent_phase();
-			return curPhase == 1 ? phase1_ends :
+			return curPhase == 0 ? phase0_ends :
+				curPhase == 1 ? phase1_ends :
 				curPhase == 2 ? phase2_ends :
 				curPhase == 3 ? phase3_ends :
 				curPhase == 4 ? phase4_ends :
@@ -334,6 +340,7 @@ public class TemplateVariables
 			Phase [] pp = new Phase[5];
 			pp[0] = new Phase();
 			pp[0].id = "0";
+			pp[0].name = phase0_name;
 			pp[1] = new Phase();
 			pp[1].id = "1";
 			pp[1].name = phase1_name;
@@ -1062,11 +1069,13 @@ public class TemplateVariables
 			((Boolean)ent.getProperty("scoreboard_fanfare")).booleanValue() :
 			true;
 
+		c.phase0_name = (String) ent.getProperty("phase0_name");
 		c.phase1_name = (String) ent.getProperty("phase1_name");
 		c.phase2_name = (String) ent.getProperty("phase2_name");
 		c.phase3_name = (String) ent.getProperty("phase3_name");
 		c.phase4_name = (String) ent.getProperty("phase4_name");
 
+		c.phase0_ends = (Date) ent.getProperty("phase0_ends");
 		c.phase1_ends = (Date) ent.getProperty("phase1_ends");
 		c.phase2_ends = (Date) ent.getProperty("phase2_ends");
 		c.phase3_ends = (Date) ent.getProperty("phase3_ends");

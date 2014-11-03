@@ -48,10 +48,12 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("scoreboard_popups", c.scoreboard_popups);
 		form.put("scoreboard_order", c.scoreboard_order);
 		form.put("scoreboard_fanfare", c.scoreboard_fanfare);
+		form.put("phase0_name", c.phase0_name);
 		form.put("phase1_name", c.phase1_name);
 		form.put("phase2_name", c.phase2_name);
 		form.put("phase3_name", c.phase3_name);
 		form.put("phase4_name", c.phase4_name);
+		form.put("phase0_ends", fromDate(c.phase0_ends));
 		form.put("phase1_ends", fromDate(c.phase1_ends));
 		form.put("phase2_ends", fromDate(c.phase2_ends));
 		form.put("phase3_ends", fromDate(c.phase3_ends));
@@ -102,11 +104,13 @@ public class ContestRulesServlet extends CoreServlet
 
 			ent.setProperty("started", asDate(req.getParameter("started")));
 
+			ent.setProperty("phase0_name", req.getParameter("phase0_name"));
 			ent.setProperty("phase1_name", req.getParameter("phase1_name"));
 			ent.setProperty("phase2_name", req.getParameter("phase2_name"));
 			ent.setProperty("phase3_name", req.getParameter("phase3_name"));
 			ent.setProperty("phase4_name", req.getParameter("phase4_name"));
 
+			ent.setProperty("phase0_ends", asDate(req.getParameter("phase0_ends")));
 			ent.setProperty("phase1_ends", asDate(req.getParameter("phase1_ends")));
 			ent.setProperty("phase2_ends", asDate(req.getParameter("phase2_ends")));
 			ent.setProperty("phase3_ends", asDate(req.getParameter("phase3_ends")));
