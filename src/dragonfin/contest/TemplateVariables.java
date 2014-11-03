@@ -53,15 +53,6 @@ public class TemplateVariables
 		return list;
 	}
 
-	ArrayList<Problem> getAll_problems()
-	{
-		String contestId = req.getParameter("contest");
-		if (contestId == null) {
-			return null;
-		}
-		return enumerateProblems(contestId);
-	}
-
 	ArrayList<Problem> enumerateProblems(String contestId)
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
@@ -262,13 +253,26 @@ public class TemplateVariables
 			return usersCached;
 		}
 
-		ArrayList<Problem> problemsCached;
+		ArrayList<Problem> allProblemsCached;
+		public ArrayList<Problem> getAll_problems()
+		{
+			if (allProblemsCached == null) {
+				allProblemsCached = enumerateProblems(id);
+			}
+			return allProblemsCached;
+		}
+
 		public ArrayList<Problem> getProblems()
 		{
-			if (problemsCached == null) {
-				problemsCached = enumerateProblems(id);
+			int curPhase = getCurrent_phase();
+
+			ArrayList<Problem> list = new ArrayList<Problem>();
+			for (Problem p : getAll_problems()) {
+				if (p.onScoreboard(curPhase)) {
+					list.add(p);
+				}
 			}
-			return problemsCached;
+			return list;
 		}
 
 		public int getCurrent_phase()
@@ -535,6 +539,12 @@ public class TemplateVariables
 				}
 			}
 			return list;
+		}
+
+		boolean onScoreboard(int phase)
+		{
+			assert phase >= 0 && phase <= MAX_PHASE_NUMBER;
+			return (pp_scoreboard != null && pp_scoreboard[phase]);
 		}
 	}
 

@@ -15,7 +15,7 @@
 <th>Difficulty</th>
 </tr>
 
-[% FOREACH prb IN all_problems %]
+[% FOREACH prb IN contest.all_problems %]
 <tr>
 <td>
 <img style="vertical-align: middle" src="[% prb.scoreboard_image |html %]" alt="">

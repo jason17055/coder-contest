@@ -8,6 +8,7 @@ session      - properties of the current session
 
 contest         - properties of the current contest
 .problems       - Problem[] problems visible to the current user
+.all_problems   - Problem[] all problems (director only)
 .contestants    - User[] contestants of this contest
 .judges         - User[] judges in this contest
 .id

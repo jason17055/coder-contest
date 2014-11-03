@@ -17,7 +17,7 @@ Current phase:
 <table id="controller_teams_table" class="realtable">
 <tr>
 <th>Contestant [<a href="[% sort_by_team_url |html %]">^</a>]</th>
-[% FOREACH prob IN all_problems %]
+[% FOREACH prob IN contest.problems %]
 <th><a href="[% prob.url |html %]">[% prob.name |html %]</a></th>
 [% END #problem loop %]
 <th>Totals [<a href="[% sort_by_score_url |html %]">^</a>]</th>
@@ -40,7 +40,7 @@ Current phase:
 </div>
 </td>
 
-[% FOREACH prb IN all_problems %]
+[% FOREACH prb IN contest.problems %]
 [% prb_id = prb.id %]
 [% result = team.result_by_problem(prb) %]
 
