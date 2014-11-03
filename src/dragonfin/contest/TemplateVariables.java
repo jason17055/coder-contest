@@ -271,7 +271,7 @@ public class TemplateVariables
 			return problemsCached;
 		}
 
-		int getCurrent_phase()
+		public int getCurrent_phase()
 		{
 			final Date [] endTimes = new Date[5];
 			endTimes[0] = phase0_ends;
