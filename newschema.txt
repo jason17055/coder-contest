@@ -54,8 +54,6 @@ User [ "Contest.id" / "username" ]
 Problem [ Contest / id ]
 	name                  String
 	created               Date
-	visible               Boolean
-	allow_submissions     Boolean
 	judged_by             String
 	difficulty            Integer
 	start_time            Date

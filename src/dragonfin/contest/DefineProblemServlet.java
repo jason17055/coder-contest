@@ -39,8 +39,6 @@ public class DefineProblemServlet extends CoreServlet
 
 			Map<String,Object> form = new HashMap<String,Object>();
 			form.put("name", p.name);
-			form.put("visible", p.visible ? "1" : "");
-			form.put("allow_submissions", p.allow_submissions ? "1" : "");
 			form.put("judged_by", p.judged_by);
 			form.put("difficulty", Integer.toString(p.difficulty));
 			form.put("allocated_minutes", Integer.toString(p.allocated_minutes));
@@ -160,8 +158,6 @@ public class DefineProblemServlet extends CoreServlet
 	void updateFromForm(Entity ent1, Map<String,String> POST)
 	{
 		ent1.setProperty("name", POST.get("name"));
-		ent1.setProperty("visible", POST.containsKey("visible") ? Boolean.TRUE : Boolean.FALSE);
-		ent1.setProperty("allow_submissions", POST.containsKey("allow_submissions") ? Boolean.TRUE : Boolean.FALSE);
 		ent1.setProperty("score_by_access_time", "Y".equals(POST.get("score_by_access_time")) ? Boolean.TRUE : Boolean.FALSE);
 		ent1.setProperty("judged_by", POST.get("judged_by"));
 

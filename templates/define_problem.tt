@@ -15,15 +15,6 @@
 </td>
 </tr>
 <tr>
-<td valign="top">Visible:</td>
-<td valign="top">
-<div><label><input type="checkbox" name="visible"[% f.visible ? ' checked="checked"' : '' %]>
-Counted as part of total score</label></div>
-<div><label><input type="checkbox" name="allow_submissions"[% f.allow_submissions ? ' checked="checked"' : '' %]>
-Allow contestants to submit solutions</label></div>
-</td>
-</tr>
-<tr>
 <td><label for="spec_upload">Description (PDF):</label></td>
 <td>[% INCLUDE 'select_file_widget.inc'
 	name = 'spec'

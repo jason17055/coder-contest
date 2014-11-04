@@ -30,8 +30,11 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		try {
 
 		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Contest c = tv.fetchContest(contestId);
+		int curPhase = c.getCurrent_phase();
+
 		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
-		if (!p.visible) {
+		if (!p.onScoreboard(curPhase)) {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return true;
 		}

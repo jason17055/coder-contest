@@ -21,8 +21,8 @@
 <img style="vertical-align: middle" src="[% prb.scoreboard_image |html %]" alt="">
 <a href="[% prb.edit_url |html %]">[% prb.name |html %]</a>
 </td>
-<td align="center">[% prb.visible ? '&#x2713;' : '' %]</td>
-<td align="center">[% prb.allow_submissions ? '&#x2713;' : '' %]</td>
+<td align="center">[% prb.phases_visible |html %]</td>
+<td align="center">[% prb.phases_open |html %]</td>
 <td>[% prb.judged_by |html %]</td>
 <td align="center">
 [% IF prb.solution %]

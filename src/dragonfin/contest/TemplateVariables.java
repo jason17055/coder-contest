@@ -341,7 +341,7 @@ public class TemplateVariables
 
 		public List<Phase> getPhases()
 		{
-			Phase [] pp = new Phase[5];
+			Phase [] pp = new Phase[MAX_PHASE_NUMBER+1];
 			pp[0] = new Phase();
 			pp[0].id = "0";
 			pp[0].name = phase0_name;
@@ -380,8 +380,6 @@ public class TemplateVariables
 		public int allocated_minutes;
 		public int runtime_limit;
 		public Date start_time;
-		public boolean visible;
-		public boolean allow_submissions;
 		public boolean score_by_access_time;
 		public boolean [] pp_scoreboard;
 		public boolean [] pp_read_problem;
@@ -546,6 +544,45 @@ public class TemplateVariables
 			assert phase >= 0 && phase <= MAX_PHASE_NUMBER;
 			return (pp_scoreboard != null && pp_scoreboard[phase]);
 		}
+
+		public String getPhases_visible()
+		{
+			return getPhaseNames(pp_scoreboard);
+		}
+
+		public String getPhases_open()
+		{
+			return getPhaseNames(pp_submit);
+		}
+	}
+
+	String getPhaseNames(boolean[] pp_flags)
+	{
+		Contest c;
+		try {
+			c = getContest();
+		}
+		catch (EntityNotFoundException e) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (Phase ph : c.getPhases()) {
+			int i = Integer.parseInt(ph.id);
+			assert i >= 0 && i <= MAX_PHASE_NUMBER;
+			if (pp_flags[i]) {
+				if (sb.length() != 0) {
+					sb.append(",");
+				}
+				if (ph.name != null && ph.name.length() != 0) {
+					sb.append(ph.name);
+				}
+				else {
+					sb.append(ph.id);
+				}
+			}
+		}
+		return sb.toString();
 	}
 
 	String makeUrl(String path)
@@ -1192,12 +1229,6 @@ public class TemplateVariables
 		p.solutionFileKey = (Key) ent.getProperty("solution");
 
 		//booleans
-		p.visible = ent.hasProperty("visible") ?
-			((Boolean) ent.getProperty("visible")).booleanValue() :
-			false;
-		p.allow_submissions = ent.hasProperty("allow_submissions") ?
-			((Boolean) ent.getProperty("allow_submissions")).booleanValue() :
-			false;
 		p.score_by_access_time = ent.hasProperty("score_by_access_time") ?
 			((Boolean) ent.getProperty("score_by_access_time")).booleanValue() :
 			false;
