@@ -1,24 +1,30 @@
 * controller: show online/offline status of users and judges
-* clarifications: allow "general" clarification questions and answers
 * edit_judge: select which problems the judge can see
 * list_users: add ability to bulk-create teams
 * controller: remove "test a solution" link
 * menu: hide problems that aren't "open"
 * contestants: should not see Solutions tab
 * contestants: should see Write Code tab only if that option is enabled
-* file_upload: canonicalize lind-endings on upload
+* file_upload: canonicalize line-endings on upload
 * Logout link doesn't work when working on a problem
+* problem: balloons
+* controller: password generation and password hand-out sheets
+* define_problem: make link to test the reference solution
 
---OLD--
+--future--
+* clarifications: allow "general" clarification questions and answers
 * scoreboard: show time remaining in current round
-* config option for "Write Code" tab
-   - let director disable the "Write Code" tab for all contestants
-      (I am worried that if teams write code online in the editor
-       they might lose their work if they forget to click Save, or
-       upload a different file on the Test/Submit tab.)
 * programming language support
    - let director specify exactly which programming languages are
      supported.
+* user interface:
+   - allow contest to specify color scheme of all pages
+      (e.g. Red for Dickinson)
+* worker:
+   - implement memory limit
+   - implement output file size limit
+
+--OLD--
 * message acknowledgement:
    - when user clicked 'Dismiss' or 'Open' on a message,
      make sure the message is never displayed again, even if user
@@ -34,19 +40,7 @@
    - unique image for congratulations popup
    - specify runtime limit
    - specify that output file should be treated as text
-* worker:
-   - implement memory limit
-   - implement output file size limit
-* user interface:
-   - allow contest to specify color scheme of all pages
-      (e.g. Red for Dickinson)
-* director dashboard:
-   - show online/offline status of job runners (a.k.a. workers)
-   - show current activity levels
 * general notification architecture:
    - notify completion of a run
-* schema fixups
-   - rename 'team' table to 'user'
-   - rename team.team_number column to 'user_id'
 * listsubmissions:
    - auto-refresh on new submissions
