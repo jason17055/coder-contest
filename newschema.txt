@@ -51,6 +51,7 @@ User [ "Contest.id" / "username" ]
 	online            Boolean
 	score             Integer
 	score_alt         Integer
+	last_access       Date
 
 Problem [ Contest / id ]
 	name                  String
@@ -64,6 +65,10 @@ Problem [ Contest / id ]
 	scoreboard_image      String
 	spec                  Key(File)
 	solution              Key(File)
+	input_validator       Key(File)
+	output_validator      Key(File)
+	input_is_text         Boolean
+	output_is_text        Boolean
 	last_system_test_id   Integer
 	last_clarification_id Integer
 	pp_scoreboard         String[] list of phase numbers

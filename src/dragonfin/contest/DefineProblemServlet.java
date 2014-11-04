@@ -45,7 +45,11 @@ public class DefineProblemServlet extends CoreServlet
 			form.put("runtime_limit", Integer.toString(p.runtime_limit));
 			form.put("spec", p.getSpec());
 			form.put("solution", p.getSolution());
+			form.put("input_validator", p.getInput_validator());
+			form.put("output_validator", p.getOutput_validator());
 			form.put("scoreboard_image", p.scoreboard_image);
+			form.put("input_is_text", p.input_is_text ? "1" : "");
+			form.put("output_is_text", p.output_is_text ? "1" : "");
 			form.put("score_by_access_time", p.score_by_access_time ? "1" : "");
 			form.put("start_time", p.start_time);
 
@@ -160,6 +164,8 @@ public class DefineProblemServlet extends CoreServlet
 		ent1.setProperty("name", POST.get("name"));
 		ent1.setProperty("score_by_access_time", "Y".equals(POST.get("score_by_access_time")) ? Boolean.TRUE : Boolean.FALSE);
 		ent1.setProperty("judged_by", POST.get("judged_by"));
+		ent1.setProperty("input_is_text", new Boolean(POST.containsKey("input_is_text")));
+		ent1.setProperty("output_is_text", new Boolean(POST.containsKey("output_is_text")));
 
 		updateFromFormInt(ent1, POST, "difficulty");
 		updateFromFormInt(ent1, POST, "allocated_minutes");
@@ -167,6 +173,8 @@ public class DefineProblemServlet extends CoreServlet
 
 		updateFromForm_file(ent1, POST, "spec");
 		updateFromForm_file(ent1, POST, "solution");
+		updateFromForm_file(ent1, POST, "input_validator");
+		updateFromForm_file(ent1, POST, "output_validator");
 
 		updateFromForm_phases(ent1, POST, "pp_scoreboard");
 		updateFromForm_phases(ent1, POST, "pp_read_problem");

@@ -382,6 +382,8 @@ public class TemplateVariables
 		public int allocated_minutes;
 		public int runtime_limit;
 		public Date start_time;
+		public boolean input_is_text;
+		public boolean output_is_text;
 		public boolean score_by_access_time;
 		public boolean [] pp_scoreboard;
 		public boolean [] pp_read_problem;
@@ -391,6 +393,8 @@ public class TemplateVariables
 		public boolean [] pp_read_solution;
 		Key specFileKey;
 		Key solutionFileKey;
+		Key inputValidatorFileKey;
+		Key outputValidatorFileKey;
 
 		Problem(Key dsKey) {
 			this.dsKey = dsKey;
@@ -427,6 +431,18 @@ public class TemplateVariables
 			throws EntityNotFoundException
 		{
 			return solutionFileKey != null ? fetchFile(solutionFileKey) : null;
+		}
+
+		public File getInput_validator()
+			throws EntityNotFoundException
+		{
+			return inputValidatorFileKey != null ? fetchFile(inputValidatorFileKey) : null;
+		}
+
+		public File getOutput_validator()
+			throws EntityNotFoundException
+		{
+			return outputValidatorFileKey != null ? fetchFile(outputValidatorFileKey) : null;
 		}
 
 		public ArrayList<SystemTest> getSample_inputs()
@@ -626,6 +642,7 @@ public class TemplateVariables
 		public boolean visible;
 		public int score;
 		public int score_alt;
+		public Date last_access;
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;
@@ -1236,11 +1253,13 @@ public class TemplateVariables
 		//files
 		p.specFileKey = (Key) ent.getProperty("spec");
 		p.solutionFileKey = (Key) ent.getProperty("solution");
+		p.inputValidatorFileKey = (Key) ent.getProperty("input_validator");
+		p.outputValidatorFileKey = (Key) ent.getProperty("output_validator");
 
 		//booleans
-		p.score_by_access_time = ent.hasProperty("score_by_access_time") ?
-			((Boolean) ent.getProperty("score_by_access_time")).booleanValue() :
-			false;
+		p.input_is_text = handleBooleanProperty(ent, "input_is_text");
+		p.output_is_text = handleBooleanProperty(ent, "output_is_text");
+		p.score_by_access_time = handleBooleanProperty(ent, "score_by_access_time");
 
 		// integers
 		p.difficulty = ent.hasProperty("difficulty") ?
@@ -1261,6 +1280,12 @@ public class TemplateVariables
 		p.pp_read_solution = handlePhaseOptionsProperty(ent, "pp_read_solution");
 
 		return p;
+	}
+
+	boolean handleBooleanProperty(Entity ent, String propName)
+	{
+		return ent.hasProperty(propName) &&
+			((Boolean) ent.getProperty(propName)).booleanValue();
 	}
 
 	boolean [] handlePhaseOptionsProperty(Entity ent, String propName)
@@ -1440,9 +1465,6 @@ public class TemplateVariables
 		u.visible = ent.hasProperty("visible") ?
 			((Boolean) ent.getProperty("visible")).booleanValue() :
 			false;
-		u.online = ent.hasProperty("online") ?
-			((Boolean) ent.getProperty("online")).booleanValue() :
-			false;
 		u.name = (String) ent.getProperty("name");
 		u.description = (String) ent.getProperty("description");
 		u.ordinal = ent.hasProperty("ordinal") ?
@@ -1454,6 +1476,15 @@ public class TemplateVariables
 		u.score_alt = ent.hasProperty("score_alt") ?
 			(int)((Long)ent.getProperty("score_alt")).longValue() :
 			0;
+
+		u.last_access = (Date)ent.getProperty("last_access");
+		if (u.last_access != null) {
+			Date curDate = new Date();
+			if (curDate.getTime() - u.last_access.getTime() < 60000) {
+				u.online = true;
+			}
+		}
+
 		return u;
 	}
 

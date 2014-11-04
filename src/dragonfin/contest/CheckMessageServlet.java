@@ -32,6 +32,7 @@ public class CheckMessageServlet extends HttpServlet
 			String username = (String) sess.getAttribute("username");
 			if (m.contestId != null && username != null) {
 				m.userKey = makeUserKey(m.contestId, username);
+				m.pokeUser();
 			}
 		}
 
@@ -97,6 +98,26 @@ public class CheckMessageServlet extends HttpServlet
 		CheckMessage()
 		{
 			this.ds = DatastoreServiceFactory.getDatastoreService();
+		}
+
+		void pokeUser()
+		{
+			Transaction txn = ds.beginTransaction();
+			try {
+				Entity ent = ds.get(userKey);
+				Date lastAccess = (Date) ent.getProperty("last_access");
+				ent.setProperty("last_access", new Date());
+				ds.put(ent);
+				txn.commit();
+			}
+			catch (EntityNotFoundException e) {
+				// just ignore
+			}
+			finally {
+				if (txn.isActive()) {
+					txn.rollback();
+				}
+			}
 		}
 
 		boolean checkMultiple()

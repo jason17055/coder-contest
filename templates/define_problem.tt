@@ -28,6 +28,27 @@
 </td>
 </tr>
 <tr>
+<td valign="top"><label>Problem Options:</label></td>
+<td valign="top">
+<div><label><input type="checkbox" name="input_is_text"[% f.input_is_text ? ' checked="checked"' : '' %]>Treat input files as Text</label></div>
+<div><label><input type="checkbox" name="output_is_text"[% f.output_is_text ? ' checked="checked"' : '' %]>Treat output files as Text</label></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><label for="input_validator_upload">Input Validator:</label>
+<div class="not_implemented"><small>(not implemented)</small></div></td>
+<td valign="top">
+<div>[% INCLUDE 'select_file_widget.inc' name = 'input_validator' value = f.input_validator %]</div>
+</td>
+</tr>
+<tr>
+<td valign="top"><label for="output_validator_upload">Output Validator:</label>
+<div class="not_implemented"><small>(not implemented)</small></div></td>
+<td valign="top">
+<div>[% INCLUDE 'select_file_widget.inc' name = 'output_validator' value = f.output_validator %]</div>
+</td>
+</tr>
+<tr>
 <td><label for="judged_by_entry">Judged by:</label></td>
 <td><input type="text" name="judged_by" id="judged_by_entry" value="[% f.judged_by |html %]">
 <small>Comma-separated list of judges' usernames (e.g. judge1,judge2)</small>
