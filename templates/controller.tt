@@ -2,18 +2,6 @@
 	page_title = contest.title
 %]
 
-<form method="post" action="[% r.uri |html %]">
-<p>
-Current phase:
-<select name="current_phase">
-[% FOREACH ph IN contest.phases %]
-<option value="[% ph.id |html %]"[% ph.id==contest.current_phase ? ' selected="selected"' : '' %]>[% ph.id |html %]- [% ph.name |html %]</option>
-[% END %]
-</select>
-<button type="submit" name="action:set_current_phase">Change</button>
-</p>
-</form>
-
 <table id="controller_teams_table" class="realtable">
 <tr>
 <th>Contestant [<a href="[% sort_by_team_url |html %]">^</a>]</th>

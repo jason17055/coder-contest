@@ -99,6 +99,8 @@ public class ContestRulesServlet extends CoreServlet
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
 
+		boolean phaseChanged = false;
+
 		try {
 
 			String contestId = req.getParameter("contest");
@@ -114,19 +116,24 @@ public class ContestRulesServlet extends CoreServlet
 				ent.setProperty("started", new Date());
 			}
 
-			ent.setProperty("phase0_name", req.getParameter("phase0_name"));
 			ent.setProperty("phase1_name", req.getParameter("phase1_name"));
 			ent.setProperty("phase2_name", req.getParameter("phase2_name"));
 			ent.setProperty("phase3_name", req.getParameter("phase3_name"));
 			ent.setProperty("phase4_name", req.getParameter("phase4_name"));
 
-			ent.setProperty("phase0_ends", asDate(req.getParameter("phase0_ends")));
 			ent.setProperty("phase1_ends", asDate(req.getParameter("phase1_ends")));
 			ent.setProperty("phase2_ends", asDate(req.getParameter("phase2_ends")));
 			ent.setProperty("phase3_ends", asDate(req.getParameter("phase3_ends")));
 			ent.setProperty("phase4_ends", asDate(req.getParameter("phase4_ends")));
 
 			ent.setProperty("no_responses", asStringList(req.getParameter("no_responses")));
+
+			int oldPhase = ent.hasProperty("current_phase") ?
+				(int)((Long)ent.getProperty("current_phase")).longValue() :
+				1;
+			int newPhase = Integer.parseInt(req.getParameter("current_phase"));
+			phaseChanged = oldPhase != newPhase;
+			ent.setProperty("current_phase", newPhase);
 
 			//TODO- the remaining parameters on this form.
 
@@ -141,6 +148,10 @@ public class ContestRulesServlet extends CoreServlet
 			if (txn.isActive()) {
 				txn.rollback();
 			}
+		}
+
+		if (phaseChanged) {
+			// TODO- recalculate all teams' scores
 		}
 
 		doCancel(req, resp);

@@ -111,7 +111,7 @@ Change password</label>
 <td valign="top"><label>Contest phases:</label></td>
 <td valign="top">
 	<table>
-	<tr><th>Phase</th><th>Display As</th><th>Ends (DATE TIME)</th>
+	<tr><th>Phase</th><th>Cur</th><th>Display As</th><th>Ends (DATE TIME)</th>
 		<td rowspan="5" valign="middle" style="max-width: 200pt">
 		<small>Contest phases allow problems to be made available
 		at different times during a single contest,
@@ -123,6 +123,7 @@ Change password</label>
 	[% key2 = 'phase' _ ph.id _ '_ends' %]
 	<tr>
 	<td>[% ph.id |html %]</td>
+	<td><input type="radio" name="current_phase" value="[% ph.id |html %]"[% ph.current ? ' checked="checked"' : '' %]></td>
 	<td><input type="text" name="[% key1 |html %]" value="[% f.get(key1) |html %]"></td>
 	<td><input type="text" name="[% key2 |html %]" value="[% f.get(key2) |html %]"></td>
 	</tr>

@@ -1,4 +1,5 @@
-* controller: show online/offline status of users and judges
+* controller: auto-refresh for online/offline status of users
+* controller: show judges
 * edit_judge: select which problems the judge can see
 * list_users: add ability to bulk-create teams
 * controller: remove "test a solution" link
@@ -10,6 +11,8 @@
 * problem: balloons
 * controller: password generation and password hand-out sheets
 * define_problem: make link to test the reference solution
+* rules: when phase changes, recalculate all teams scores
+* check_messages: use a POST of JSON rather than a GET with url parameters
 
 --future--
 * clarifications: allow "general" clarification questions and answers
