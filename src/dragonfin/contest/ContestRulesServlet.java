@@ -60,7 +60,6 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("phase4_ends", fromDate(c.phase4_ends));
 		form.put("started", fromDate(c.started));
 
-		form.put("yes_response", c.yes_response);
 		{
 			StringBuilder sb = new StringBuilder();
 			for (String s : c.no_responses) {
@@ -126,7 +125,6 @@ public class ContestRulesServlet extends CoreServlet
 			ent.setProperty("phase3_ends", asDate(req.getParameter("phase3_ends")));
 			ent.setProperty("phase4_ends", asDate(req.getParameter("phase4_ends")));
 
-			ent.setProperty("yes_response", req.getParameter("yes_response"));
 			ent.setProperty("no_responses", asStringList(req.getParameter("no_responses")));
 
 			//TODO- the remaining parameters on this form.

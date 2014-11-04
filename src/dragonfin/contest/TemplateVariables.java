@@ -181,7 +181,6 @@ public class TemplateVariables
 		public String score_system;
 		public String scoreboard;
 		public String scoreboard_order;
-		public String [] status_choices;
 		public boolean contestants_can_change_name;
 		public boolean contestants_can_change_description;
 		public boolean contestants_can_change_password;
@@ -202,23 +201,24 @@ public class TemplateVariables
 		public Date phase3_ends;
 		public Date phase4_ends;
 		public Date started;
-		public String yes_response;
 		public List<String> no_responses;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
 			this.id = dsKey.getName();
+		}
 
-			status_choices = new String[] {
-				"Accepted",
-				"Correct",
-				"Wrong Answer",
-				"Output Format Error",
-				"Excessive Output",
-				"Compilation Error",
-				"Run-Time Error",
-				"Time-Limit Exceeded"
-				};
+		public String [] getStatus_choices()
+		{
+			ArrayList<String> list = new ArrayList<String>();
+			list.add("Correct");
+			for (String s : no_responses) {
+				list.add(s);
+			}
+			list.add("Compilation Error");
+			list.add("Run-Time Error");
+			list.add("Time-Limit Exceeded");
+			return list.toArray(new String[0]);
 		}
 
 		public String getConfig_url()
@@ -1088,9 +1088,6 @@ public class TemplateVariables
 		c.scoreboard_order = ent.hasProperty("scoreboard_order") ?
 			(String)ent.getProperty("scoreboard_order") :
 			"s";
-		c.yes_response = ent.hasProperty("yes_response") ?
-			(String)ent.getProperty("yes_response") :
-			"Yes";
 
 		@SuppressWarnings("unchecked")
 		List<String> no_responses_arr = (List<String>) ent.getProperty("no_responses");

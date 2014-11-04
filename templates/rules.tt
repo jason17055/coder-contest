@@ -131,8 +131,7 @@ Change password</label>
 <tr>
 <td valign="top"><label>Judge responses:</label></td>
 <td valign="top">
-<div><label>Yes/Correct response: <input type="text" name="yes_response" value="[% f.yes_response |html %]"></label></div>
-<div><label>Incorrect responses:</label> <small>Enter one per line</small></div>
+<div><label>No responses:</label> <small>Enter one per line</small></div>
 <div><textarea name="no_responses" rows="4" cols="30">[% f.no_responses |html %]</textarea></div>
 </td>
 </tr>

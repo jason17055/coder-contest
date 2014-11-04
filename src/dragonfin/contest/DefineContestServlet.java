@@ -91,10 +91,7 @@ public class DefineContestServlet extends AdminPageServlet
 				"Wrong Answer",
 				"Output Format Error",
 				"Incomplete Output",
-				"Excessive Output",
-				"Compilation Error",
-				"Run-Time Error",
-				"Time-Limit Exceeded"
+				"Excessive Output"
 				}));
 			ds.put(ent1);
 
