@@ -120,28 +120,6 @@ public class TemplateVariables
 		return list;
 	}
 
-	ArrayList<User> getAll_contestants()
-	{
-		String contestId = req.getParameter("contest");
-		if (contestId == null) {
-			return null;
-		}
-
-		Query q = new Query("User");
-		q.setFilter(Query.CompositeFilterOperator.and(
-			Query.FilterOperator.EQUAL.of("contest", contestId),
-			Query.FilterOperator.EQUAL.of("is_contestant", Boolean.TRUE)
-			));
-
-		PreparedQuery pq = ds.prepare(q);
-		ArrayList<User> list = new ArrayList<User>();
-		for (Entity ent : pq.asIterable()) {
-			User u = handleUser(ent.getKey(), ent);
-			list.add(u);
-		}
-		return list;
-	}
-
 	ArrayList<Contest> getAll_contests()
 	{
 		Query q = new Query("Contest");
@@ -253,6 +231,28 @@ public class TemplateVariables
 				usersCached = enumerateUsers(id);
 			}
 			return usersCached;
+		}
+
+		public ArrayList<User> getContestants()
+		{
+			ArrayList<User> list = new ArrayList<User>();
+			for (User u : getUsers()) {
+				if (u.is_contestant && u.visible) {
+					list.add(u);
+				}
+			}
+			return list;
+		}
+
+		public ArrayList<User> getNoncontestants()
+		{
+			ArrayList<User> list = new ArrayList<User>();
+			for (User u : getUsers()) {
+				if (!(u.is_contestant && u.visible)) {
+					list.add(u);
+				}
+			}
+			return list;
 		}
 
 		ArrayList<Problem> allProblemsCached;

@@ -180,14 +180,6 @@ public class CoreServlet extends HttpServlet
 		final TemplateVariables tv = makeTemplateVariables(req);
 		ctx.put("contest", tv.getContest());
 
-		Callable< ArrayList<TemplateVariables.User> > c3 = new Callable< ArrayList<TemplateVariables.User> >() {
-			public ArrayList<TemplateVariables.User> call() throws Exception
-			{
-				return tv.getAll_contestants();
-			}
-		};
-		ctx.put("all_contestants", c3);
-
 		HttpSession s = req.getSession(false);
 		if (s != null)
 		{

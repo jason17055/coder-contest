@@ -11,6 +11,7 @@ contest         - properties of the current contest
 .all_problems   - Problem[] all problems (director only)
 .contestants    - User[] contestants of this contest
 .judges         - User[] judges in this contest
+.noncontestants - User[] all users not in contestants[]
 .id
 .title
 .config_url     - takes user to Admin Contest definition page
@@ -52,7 +53,6 @@ contest_links
 .new_user
 
 all_submissions - Submission[]
-all_users       - User[]
 all_contestants - User[]
 
 submission    - the currently-selected submission

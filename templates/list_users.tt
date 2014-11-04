@@ -6,14 +6,15 @@
 
 <h3>Contestants</h3>
 
+[% IF contest.contestants.size %]
 <table class="realtable">
 <tr>
-<th>Contestant ID</th>
+<th>User ID</th>
 <th>Display Name</th>
 <th>Description</th>
 </tr>
 
-[% FOREACH user IN contest.users %]
+[% FOREACH user IN contest.contestants %]
 <tr>
 <td>
 <a href="[% user.edit_url |html %]">[% user.username |html %]</a>
@@ -25,6 +26,50 @@
 [% END #foreach user %]
 
 </table>
+[% ELSE #no contestants %]
+<p>None defined at this time.</p>
+[% END #if no contestants %]
+
+<h3>Non-contestant Users</h3>
+
+[% IF contest.noncontestants.size %]
+<table class="realtable">
+<tr>
+<th>User ID</th>
+<th>Display Name</th>
+<th>Description</th>
+</tr>
+
+[% FOREACH user IN contest.noncontestants %]
+<tr>
+<td>
+<a href="[% user.edit_url |html %]">[% user.username |html %]</a>
+</td>
+<td>[% user.name |html %]</td>
+<td>[% user.description |html %]</td>
+</tr>
+
+[% END #foreach user %]
+
+</table>
+[% ELSE #no noncontestants %]
+<p>None defined at this time.</p>
+[% END #if no noncontestants %]
+
+<h3>Bulk Creation</h3>
+<p>
+Create
+<select name="bulk_type">
+<option value="team">teams</option>
+<option value="judge">judges</option>
+</select>
+numbered
+<input type="text" name="bulk_start" size="4" value="1">
+to
+<input type="text" name="bulk_end" size="4" value="10">
+<button type="submit" name="action:bulk_create_users">GO</button>
+</p>
+
 </form>
 
 <p>
