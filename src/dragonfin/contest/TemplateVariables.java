@@ -233,11 +233,33 @@ public class TemplateVariables
 			return usersCached;
 		}
 
+		public ArrayList<User> getAll_contestants()
+		{
+			ArrayList<User> list = new ArrayList<User>();
+			for (User u : getUsers()) {
+				if (u.is_contestant) {
+					list.add(u);
+				}
+			}
+			return list;
+		}
+
 		public ArrayList<User> getContestants()
 		{
 			ArrayList<User> list = new ArrayList<User>();
 			for (User u : getUsers()) {
 				if (u.is_contestant && u.visible) {
+					list.add(u);
+				}
+			}
+			return list;
+		}
+
+		public ArrayList<User> getJudges()
+		{
+			ArrayList<User> list = new ArrayList<User>();
+			for (User u : getUsers()) {
+				if (u.is_judge) {
 					list.add(u);
 				}
 			}
@@ -619,6 +641,13 @@ public class TemplateVariables
 		public int score;
 		public int score_alt;
 		public Date last_access;
+
+		public int clarifications_total;
+		public int clarifications_pending;
+		public int clarifications_done;
+		public int submissions_total;
+		public int submissions_pending;
+		public int submissions_done;
 
 		User(Key dsKey) {
 			this.dsKey = dsKey;

@@ -1,5 +1,4 @@
 * controller: auto-refresh for online/offline status of users
-* controller: show judges
 * edit_judge: select which problems the judge can see
 * list_users: add ability to bulk-create teams
 * controller: remove "test a solution" link

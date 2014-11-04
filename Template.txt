@@ -9,9 +9,10 @@ session      - properties of the current session
 contest         - properties of the current contest
 .problems       - Problem[] problems visible to the current user
 .all_problems   - Problem[] all problems (director only)
-.contestants    - User[] contestants of this contest
-.judges         - User[] judges in this contest
-.noncontestants - User[] all users not in contestants[]
+.all_contestants - User[] contestants (including invisible) of this contest
+.contestants     - User[] contestants of this contest
+.judges          - User[] judges in this contest
+.noncontestants  - User[] all users not in contestants[]
 .id
 .title
 .config_url     - takes user to Admin Contest definition page
@@ -108,6 +109,12 @@ user
 .score_alt
 .score_html
 .result_by_problem
+.clarifications_total
+.clarifications_pending
+.clarifications_done
+.submissions_total
+.submissions_pending
+.submissions_done
 
 result
 .opened                - Date
