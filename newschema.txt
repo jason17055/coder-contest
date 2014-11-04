@@ -37,6 +37,8 @@ Contest [ "id" ]
 	phase3_ends       Date
 	phase4_name       String
 	phase4_ends       Date
+	yes_response      String
+	no_responses      String[]
 
 User [ "Contest.id" / "username" ]
 	password          String

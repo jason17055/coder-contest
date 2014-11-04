@@ -86,6 +86,16 @@ public class DefineContestServlet extends AdminPageServlet
 			Entity ent1 = new Entity(contestKey);
 			ent1.setProperty("created", new Date());
 			ent1.setProperty("created_by", req.getUserPrincipal().getName());
+			ent1.setProperty("yes_response", "Yes");
+			ent1.setProperty("no_responses", Arrays.asList(new String[] {
+				"Wrong Answer",
+				"Output Format Error",
+				"Incomplete Output",
+				"Excessive Output",
+				"Compilation Error",
+				"Run-Time Error",
+				"Time-Limit Exceeded"
+				}));
 			ds.put(ent1);
 
 			Key userKey = KeyFactory.createKey(

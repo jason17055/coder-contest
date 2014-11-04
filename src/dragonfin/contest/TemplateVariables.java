@@ -202,6 +202,8 @@ public class TemplateVariables
 		public Date phase3_ends;
 		public Date phase4_ends;
 		public Date started;
+		public String yes_response;
+		public List<String> no_responses;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -1086,6 +1088,16 @@ public class TemplateVariables
 		c.scoreboard_order = ent.hasProperty("scoreboard_order") ?
 			(String)ent.getProperty("scoreboard_order") :
 			"s";
+		c.yes_response = ent.hasProperty("yes_response") ?
+			(String)ent.getProperty("yes_response") :
+			"Yes";
+
+		@SuppressWarnings("unchecked")
+		List<String> no_responses_arr = (List<String>) ent.getProperty("no_responses");
+		c.no_responses = no_responses_arr != null ? no_responses_arr :
+			Arrays.asList(new String[] {
+				"Wrong Answer"
+				});
 
 		// booleans
 		c.contestants_can_change_name = ent.hasProperty("contestants_can_change_name") ?
