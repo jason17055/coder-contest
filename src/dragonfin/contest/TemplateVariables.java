@@ -199,6 +199,11 @@ public class TemplateVariables
 			return list.toArray(new String[0]);
 		}
 
+		public String getUrl()
+		{
+			return makeUrl("");
+		}
+
 		public String getConfig_url()
 		{
 			return req.getContextPath()+"/_admin/define_contest?contest="+escapeUrl(id);

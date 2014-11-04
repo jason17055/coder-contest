@@ -149,6 +149,11 @@ public class CoreServlet extends HttpServlet
 			return getMyUrl(request);
 		}
 
+		public String getBase_url()
+		{
+			return getBaseUrl(request);
+		}
+
 		public String get(String param)
 		{
 			return request.getParameter(param);
@@ -268,7 +273,7 @@ public class CoreServlet extends HttpServlet
 		return fixUrl(req, u);
 	}
 
-	String getBaseUrl(HttpServletRequest req)
+	static String getBaseUrl(HttpServletRequest req)
 	{
 		String scheme = req.getScheme();
 		int port = req.getServerPort();

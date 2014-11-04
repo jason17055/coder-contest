@@ -7,6 +7,7 @@ session      - properties of the current session
 .is_judge
 
 contest         - properties of the current contest
+.url            - user visible URL of the contest
 .problems       - Problem[] problems visible to the current user
 .all_problems   - Problem[] all problems (director only)
 .all_contestants - User[] contestants (including invisible) of this contest
