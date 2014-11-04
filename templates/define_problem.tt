@@ -89,7 +89,7 @@ FOREACH ppo IN PER_PHASE_OPTIONS %]
 	<tr>
 	<th class="attr">[% ppo.label |html %]</th>
 	[% FOREACH ph IN contest.phases %]
-	<td class="[% ph.current ? 'current_phase' : ph.upcoming ? 'next_phase' : '' %]">
+	<td class="[% ph.current ? 'current_phase' : '' %]">
 		<input type="checkbox" name="[% ppo.name |html %]_[% ph.id |html %]"[% f.get("${ppo.name}_${ph.id}") ? ' checked="checked"' : '' %]>
 	</td>
 	[% END %]

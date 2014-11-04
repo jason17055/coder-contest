@@ -13,13 +13,21 @@ contest         - properties of the current contest
 .judges         - User[] judges in this contest
 .id
 .title
-.current_phase_name
-.current_phase_timeleft
 .config_url     - takes user to Admin Contest definition page
 .workers        - Worker[]
 .scoreboard     - 'Y'=enabled, 'N'=disabled
 .status_choices - String[]
-.phases
+.phases         - Phase[]
+.current_phase  - Phase
+.current_phase_name
+.current_phase_timeleft
+
+phase
+.id
+.name
+.ends           - Date
+.current        - Boolean
+.timeleft       - optional number of seconds
 
 problem      - properties of the currently-selected problem
 .name        - name of the problem

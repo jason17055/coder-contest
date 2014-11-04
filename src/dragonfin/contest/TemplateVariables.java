@@ -14,11 +14,13 @@ public class TemplateVariables
 {
 	final DatastoreService ds;
 	final HttpServletRequest req;
+	final Date curTime;
 
 	public TemplateVariables(HttpServletRequest req)
 	{
 		this.ds = DatastoreServiceFactory.getDatastoreService();
 		this.req = req;
+		this.curTime = new Date();
 	}
 
 	Contest getContest()
@@ -34,7 +36,6 @@ public class TemplateVariables
 
 	ArrayList<Worker> enumerateWorkers(String contestId)
 	{
-		Date curTime = new Date();
 		Date cutOffTime = new Date(curTime.getTime() - 10*60*1000); //10 minutes
 
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
@@ -190,18 +191,17 @@ public class TemplateVariables
 		public boolean scoreboard_images;
 		public boolean scoreboard_popups;
 		public boolean scoreboard_fanfare;
-		public String phase0_name;
 		public String phase1_name;
 		public String phase2_name;
 		public String phase3_name;
 		public String phase4_name;
-		public Date phase0_ends;
 		public Date phase1_ends;
 		public Date phase2_ends;
 		public Date phase3_ends;
 		public Date phase4_ends;
 		public Date started;
 		public List<String> no_responses;
+		public int current_phase_id;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -266,7 +266,7 @@ public class TemplateVariables
 
 		public ArrayList<Problem> getProblems()
 		{
-			int curPhase = getCurrent_phase();
+			int curPhase = current_phase_id;
 
 			ArrayList<Problem> list = new ArrayList<Problem>();
 			for (Problem p : getAll_problems()) {
@@ -277,89 +277,64 @@ public class TemplateVariables
 			return list;
 		}
 
-		public int getCurrent_phase()
+		public Phase getCurrent_phase()
 		{
-			final Date [] endTimes = new Date[5];
-			endTimes[0] = phase0_ends;
-			endTimes[1] = phase1_ends;
-			endTimes[2] = phase2_ends;
-			endTimes[3] = phase3_ends;
-			endTimes[4] = phase4_ends;
-
-			ArrayList<Integer> phaseNumbers = new ArrayList<Integer>();
-			if (phase0_ends!=null) { phaseNumbers.add(new Integer(0)); }
-			if (phase1_ends!=null) { phaseNumbers.add(new Integer(1)); }
-			if (phase2_ends!=null) { phaseNumbers.add(new Integer(2)); }
-			if (phase3_ends!=null) { phaseNumbers.add(new Integer(3)); }
-			if (phase4_ends!=null) { phaseNumbers.add(new Integer(4)); }
-
-			Collections.sort(phaseNumbers, new Comparator<Integer>() {
-			public int compare(Integer o1, Integer o2) {
-				int a = o1;
-				int b = o2;
-				return endTimes[a].compareTo(endTimes[b]);
-			}
-			});
-
-			Date now = new Date();
-			for (int ord : phaseNumbers) {
-				if (now.compareTo(endTimes[ord]) < 0) {
-					return ord;
-				}
-			}
-			return 0;
+			return getPhase(current_phase_id);
 		}
 
 		public String getCurrent_phase_name()
 		{
-			int curPhase = getCurrent_phase();
-			return curPhase == 0 ? phase0_name :
-				curPhase == 1 ? phase1_name :
-				curPhase == 2 ? phase2_name :
-				curPhase == 3 ? phase3_name :
-				curPhase == 4 ? phase4_name :
-				null;
+			return getCurrent_phase().name;
 		}
 
 		public Date getCurrent_phase_ends()
 		{
-			int curPhase = getCurrent_phase();
-			return curPhase == 0 ? phase0_ends :
-				curPhase == 1 ? phase1_ends :
-				curPhase == 2 ? phase2_ends :
-				curPhase == 3 ? phase3_ends :
-				curPhase == 4 ? phase4_ends :
-				null;
+			return getCurrent_phase().ends;
 		}
 
 		public int getCurrent_phase_timeleft()
 		{
-			Date endTime = getCurrent_phase_ends();
-			if (endTime == null) {
-				return 0;
-			}
-			return (int)((endTime.getTime() - new Date().getTime())/1000);
+			return getCurrent_phase().timeleft;
 		}
 
 		public List<Phase> getPhases()
 		{
-			Phase [] pp = new Phase[MAX_PHASE_NUMBER+1];
-			pp[0] = new Phase();
-			pp[0].id = "0";
-			pp[0].name = phase0_name;
-			pp[1] = new Phase();
-			pp[1].id = "1";
-			pp[1].name = phase1_name;
-			pp[2] = new Phase();
-			pp[2].id = "2";
-			pp[2].name = phase2_name;
-			pp[3] = new Phase();
-			pp[3].id = "3";
-			pp[3].name = phase3_name;
-			pp[4] = new Phase();
-			pp[4].id = "4";
-			pp[4].name = phase4_name;
+			Phase [] pp = new Phase[MAX_PHASE_NUMBER];
+			for (int i = 1; i <= MAX_PHASE_NUMBER; i++) {
+				pp[i-1] = getPhase(i);
+			}
 			return Arrays.asList(pp);
+		}
+
+		Phase getPhase(int phaseNumber)
+		{
+			Phase ph = new Phase();
+			ph.id = Integer.toString(phaseNumber);
+			switch (phaseNumber) {
+			case 1:
+				ph.name = phase1_name;
+				ph.ends = phase1_ends;
+				break;
+			case 2:
+				ph.name = phase2_name;
+				ph.ends = phase2_ends;
+				break;
+			case 3:
+				ph.name = phase3_name;
+				ph.ends = phase3_ends;
+				break;
+			case 4:
+				ph.name = phase4_name;
+				ph.ends = phase4_ends;
+				break;
+			default:
+				assert false;
+			}
+			if (ph.ends != null) {
+				ph.timeleft = (int)((ph.ends.getTime() - curTime.getTime())/1000);
+			}
+			ph.current = (phaseNumber == current_phase_id);
+			return ph;
 		}
 	}
 
@@ -367,8 +342,9 @@ public class TemplateVariables
 	{
 		public String id;
 		public String name;
+		public Date ends;
+		public int timeleft;
 		public boolean current;
-		public boolean upcoming;
 	}
 
 	public class Problem
@@ -1142,19 +1118,19 @@ public class TemplateVariables
 			((Boolean)ent.getProperty("scoreboard_fanfare")).booleanValue() :
 			true;
 
-		c.phase0_name = (String) ent.getProperty("phase0_name");
 		c.phase1_name = (String) ent.getProperty("phase1_name");
 		c.phase2_name = (String) ent.getProperty("phase2_name");
 		c.phase3_name = (String) ent.getProperty("phase3_name");
 		c.phase4_name = (String) ent.getProperty("phase4_name");
 
-		c.phase0_ends = (Date) ent.getProperty("phase0_ends");
 		c.phase1_ends = (Date) ent.getProperty("phase1_ends");
 		c.phase2_ends = (Date) ent.getProperty("phase2_ends");
 		c.phase3_ends = (Date) ent.getProperty("phase3_ends");
 		c.phase4_ends = (Date) ent.getProperty("phase4_ends");
 
 		c.started = (Date) ent.getProperty("started");
+
+		c.current_phase_id = handleIntProperty(ent, "current_phase", 1);
 
 		return c;
 	}
@@ -1280,6 +1256,16 @@ public class TemplateVariables
 		p.pp_read_solution = handlePhaseOptionsProperty(ent, "pp_read_solution");
 
 		return p;
+	}
+
+	static int handleIntProperty(Entity ent, String propName, int defValue)
+	{
+		if (ent.hasProperty(propName)) {
+			return (int)((Long)ent.getProperty(propName)).longValue();
+		}
+		else {
+			return defValue;
+		}
 	}
 
 	boolean handleBooleanProperty(Entity ent, String propName)
@@ -1479,8 +1465,7 @@ public class TemplateVariables
 
 		u.last_access = (Date)ent.getProperty("last_access");
 		if (u.last_access != null) {
-			Date curDate = new Date();
-			if (curDate.getTime() - u.last_access.getTime() < 60000) {
+			if (curTime.getTime() - u.last_access.getTime() < 60000) {
 				u.online = true;
 			}
 		}

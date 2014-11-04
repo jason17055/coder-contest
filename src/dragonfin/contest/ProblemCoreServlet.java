@@ -31,7 +31,7 @@ public abstract class ProblemCoreServlet extends CoreServlet
 
 		TemplateVariables tv = makeTemplateVariables(req);
 		TemplateVariables.Contest c = tv.fetchContest(contestId);
-		int curPhase = c.getCurrent_phase();
+		int curPhase = c.current_phase_id;
 
 		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
 		if (!p.onScoreboard(curPhase)) {

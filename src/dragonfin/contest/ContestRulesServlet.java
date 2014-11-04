@@ -48,12 +48,10 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("scoreboard_popups", c.scoreboard_popups);
 		form.put("scoreboard_order", c.scoreboard_order);
 		form.put("scoreboard_fanfare", c.scoreboard_fanfare);
-		form.put("phase0_name", c.phase0_name);
 		form.put("phase1_name", c.phase1_name);
 		form.put("phase2_name", c.phase2_name);
 		form.put("phase3_name", c.phase3_name);
 		form.put("phase4_name", c.phase4_name);
-		form.put("phase0_ends", fromDate(c.phase0_ends));
 		form.put("phase1_ends", fromDate(c.phase1_ends));
 		form.put("phase2_ends", fromDate(c.phase2_ends));
 		form.put("phase3_ends", fromDate(c.phase3_ends));

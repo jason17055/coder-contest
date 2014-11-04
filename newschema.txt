@@ -27,8 +27,7 @@ Contest [ "id" ]
 	created_by        String
 	last_problem_id   Integer
 	last_announcement_id Integer
-	phase0_name       String
-	phase0_ends       Date
+	current_phase     Integer (default 1)
 	phase1_name       String
 	phase1_ends       Date
 	phase2_name       String
