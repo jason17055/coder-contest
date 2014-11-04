@@ -51,7 +51,11 @@
 </tr>
 <tr>
 <td><label for="username_entry">Username:</label></td>
-<td>[% f.username |html %]
+<td>[% IF r.id %]
+[% f.username |html %]
+[% ELSE %]
+<input type="text" name="username" id="username_entry" value="[% f.username |html %]">
+[% END %]
 </td>
 </tr>
 <tr>
