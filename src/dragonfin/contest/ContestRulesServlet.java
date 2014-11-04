@@ -110,6 +110,9 @@ public class ContestRulesServlet extends CoreServlet
 			ent.setProperty("logo", req.getParameter("logo"));
 
 			ent.setProperty("started", asDate(req.getParameter("started")));
+			if (req.getParameter("started_set_to_now") != null) {
+				ent.setProperty("started", new Date());
+			}
 
 			ent.setProperty("phase0_name", req.getParameter("phase0_name"));
 			ent.setProperty("phase1_name", req.getParameter("phase1_name"));

@@ -98,13 +98,15 @@ Change password</label>
 <label><input type="checkbox" name="scoreboard_fanfare"[% f.scoreboard_fanfare ? ' checked="checked"' : '' %]>Play fanfare on accepted solution</label>
 </td>
 </tr>
+-->
 <tr>
-<td><label for="started_entry">Started:</label></td>
-<td><input type="type" name="started" id="started_entry" value="[% f.started |html %]">
-<small>Used to calculate penalty points for team submissions.</small>
+<td valign="top"><label for="started_entry">Started:</label></td>
+<td valign="top">
+<div><input type="type" name="started" id="started_entry" value="[% f.started |html %]">
+<small>Used to calculate penalty points for team submissions.</small></div>
+<div><label><input type="checkbox" name="started_set_to_now">Set to current time</label></div>
 </td>
 </tr>
--->
 <tr>
 <td valign="top"><label>Contest phases:</label></td>
 <td valign="top">
