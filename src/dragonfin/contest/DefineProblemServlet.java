@@ -67,6 +67,13 @@ public class DefineProblemServlet extends CoreServlet
 			// creating a new record
 
 			Map<String,Object> form = new HashMap<String,Object>();
+
+			form.put("input_is_text", "1");
+			form.put("output_is_text", "1");
+			form.put("pp_scoreboard_1", "on");
+			form.put("pp_read_problem_1", "on");
+			form.put("pp_submit_1", "on");
+
 			ctx.put("f", form);
 		}
 	}
