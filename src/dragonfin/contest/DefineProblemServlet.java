@@ -24,6 +24,16 @@ public class DefineProblemServlet extends CoreServlet
 		renderTemplate(req, resp, getTemplate());
 	}
 
+	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
+		throws IOException, ServletException
+	{
+		ArrayList<String> messages = new ArrayList<String>();
+		messages.add(errorMessage);
+		Map<String,Object> args = new HashMap<String,Object>();
+		args.put("messages", messages);
+		renderTemplate(req, resp, getTemplate(), args);
+	}
+
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
 		throws Exception
 	{
@@ -129,7 +139,13 @@ public class DefineProblemServlet extends CoreServlet
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
 		String problemName = POST.get("name");
 
-		// TODO- check parameters
+		//
+		// check parameters
+		//
+		if (POST.get("name") == null || POST.get("name").length() == 0) {
+			doFormError(req, resp, "Name is required.");
+			return;
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
@@ -214,7 +230,13 @@ public class DefineProblemServlet extends CoreServlet
 		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
 		String problemName = POST.get("name");
 
-		// TODO- check parameters
+		//
+		// check parameters
+		//
+		if (POST.get("name") == null || POST.get("name").length() == 0) {
+			doFormError(req, resp, "Name is required.");
+			return;
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();

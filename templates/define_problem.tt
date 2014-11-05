@@ -2,9 +2,7 @@
 	page_title = r.id ? 'Edit Problem Definition' : 'Define New Problem'
 %]
 
-[% IF message %]
-<p class="error">[% message |html %]</p>
-[% END %]
+[% INCLUDE 'form_messages.inc' %]
 
 <form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
 <table>
