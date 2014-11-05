@@ -67,8 +67,17 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		Key userKey = getLoggedInUserKey(tv.req);
 		Key resultKey = KeyFactory.createKey(userKey, "Result", Long.parseLong(problemId));
 
+		TemplateVariables.Contest c = tv.fetchContest(contestId);
+		TemplateVariables.User u = tv.fetchUser(userKey);
+
 		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
 		ctx.put("problem", p);
+
+		ctx.put("show_problem_tab", Boolean.valueOf(p.specFileKey != null));
+		ctx.put("show_write_tab", Boolean.valueOf(c.contestants_can_write_code));
+		ctx.put("show_test_tab", Boolean.TRUE);
+		ctx.put("show_submit_tab", Boolean.valueOf(u.is_contestant));
+		ctx.put("show_solutions_tab", Boolean.valueOf(u.is_judge || c.checkPhase(p.pp_read_opponent) || c.checkPhase(p.pp_read_solution)));
 
 		try {
 			TemplateVariables.Result r = tv.fetchResult(resultKey);
@@ -78,6 +87,8 @@ public abstract class ProblemCoreServlet extends CoreServlet
 			// safe to ignore
 			ctx.put("result", null);
 		}
+
+		
 	}
 
 	public abstract String getTemplate();

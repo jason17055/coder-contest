@@ -363,6 +363,16 @@ public class TemplateVariables
 			ph.current = (phaseNumber == current_phase_id);
 			return ph;
 		}
+
+		boolean checkPhase(boolean [] pp_array)
+		{
+			if (pp_array != null && current_phase_id >= 0 && current_phase_id < pp_array.length) {
+				return pp_array[current_phase_id];
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
 	public class Phase
