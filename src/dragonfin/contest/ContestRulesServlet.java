@@ -135,6 +135,13 @@ public class ContestRulesServlet extends CoreServlet
 			phaseChanged = oldPhase != newPhase;
 			ent.setProperty("current_phase", newPhase);
 
+			updateFromForm_boolean(ent, req, "contestants_can_change_name");
+			updateFromForm_boolean(ent, req, "contestants_can_change_description");
+			updateFromForm_boolean(ent, req, "contestants_can_change_password");
+			updateFromForm_boolean(ent, req, "contestants_can_write_code");
+			updateFromForm_boolean(ent, req, "judges_can_change_name");
+			updateFromForm_boolean(ent, req, "judges_can_change_password");
+
 			//TODO- the remaining parameters on this form.
 
 			ds.put(ent);
@@ -155,6 +162,11 @@ public class ContestRulesServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
+	}
+
+	void updateFromForm_boolean(Entity ent, HttpServletRequest req, String propName)
+	{
+		ent.setProperty(propName, Boolean.valueOf(req.getParameter(propName) != null));
 	}
 
 	static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

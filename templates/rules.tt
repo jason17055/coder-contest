@@ -30,22 +30,22 @@
 <tr>
 <td><label>Contestant options:</label></td>
 <td>
-<label><input type="checkbox" name="contestants_can_change_name"[% f.contestants_can_change_name ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="contestants_can_change_name"[% f.contestants_can_change_name ? ' checked="checked"' : '' %]>
 Change name</label>
-<label><input type="checkbox" name="contestants_can_change_description"[% f.contestants_can_change_description ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="contestants_can_change_description"[% f.contestants_can_change_description ? ' checked="checked"' : '' %]>
 Change description</label>
-<label><input type="checkbox" name="contestants_can_change_password"[% f.contestants_can_change_password ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="contestants_can_change_password"[% f.contestants_can_change_password ? ' checked="checked"' : '' %]>
 Change password</label>
-<label><input type="checkbox" name="contestants_can_write_code"[% f.contestants_can_write_code ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="contestants_can_write_code"[% f.contestants_can_write_code ? ' checked="checked"' : '' %]>
 Write Code</label>
 </td>
 </tr>
 <tr>
 <td><label>Judge options:</label></td>
 <td>
-<label><input type="checkbox" name="judges_can_change_name"[% f.judges_can_change_name ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="judges_can_change_name"[% f.judges_can_change_name ? ' checked="checked"' : '' %]>
 Change name</label>
-<label><input type="checkbox" name="judges_can_change_password"[% f.judges_can_change_password ? ' selected="selected"' : '' %]>
+<label><input type="checkbox" name="judges_can_change_password"[% f.judges_can_change_password ? ' checked="checked"' : '' %]>
 Change password</label>
 </td>
 </tr>
