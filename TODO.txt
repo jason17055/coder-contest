@@ -12,6 +12,7 @@
 * define_problem: make link to test the reference solution
 * rules: when phase changes, recalculate all teams scores
 * check_messages: use a POST of JSON rather than a GET with url parameters
+* user: eliminate 'ordinal' property
 
 --future--
 * clarifications: allow "general" clarification questions and answers

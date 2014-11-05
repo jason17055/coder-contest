@@ -167,7 +167,40 @@ public class DefineUserServlet extends CoreServlet
 	{
 		if (requireDirector(req, resp)) { return; }
 
-		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		String contestId = req.getParameter("contest");
+		String username = req.getParameter("id");
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+		try {
+
+			Key userKey = KeyFactory.createKey("User",
+				contestId+"/"+username);
+
+			//
+			// delete all submissions by this user
+			//
+			Query q = new Query("Submission");
+			q.setAncestor(userKey);
+			PreparedQuery pq = ds.prepare(q);
+			for (Entity ent : pq.asIterable()) {
+				ds.delete(ent.getKey());
+			}
+
+			//
+			// delete the user itself
+			//
+			ds.delete(userKey);
+
+			txn.commit();
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+
+		doCancel(req, resp);
 	}
 
 	void doUpdateUser(HttpServletRequest req, HttpServletResponse resp)
