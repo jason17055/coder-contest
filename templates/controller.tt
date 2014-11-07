@@ -22,7 +22,7 @@
 [%	online_lbl = "[Offline]" %]
 [% END %]
 <div>
-<img src="[% online_img |html %]" alt="[% online_lbl |html %]" width="14" height="14" class="online-indicator" id="ind_online_team_[% team.username |html %]_[% team.online ? "Y" : "N" %]">
+<img src="[% online_img |html %]" alt="[% online_lbl |html %]" width="14" height="14" class="online-indicator" data-user="[% team.username |html %]" data-user-online="[% team.online ? 'Y' : 'N' %]">
 <a href="[% team.edit_url |html %]">[% team.name |html %]</a>
 [% IF NOT team.visible %] (Invisible)[% END %]
 </div>

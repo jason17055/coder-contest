@@ -1509,12 +1509,23 @@ public class TemplateVariables
 
 		u.last_access = (Date)ent.getProperty("last_access");
 		if (u.last_access != null) {
-			if (curTime.getTime() - u.last_access.getTime() < 60000) {
+			if (curTime.getTime() - u.last_access.getTime() < USER_ONLINE_THRESHOLD) {
 				u.online = true;
 			}
 		}
 
 		return u;
+	}
+
+	static long USER_ONLINE_THRESHOLD = 60000;
+	static boolean checkUserOnline(Entity ent)
+	{
+		Date lastAccess = (Date)ent.getProperty("last_access");
+		if (lastAccess != null) {
+			Date curTime = new Date();
+			return curTime.getTime() - lastAccess.getTime() < USER_ONLINE_THRESHOLD;
+		}
+		return false;
 	}
 
 	HashMap<Key,Submission> cachedSubmissions = new HashMap<Key,Submission>();

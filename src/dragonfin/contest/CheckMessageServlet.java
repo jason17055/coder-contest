@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.*;
 import static dragonfin.contest.TemplateVariables.makeUserKey;
 import static dragonfin.contest.TemplateVariables.makeTestResultId;
 import static dragonfin.contest.TemplateVariables.parseTestResultId;
+import static dragonfin.contest.TemplateVariables.checkUserOnline;
 
 public class CheckMessageServlet extends HttpServlet
 {
@@ -221,6 +222,13 @@ public class CheckMessageServlet extends HttpServlet
 				String statusStr = data.substring(sep+2);
 				addTestResultStatusCheck(testResultId, statusStr);
 			}
+			else if (assertionType.equals("useronline")) {
+				int sep = data.indexOf(',');
+				if (sep == -1) { return; }
+				String username = data.substring(0, sep);
+				String status = data.substring(sep+1);
+				addUserStatusCheck(username, status);
+			}
 		}
 
 		void addJobCompletionCheck(String jobId)
@@ -238,6 +246,12 @@ public class CheckMessageServlet extends HttpServlet
 		{
 			if (contestId == null) { return; }
 			checks.add(new TestResultStatusCheck(ds, contestId, testResultId, status));
+		}
+
+		void addUserStatusCheck(String username, String status)
+		{
+			if (contestId == null) { return; }
+			checks.add(new UserStatusCheck(ds, contestId, username, status));
 		}
 
 		void dismissMessage(String messageId)
@@ -372,6 +386,56 @@ public class CheckMessageServlet extends HttpServlet
 			out.writeStartObject();
 			out.writeStringField("class", "test_result_completed");
 			out.writeStringField("test_result_id", makeTestResultId(testResultKey));
+			out.writeEndObject();
+		}
+	}
+
+	static class UserStatusCheck extends Check
+	{
+		final DatastoreService ds;
+		final Key userKey;
+		final String status;
+		final String username;
+
+		UserStatusCheck(DatastoreService ds, String contestId, String username, String status)
+		{
+			this.ds = ds;
+			this.userKey = makeUserKey(contestId, username);
+			this.status = status;
+			this.username = username;
+		}
+
+		@Override
+		public boolean doCheck()
+		{
+			boolean isOnline;
+			try {
+
+				Entity ent = ds.get(userKey);
+				isOnline = checkUserOnline(ent);
+			}
+			catch (EntityNotFoundException e) {
+
+				return false;
+			}
+
+			if (isOnline && !status.equals("Y")) {
+				return true;
+			}
+			else if (!isOnline && status.equals("Y")) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public void emitMessage(JsonGenerator out) throws IOException
+		{
+			out.writeStartObject();
+			out.writeStringField("class", "online_status_change");
+			out.writeStringField("user", username);
 			out.writeEndObject();
 		}
 	}

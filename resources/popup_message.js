@@ -153,13 +153,12 @@ function checkForAnnouncement()
 			assertion_tags.push("testresultstatus="+test_result_id+"//"+cur_status);
 		});
 
-	$('.online-indicator').each(function(el)
+	$('.online-indicator').each(function(idx,el)
 		{
 			var id = this.id;
-			if (id.match(/^ind_online_/))
-			{
-				assertion_tags.push("onlinestatuschange="+id.substr(11));
-			}
+			var user = el.getAttribute('data-user');
+			var online = el.getAttribute('data-user-online');
+			assertion_tags.push("useronline="+user+","+online);
 		});
 
 	var process_submissions_table = function(el) {
