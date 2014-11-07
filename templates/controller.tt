@@ -71,7 +71,7 @@
 [% END %]
 
 <tr>
-<td height="32"><img class="online-indicator" id="ind_online_team_[% judge.username |html %]_[% judge.online ? "Y" : "N" %]" src="[% online_img |html %]" alt="[% online_lbl %]" width="14" height="14">
+<td height="32"><img src="[% online_img |html %]" alt="[% online_lbl %]" width="14" height="14" class="online-indicator" data-user="[% judge.username |html %]" data-user-online="[% judge.online ? 'Y' : 'N' %]">
 <a href="[% judge.edit_url |html %]">[% judge.name |html %]</a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
