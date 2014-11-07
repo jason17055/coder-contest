@@ -423,6 +423,27 @@ public class CoreServlet extends HttpServlet
 		return true;
 	}
 
+	boolean requireJudge(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireContest(req, resp)) { return true; }
+
+		TemplateVariables tv = makeTemplateVariables(req);
+		try {
+			TemplateVariables.User u = tv.fetchUser(getLoggedInUserKey(req));
+			if (u.is_director || u.is_judge) {
+				return false;
+			}
+		}
+		catch (EntityNotFoundException e) {
+		}
+
+		// not a judge or director
+		resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+			"This page requires director or judge access.");
+		return true;
+	}
+
 	void updateFromFormInt(Entity ent1, Map<String,String> POST, String propName)
 	{
 		if (POST.containsKey(propName)) {

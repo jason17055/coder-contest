@@ -19,7 +19,7 @@ public class EditClarificationServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireJudge(req, resp)) { return; }
 
 		renderTemplate(req, resp, getTemplate());
 	}
