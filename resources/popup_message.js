@@ -133,44 +133,34 @@ function checkForAnnouncement()
 			}, 30000);
 	};
 
-	var xtra = "";
-	var indicators_array = new Array();
+	var assertion_tags = [];
 	$('.job-incomplete-indicator').each(function(idx,el)
 		{
 			var job_id = el.getAttribute('data-job-id');
-			indicators_array.push(job_id);
+			assertion_tags.push("jobcompletion="+job_id);
 		});
-	for (var j = 0; j < indicators_array.length; j++)
-	{
-		xtra += "&jobcompletion=" + escape(indicators_array[j]);
-	}
 
 	$('.test-result-incomplete-indicator').each(function(idx,el)
 		{
 			var test_result_id = el.getAttribute('data-test-result-id');
-			xtra += '&testresultcompletion=' + escape(test_result_id);
+			assertion_tags.push("testresultcompletion="+test_result_id);
 		});
 
 	$('.test-result-status').each(function(idx, el)
 		{
 			var test_result_id = el.getAttribute('data-test-result-id');
 			var cur_status = el.getAttribute('data-test-result-status');
-			xtra += '&testresultstatus=' + escape(test_result_id+'//'+cur_status);
+			assertion_tags.push("testresultstatus="+test_result_id+"//"+cur_status);
 		});
 
-	var online_indicators = new Array();
 	$('.online-indicator').each(function(el)
 		{
 			var id = this.id;
 			if (id.match(/^ind_online_/))
 			{
-				online_indicators.push(id.substr(11));
+				assertion_tags.push("onlinestatuschange="+id.substr(11));
 			}
 		});
-	if (online_indicators.length)
-	{
-		xtra += "&onlinestatuschange=" + escape(online_indicators.join(","));
-	}
 
 	var process_submissions_table = function(el) {
 		var items = [];
@@ -179,7 +169,7 @@ function checkForAnnouncement()
 				var it = $(el2).attr('data-submission-id');
 				items.push(it);
 			});
-		xtra += '&newsubmissionsafter='+escape(items.join(','));
+		assertion_tags.push("newsubmissionafter="+items.join(','));
 	};
 
 	$('.auto_reload_trigger').each(function(xx)
@@ -191,13 +181,20 @@ function checkForAnnouncement()
 	});
 
 	var url_base = $('body').attr('data-checkmessage-url');
-	var url = url_base+"?timeout=60&type=N" + xtra;
+	var url = url_base+"?timeout=60&type=N";
+	var post = {
+		assertions: assertion_tags
+		};
+
 	if (last_message_id) {
 		url += '&dismiss_message='+escape(last_message_id);
 	}
 	console.log('checking '+url);
 	$.ajax({
+		type: "POST",
 		url: url,
+		data: JSON.stringify(post),
+		contentType: "application/json; charset=utf-8",
 		dataType: 'json',
 		success: callback,
 		error: onError

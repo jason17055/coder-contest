@@ -3,6 +3,7 @@ package dragonfin.contest;
 import java.io.IOException;
 import java.util.*;
 import java.util.Date;
+import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
@@ -14,6 +15,65 @@ import static dragonfin.contest.TemplateVariables.parseTestResultId;
 
 public class CheckMessageServlet extends HttpServlet
 {
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		CheckMessage m = new CheckMessage();
+		m.req = req;
+		m.resp = resp;
+		m.timeout = req.getParameter("timeout");
+		m.type = req.getParameter("type");
+		m.after = req.getParameter("after");
+
+		m.userKey = null;
+		HttpSession sess = req.getSession(false);
+		if (sess != null) {
+			m.contestId = (String) sess.getAttribute("contest");
+			String username = (String) sess.getAttribute("username");
+			if (m.contestId != null && username != null) {
+				m.userKey = makeUserKey(m.contestId, username);
+				m.pokeUser();
+			}
+		}
+
+		JsonParser json = new JsonFactory().
+			createJsonParser(req.getReader());
+		while (json.nextToken() != null) {
+			if (json.getCurrentToken() != JsonToken.FIELD_NAME) { continue; }
+
+			String field = json.getCurrentName();
+			if (field.equals("assertions")) {
+				if (json.nextToken() != JsonToken.START_ARRAY) {
+					throw new IOException("invalid JSON request");
+				}
+				while (json.nextToken() != JsonToken.END_ARRAY) {
+					m.addAssertion(json.getText());
+				}
+			}
+		}
+		json.close();
+
+		String dismissMessage = req.getParameter("dismiss_message");
+		if (dismissMessage != null) {
+			m.dismissMessage(dismissMessage);
+		}
+
+		if (m.checkMultiple()) {
+			return;
+		}
+
+		if (m.checkForMessage(req, resp)) {
+			return;
+		}
+
+		resp.setContentType("text/json;charset=UTF-8");
+		JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
+		out.writeStartObject();
+		out.writeEndObject();
+		out.close();
+	}
+
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
@@ -61,13 +121,13 @@ public class CheckMessageServlet extends HttpServlet
 			}
 		}
 
-		if (m.checkMultiple()) {
-			return;
-		}
-
 		String dismissMessage = req.getParameter("dismiss_message");
 		if (dismissMessage != null) {
 			m.dismissMessage(dismissMessage);
+		}
+
+		if (m.checkMultiple()) {
+			return;
 		}
 
 		if (m.checkForMessage(req, resp)) {
@@ -135,6 +195,32 @@ public class CheckMessageServlet extends HttpServlet
 				}
 			}
 			return false;
+		}
+
+		void addAssertion(String assertion)
+			throws IOException
+		{
+			Matcher m = Pattern.compile("^([^=]+)=(.*)$").matcher(assertion);
+			if (!m.matches()) {
+				throw new IOException("Invalid assertion");
+			}
+
+			String assertionType = m.group(1);
+			String data = m.group(2);
+
+			if (assertionType.equals("jobcompletion")) {
+				addJobCompletionCheck(data);
+			}
+			else if (assertionType.equals("testresultcompletion")) {
+				addTestResultCompletionCheck(data);
+			}
+			else if (assertionType.equals("testresultstatus")) {
+				int sep = data.indexOf("//");
+				if (sep == -1) { return; }
+				String testResultId = data.substring(0, sep);
+				String statusStr = data.substring(sep+2);
+				addTestResultStatusCheck(testResultId, statusStr);
+			}
 		}
 
 		void addJobCompletionCheck(String jobId)
