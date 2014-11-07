@@ -405,21 +405,22 @@ public class CoreServlet extends HttpServlet
 			return true;
 		}
 
+		TemplateVariables tv = makeTemplateVariables(req);
 		try {
-		TemplateVariables tv = new TemplateVariables(req);
-		TemplateVariables.User user = tv.fetchUser(contestId, username);
-		if (!user.is_director) {
+			TemplateVariables.User user = tv.fetchUser(contestId, username);
+			if (user.is_director) {
 
-			// not a director
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-				"This page requires you to be contest director.");
-			return true;
-		}
+				// ok, user is a director
+				return false;
+			}
 		}
 		catch (EntityNotFoundException e) {
 		}
 
-		return false;
+		// not a director
+		resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+			"This page requires you to be contest director.");
+		return true;
 	}
 
 	void updateFromFormInt(Entity ent1, Map<String,String> POST, String propName)
