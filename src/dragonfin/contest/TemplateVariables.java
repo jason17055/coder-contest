@@ -221,12 +221,47 @@ public class TemplateVariables
 		}
 
 		ArrayList<Submission> submissionsCached;
-		public ArrayList<Submission> getSubmissions()
+		public ArrayList<Submission> getAll_submissions()
 		{
 			if (submissionsCached == null) {
 				submissionsCached = enumerateSubmissions(id);
 			}
 			return submissionsCached;
+		}
+
+		public ArrayList<Submission> getSubmissions()
+		{
+			Key userKey = getLoggedInUserKey(req);
+			User me;
+			try {
+				me = fetchUser(userKey);
+			}
+			catch (EntityNotFoundException e) {
+				// invalid user
+				return new ArrayList<Submission>();
+			}
+
+			if (me.is_director) {
+				return getAll_submissions();
+			}
+			else if (!me.is_judge) {
+				return new ArrayList<Submission>();
+			}
+
+			ArrayList<Submission> list = new ArrayList<Submission>();
+			for (Submission s : getAll_submissions()) {
+
+				try {
+					Problem p = s.getProblem();
+					if (p.canJudge(me)) {
+						list.add(s);
+					}
+				}
+				catch (EntityNotFoundException e) {
+					// ignore this submission
+				}
+			}
+			return list;
 		}
 
 		ArrayList<User> usersCached;
@@ -584,6 +619,25 @@ public class TemplateVariables
 		public String getPhases_open()
 		{
 			return getPhaseNames(pp_submit);
+		}
+
+		boolean canJudge(User u)
+		{
+			if (u.is_director) {
+				return true;
+			}
+			if (this.judged_by == null) {
+				return false;
+			}
+			for (String j : this.judged_by.split(",\\s*")) {
+				if (j.equals("*")) {
+					return true;
+				}
+				if (j.equals(u.username)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
