@@ -1,5 +1,4 @@
 * edit_judge: select which problems the judge can see
-* list_users: add ability to bulk-create teams
 * controller: remove "test a solution" link
 * menu: hide problems that aren't "open"
 * file_upload: canonicalize line-endings on upload
@@ -8,7 +7,6 @@
 * controller: password generation and password hand-out sheets
 * define_problem: make link to test the reference solution
 * rules: when phase changes, recalculate all teams scores
-* check_messages: use a POST of JSON rather than a GET with url parameters
 * user: eliminate 'ordinal' property
 
 --future--
