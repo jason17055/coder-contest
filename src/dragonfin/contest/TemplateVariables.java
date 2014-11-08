@@ -89,6 +89,21 @@ public class TemplateVariables
 		return list;
 	}
 
+	ArrayList<Submission> enumerateSubmissionsByUser(Key userKey)
+	{
+		Query q = new Query("Submission");
+		q.setAncestor(userKey);
+		q.addSort("created");
+
+		PreparedQuery pq = ds.prepare(q);
+		ArrayList<Submission> list = new ArrayList<Submission>();
+		for (Entity ent : pq.asIterable()) {
+			Submission s = handleSubmission(ent.getKey(), ent);
+			list.add(s);
+		}
+		return list;
+	}
+
 	ArrayList<Submission> enumerateSubmissionsByUserAndProblem(Key userKey, Key problemKey)
 	{
 		Query q = new Query("Submission");
@@ -758,6 +773,15 @@ public class TemplateVariables
 			else {
 				return String.format("%d", score);
 			}
+		}
+
+		ArrayList<Submission> submissionsCached;
+		public ArrayList<Submission> getSubmissions()
+		{
+			if (submissionsCached == null) {
+				submissionsCached = enumerateSubmissionsByUser(dsKey);
+			}
+			return submissionsCached;
 		}
 	}
 

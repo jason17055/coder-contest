@@ -36,7 +36,7 @@ Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |htm
 
 <h3 page-reload-safe="page-reload-safe">Submissions/Responses</h3>
 
-[% IF messages.size %]
+[% IF session.user.submissions.size %]
 
 <table border="1">
 <tr><th>Time</th>
@@ -44,7 +44,7 @@ Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |htm
 <th>Submitted</th>
 <th>Response</th>
 </tr>
-[% FOREACH m IN messages %]
+[% FOREACH m IN session.user.submissions %]
 	[% IF m.status == 'reply-one' %]
 		[% status = 'Responded' %]
 	[% ELSIF m.status == 'reply-all' %]
@@ -53,16 +53,16 @@ Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |htm
 		[% status = m.status %]
 	[% END %]
 <tr>
-<td>[% m.submitted |html %]</td>
-<td>[% m.problem_name |html %]</td>
+<td>[% m.created |html %]</td>
+<td>[% m.problem.name |html %]</td>
 <td>
-[% IF m.type == 'solution' %]
-Solution: [% m.source_name |html %]
-[% ELSIF m.type == 'clarification' %]
-Clarification: [% m.request.substr(0,60) |html %]
+[% IF m.type == 'submission' %]
+Solution: [% m.source.name |html %]
+[% ELSIF m.type == 'question' %]
+Clarification: [% m.question.substr(0,60) |html %]
 [% END %]
 </td>
-<td><a href="[% m.url |html %]">[% status |html %]</a></td>
+<td><a href="[% m.edit_url |html %]">[% m.answer ? m.answer.substr(0,60) : status |html %]</a></td>
 </tr>
 [% END #foreach %]
 </table>
