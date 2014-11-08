@@ -63,7 +63,7 @@ submission    - the currently-selected submission
 .submitter    - User
 .judge        - User
 .status
-.type         - either 'submission' or 'clarification'
+.type         - either 'submission' or 'question'
 .edit_url     - takes user to submission edit page
 .minutes
 .test_results - TestResult[]
@@ -109,13 +109,14 @@ user
 .score
 .score_alt
 .score_html
-.result_by_problem
-.clarifications_total
-.clarifications_pending
-.clarifications_done
-.submissions_total
-.submissions_pending
-.submissions_done
+.result_by_problem()
+.submissions             - questions/solutions submitted by this user
+.clarifications_total    - for judges
+.clarifications_pending  - for judges
+.clarifications_done     - for judges
+.submissions_total       - for judges
+.submissions_pending     - for judges
+.submissions_done        - for judges
 
 result
 .opened                - Date
@@ -148,3 +149,10 @@ worker
 .description
 .worker_status
 .busy
+
+file
+.id
+.name
+.url
+.text_content
+.diff_url()
