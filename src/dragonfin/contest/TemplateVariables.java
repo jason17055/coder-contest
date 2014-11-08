@@ -927,6 +927,16 @@ public class TemplateVariables
 			}
 		}
 
+		public String getTake_url()
+		{
+			return makeUrl("take_submission?id="+escapeUrl(id));
+		}
+
+		public String getSteal_url()
+		{
+			return makeUrl("take_submission?id="+escapeUrl(id)+"&steal=1");
+		}
+
 		Key problemKey;
 		public Problem getProblem()
 			throws EntityNotFoundException
