@@ -81,7 +81,7 @@ public class EditClarificationServlet extends CoreServlet
 	void doCreateClarification(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireContest(req, resp)) { return; }
+		if (requireJudge(req, resp)) { return; }
 
 		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("problem");
@@ -92,6 +92,7 @@ public class EditClarificationServlet extends CoreServlet
 
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Key problemKey = KeyFactory.createKey(contestKey, "Problem", Long.parseLong(problemId));
+		Key userKey = getLoggedInUserKey(req);
 
 		//
 		// check form parameters
@@ -99,12 +100,24 @@ public class EditClarificationServlet extends CoreServlet
 		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
 			req.getAttribute("POST");
 
-		// TODO- check permission to submit question
+		// check permission to create a clarification
+		try {
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.User judge = tv.fetchUser(userKey);
+		TemplateVariables.Problem p = tv.fetchProblem(problemKey);
+		if (!p.canJudge(judge)) {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"Not allowed to judge this problem.");
+			return;
+		}
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("Entity unexpectedly missing from datastore", e);
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
 
-		Key userKey = getLoggedInUserKey(req);
 		Key submissionKey;
 		try {
 
@@ -134,7 +147,7 @@ public class EditClarificationServlet extends CoreServlet
 	void doUpdateClarification(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireJudge(req, resp)) { return; }
 
 		String contestId = req.getParameter("contest");
 		String id = req.getParameter("id");
@@ -144,6 +157,7 @@ public class EditClarificationServlet extends CoreServlet
 		}
 
 		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+		Key userKey = getLoggedInUserKey(req);
 
 		//
 		// TODO- check form parameters
@@ -151,7 +165,20 @@ public class EditClarificationServlet extends CoreServlet
 		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
 			req.getAttribute("POST");
 
-		// TODO- check permission to submit question
+		// check permission to update a clarification
+		try {
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.User judge = tv.fetchUser(userKey);
+		TemplateVariables.Submission s = tv.fetchSubmission(submissionKey);
+		if (s.getJudge() != judge) {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"Someone else is responding to this submission.");
+			return;
+		}
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("Entity unexpectedly missing from datastore", e);
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
