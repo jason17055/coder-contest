@@ -11,9 +11,24 @@ the submission from [% submission.judge.name |html %].
 </div>
 [% END %]
 
+<script type="text/javascript"><!--
+
+function checkAnswerClarificationForm()
+{
+	var f = document.answer_clarification_form;
+	if (f.answer.value != '' && f.answer_type.value == '') {
+
+		return confirm('Really continue without sending the response?');
+	}
+	return true;
+}
+
+//--></script>
+
 [% INCLUDE 'form_messages.inc' %]
 
-<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<form name="answer_clarification_form"
+	method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
 <table>
 <tr>
 <td><label>Problem:</label></td>
