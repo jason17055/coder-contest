@@ -46,7 +46,7 @@ class MethodCall extends Expression
 			String s = Value.asString(obj);
 			int a = Value.asInt(args[0]);
 			int b = Value.asInt(args[1]);
-			return s.substring(a,a+b);
+			return s.substring(Math.min(a,s.length()),Math.min(a+b,s.length()));
 		}
 		else if (methodName.equals("get") && args.length == 1)
 		{
