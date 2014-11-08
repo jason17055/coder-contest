@@ -149,17 +149,38 @@ public class EditSubmissionServlet extends CoreServlet
 	void doUpdateSubmission(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireJudge(req, resp)) { return; }
 
-		@SuppressWarnings("unchecked")
-		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+		if (contestId == null || id == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+
+		// check permission to make changes to submission
+		try {
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.User judge = tv.fetchUser(getLoggedInUserKey(req));
+		TemplateVariables.Submission s = tv.fetchSubmission(submissionKey);
+		if (s.getJudge() != judge) {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"Someone else is responding to this submission.");
+			return;
+		}
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("Entity unexpectedly missing from datastore", e);
+		}
+
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
 
 		boolean statusChanged;
 		boolean firstJudgment;
 
-		String contestId = req.getParameter("contest");
-		String id = req.getParameter("id");
-		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
 		Key userKey = submissionKey.getParent();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
