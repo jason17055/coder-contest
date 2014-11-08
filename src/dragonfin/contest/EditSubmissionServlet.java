@@ -28,7 +28,10 @@ public class EditSubmissionServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireJudge(req, resp)) { return; }
+
+		//TODO- check that the judge can actually access this specific
+		// submission
 
 		renderTemplate(req, resp, getTemplate());
 	}

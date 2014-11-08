@@ -21,6 +21,9 @@ public class EditClarificationServlet extends CoreServlet
 	{
 		if (requireJudge(req, resp)) { return; }
 
+		//TODO- check that the judge can actually access this specific
+		// submission
+
 		renderTemplate(req, resp, getTemplate());
 	}
 
