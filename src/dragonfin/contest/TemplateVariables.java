@@ -937,6 +937,12 @@ public class TemplateVariables
 			return makeUrl("take_submission?id="+escapeUrl(id)+"&steal=1");
 		}
 
+		public boolean getIs_mine()
+		{
+			return judgeKey != null &&
+				judgeKey.equals(getLoggedInUserKey(req));
+		}
+
 		Key problemKey;
 		public Problem getProblem()
 			throws EntityNotFoundException
