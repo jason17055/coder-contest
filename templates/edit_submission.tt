@@ -52,7 +52,9 @@
 <div>
 [% IF submission %]
 <button type="submit">Save Changes</button>
+[% IF session.is_director %]
 <button type="submit" name="action:delete_submission" onclick='return confirm("Really delete this submission?")'>Delete</button>
+[% END #if is_director %]
 [% ELSE %]
 <button type="submit" name="action:create_submission">Create Submission</button>
 [% END %]
