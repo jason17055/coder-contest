@@ -235,8 +235,8 @@ sub do_job
 		[
 			id => $props->{id},
 			status => $status,
-			detail_upload => [undef, 'error.txt', Content => join("", @detail_output)],
-			(-f("output.txt") ? (output_upload => ["output.txt"]) : ()),
+			'detail_upload:text' => [undef, 'error.txt', Content => join("", @detail_output)],
+			(-f("output.txt") ? ('output_upload:text' => ["output.txt"]) : ()),
 		],
 		Content_Type => "form-data",
 		);
