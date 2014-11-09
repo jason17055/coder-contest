@@ -73,13 +73,9 @@ to
 </form>
 
 <p>
-[% IF session.is_director %]
 <a href="[% contest_links.new_user |html %]">New User</a> |
+<a href="[% contest_links.issue_credentials |html %]">Generate Passwords</a> |
 <a href="[% contest_links.controller |html %]">Controller</a>
-[% ELSE %]
-<a href="[% contest_links.submissions |html %]">Submissions</a> |
-<a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
-[% END %]
 </p>
 
 [% END #wrapper %]

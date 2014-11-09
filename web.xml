@@ -61,6 +61,10 @@
  <servlet-class>dragonfin.contest.EditClarificationServlet</servlet-class>
 </servlet>
 <servlet>
+ <servlet-name>IssueCredentials</servlet-name>
+ <servlet-class>dragonfin.contest.IssueCredentialsServlet</servlet-class>
+</servlet>
+<servlet>
  <servlet-name>TakeSubmission</servlet-name>
  <servlet-class>dragonfin.contest.TakeSubmissionServlet</servlet-class>
 </servlet>
@@ -220,6 +224,10 @@
 <servlet-mapping>
  <servlet-name>EditClarification</servlet-name>
  <url-pattern>/_p/clarification</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>IssueCredentials</servlet-name>
+ <url-pattern>/_p/issue_credentials</url-pattern>
 </servlet-mapping>
 <servlet-mapping>
  <servlet-name>TakeSubmission</servlet-name>

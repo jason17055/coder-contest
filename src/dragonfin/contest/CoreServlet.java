@@ -231,6 +231,7 @@ public class CoreServlet extends HttpServlet
 		links.put("new_problem", makeContestUrl(contestId, "problem", null));
 		links.put("new_user", makeContestUrl(contestId, "user", null));
 		links.put("new_announcement", makeContestUrl(contestId, "announcement", null));
+		links.put("issue_credentials", makeContestUrl(contestId, "issue_credentials", null));
 		ctx.put("contest_links", links);
 	}
 

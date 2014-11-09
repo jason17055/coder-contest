@@ -725,6 +725,7 @@ public class TemplateVariables
 		public int score;
 		public int score_alt;
 		public Date last_access;
+		public boolean has_password;
 
 		public int clarifications_total;
 		public int clarifications_pending;
@@ -1607,6 +1608,8 @@ public class TemplateVariables
 				u.online = true;
 			}
 		}
+
+		u.has_password = ent.getProperty("password") != null;
 
 		return u;
 	}

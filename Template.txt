@@ -14,6 +14,7 @@ contest         - properties of the current contest
 .contestants     - User[] contestants of this contest
 .judges          - User[] judges in this contest
 .noncontestants  - User[] all users not in contestants[]
+.users           - User[] all users
 .id
 .title
 .config_url     - takes user to Admin Contest definition page
