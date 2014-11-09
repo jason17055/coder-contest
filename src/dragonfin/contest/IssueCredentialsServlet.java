@@ -14,6 +14,7 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
 import static dragonfin.contest.TemplateVariables.makeUserKey;
+import static dragonfin.contest.common.CommonFunctions.compareUsernames;
 
 public class IssueCredentialsServlet extends CoreServlet
 {
@@ -78,8 +79,8 @@ public class IssueCredentialsServlet extends CoreServlet
 			return;
 		}
 
-		ArrayList< HashMap<String,Object> > newPasswordsList =
-			new ArrayList< HashMap<String,Object> >();
+		ArrayList<PasswordInfo> newPasswordsList =
+			new ArrayList<PasswordInfo>();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -90,15 +91,16 @@ public class IssueCredentialsServlet extends CoreServlet
 				String pass = req.getParameter("password:"+username);
 				doSetOnePassword(ds, contestId, username, pass);
 
-				HashMap<String,Object> m = new HashMap<String,Object>();
-				m.put("username", username);
-				m.put("password", pass);
+				PasswordInfo m = new PasswordInfo();
+				m.username = username;
+				m.password = pass;
 				newPasswordsList.add(m);
 			}
 		}
 
 		if (req.getParameter("do_printout") != null && !newPasswordsList.isEmpty()) {
 
+			Collections.sort(newPasswordsList);
 			HashMap<String,Object> args = new HashMap<String,Object>();
 			args.put("passwords", newPasswordsList);
 			args.put("next_url", getNextUrl(req));
@@ -107,6 +109,16 @@ public class IssueCredentialsServlet extends CoreServlet
 		else {
 
 			doCancel(req, resp);
+		}
+	}
+
+	public static class PasswordInfo implements Comparable<PasswordInfo>
+	{
+		public String username;
+		public String password;
+
+		public int compareTo(PasswordInfo rhs) {
+			return compareUsernames(this.username, rhs.username);
 		}
 	}
 

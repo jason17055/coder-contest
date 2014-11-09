@@ -27,4 +27,10 @@ public class CommonFunctions
 
 		return fileName.substring(period+1);
 	}
+
+	public static int compareUsernames(String u1, String u2)
+	{
+		if (u1 == null) { u1 = ""; }
+		return u1.compareTo(u2);
+	}
 }
