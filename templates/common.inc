@@ -20,9 +20,9 @@
 <div id="sessionctl">
 [% IF session.username %]
 <div>[% session.username |uc |html %]</div>
-<div><a href="login?logout=1">Logout</a></div>
+<div><a href="[% contest_links.logout |html %]">Logout</a></div>
 [% ELSE %]
-<div><a href="login">Login</a></div>
+<div><a href="[% contest_links.login |html %]">Login</a></div>
 [% END %]
 </div>
 [% IF contest.current_phase_name %]

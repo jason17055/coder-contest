@@ -1,8 +1,5 @@
-* menu: hide problems that aren't "open"
 * edit_submission: the "Redo Tests" button sets Judge to null
-* Logout link doesn't work when working on a problem
 * problem: balloons
-* define_problem: make link to test the reference solution
 * rules: when phase changes, recalculate all teams scores
 * submissions: assign ids in counting order
 * edit_clarification: make Cancel button release the submission if it hasn't
@@ -33,6 +30,7 @@
     not on the edit-problem screen
 * sort usernames having numbers numerically
 * let some problems have non-text input and/or output files
+* define_problem: make link to test the reference solution
 
 --OLD--
 * message acknowledgement:
