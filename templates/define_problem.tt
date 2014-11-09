@@ -16,7 +16,8 @@
 <td><label for="spec_upload">Description (PDF):</label></td>
 <td>[% INCLUDE 'select_file_widget.inc'
 	name = 'spec'
-	value = f.spec %]</td>
+	value = f.spec
+	binary = 1 %]</td>
 </tr>
 <tr>
 <td valign="top"><label for="solution_upload">Reference Solution:</label></td>

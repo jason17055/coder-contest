@@ -206,6 +206,20 @@ public class FileUploadFormHelper
 		}
 
 		InputStream stream = item.openStream();
+
+		int colonSep = item.getFieldName().indexOf(':');
+		if (colonSep != -1) {
+			String options = item.getFieldName().substring(colonSep+1);
+			if (options.equals("text")) {
+
+				stream = new PlainTextFilter(stream);
+			}
+			else {
+
+				log.warning("Invalid file upload options: "+item.getFieldName());
+			}
+		}
+
 		return finishFileUpload(req, stream, fileName, contentType);
 	}
 
@@ -353,7 +367,10 @@ public class FileUploadFormHelper
 			}
 			else {
 				String name = item.getFieldName();
-				String fileName = item.getName();
+				if (name.indexOf(':') != -1) {
+					name = name.substring(0, name.indexOf(':'));
+				}
+
 				File f = handleFileUpload(req, item);
 				formFields.put(name, f != null ? f.id : null);
 				if (f != null) {
