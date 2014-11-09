@@ -44,7 +44,7 @@
 [% END #each problem %]
 <th>TOTAL</th>
 </tr>
-[% FOREACH u IN all_contestants %]
+[% FOREACH u IN contest.contestants %]
 <tr>
 <td class="column1"><div class="team_name">[% u.name |html %]</div></td>
 [% FOREACH p IN contest.problems %]
