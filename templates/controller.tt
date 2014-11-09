@@ -139,7 +139,6 @@ perl worker.pl [% contest.abs_url |html %]</pre>
 <a href="[% contest_links.new_announcement |html %]">Send Message</a> |
 <a href="[% contest_links.submissions_list |html %]">View Submissions</a> |
 <a href="[% contest_links.scoreboard |html %]">Live Scoreboard</a>
-| <a href="[% contest_links.test_solution |html %]">Test a Solution</a>
 </p>
 
 [% END #wrapper %]

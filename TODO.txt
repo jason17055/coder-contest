@@ -1,4 +1,3 @@
-* controller: remove "test a solution" link
 * menu: hide problems that aren't "open"
 * file_upload: canonicalize line-endings on upload
 * Logout link doesn't work when working on a problem
