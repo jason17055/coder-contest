@@ -52,24 +52,34 @@ public class IssueCredentialsServlet extends CoreServlet
 		}
 	}
 
-	void doCancel(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException
+	String getNextUrl(HttpServletRequest req)
 	{
 		String u = req.getParameter("next");
 		if (u == null) {
 			u = makeContestUrl(req.getParameter("contest"), "users", null);
 		}
-		resp.sendRedirect(u);
+		return u;
+	}
+
+	void doCancel(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		resp.sendRedirect(getNextUrl(req));
 	}
 
 	void doSetPasswords(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
+		if (requireDirector(req, resp)) { return; }
+
 		String contestId = req.getParameter("contest");
 		if (contestId == null) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
+
+		ArrayList< HashMap<String,Object> > newPasswordsList =
+			new ArrayList< HashMap<String,Object> >();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -79,9 +89,25 @@ public class IssueCredentialsServlet extends CoreServlet
 				String username = pname.substring(6);
 				String pass = req.getParameter("password:"+username);
 				doSetOnePassword(ds, contestId, username, pass);
+
+				HashMap<String,Object> m = new HashMap<String,Object>();
+				m.put("username", username);
+				m.put("password", pass);
+				newPasswordsList.add(m);
 			}
 		}
 
+		if (req.getParameter("do_printout") != null && !newPasswordsList.isEmpty()) {
+
+			HashMap<String,Object> args = new HashMap<String,Object>();
+			args.put("passwords", newPasswordsList);
+			args.put("next_url", getNextUrl(req));
+			renderTemplate(req, resp, "credentials_handouts.tt", args);
+		}
+		else {
+
+			doCancel(req, resp);
+		}
 	}
 
 	void doSetOnePassword(DatastoreService ds, String contestId, String username, String pass)

@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import dragonfin.contest.common.*;
+import static dragonfin.contest.CoreServlet.getBaseUrl;
 import static dragonfin.contest.CoreServlet.getMyUrl;
 import static dragonfin.contest.CoreServlet.getLoggedInUserKey;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
@@ -217,6 +218,11 @@ public class TemplateVariables
 		public String getUrl()
 		{
 			return makeUrl("");
+		}
+
+		public String getAbs_url()
+		{
+			return getBaseUrl(req)+"/"+id+"/";
 		}
 
 		public String getConfig_url()

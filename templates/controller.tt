@@ -125,7 +125,7 @@
 <td colspan="3">
 <div><small>To start a worker, run the following commands on a Unix/Linux system:
 <pre>curl -O [% r.base_url |html %]/script/worker.pl
-perl worker.pl [% r.base_url |html contest.url |html %]</pre>
+perl worker.pl [% contest.abs_url |html %]</pre>
 </small></div>
 </td>
 </tr>
