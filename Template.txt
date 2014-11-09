@@ -127,6 +127,7 @@ result
 .score_alt
 .score_html
 .minutes               - int
+.submission            - Submission most recent
 .submissions           - Submission[]
 .contestant            - User
 .new_submission_url

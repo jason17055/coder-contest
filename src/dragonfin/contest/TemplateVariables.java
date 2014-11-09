@@ -863,6 +863,19 @@ public class TemplateVariables
 			}
 			return submissionsCached;
 		}
+
+		public Submission getSubmission()
+		{
+			Submission best = null;
+			for (Submission s : getSubmissions()) {
+				if (best == null ||
+					s.created.compareTo(best.created) > 0)
+				{
+					best = s;
+				}
+			}
+			return best;
+		}
 	}
 
 	static String getContestFromUserKey(Key userKey)

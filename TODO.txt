@@ -8,11 +8,13 @@
     been judged yet
 * contestants: when a clarification is answered, notify the contestant
 * contestants: allow viewing submission after it's been answered
-* submit tab: show status of most recent submission if any
 * submit tab: do not allow submission if problem start time is null or in future
 * scoreboard: auto-refresh
 * listsubmissions:
    - auto-refresh on new submissions
+   - filter by New, Opened, or Closed/Responded
+* format_date: implement some sort of "format date" function
+* accepted file types: replace "TODO" with an actual list
 
 --future--
 * clarifications: allow "general" clarification questions and answers
@@ -31,6 +33,7 @@
 * sort usernames having numbers numerically
 * let some problems have non-text input and/or output files
 * define_problem: make link to test the reference solution
+* list_problems: implement "Download as Zip"
 
 --OLD--
 * message acknowledgement:

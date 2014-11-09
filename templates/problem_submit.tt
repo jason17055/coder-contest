@@ -8,12 +8,12 @@
 %]
 
 <h2>[% problem.name |html %]</h2>
-[% IF submission %]
+[% IF result.submission %]
 <div class="existing_submission">
 You submitted
-<a href="[% submission.source.url |html %]">[% submission.source.name |html %]</a>
-at <span class="minutes">[% submission.minutes |html %]</span> minutes.
-Its status is: <span class="status">[% submission.status |html %]</span>
+<a href="[% result.submission.source.url |html %]">[% result.submission.source.name |html %]</a>
+at <span class="minutes">[% result.submission.minutes |html %]</span> minutes.
+Its status is: <span class="status">[% result.submission.status |html %]</span>
 </div>
 [% END %]
 
