@@ -1,10 +1,9 @@
 * menu: hide problems that aren't "open"
-* file_upload: canonicalize line-endings on upload
+* edit_submission: the "Redo Tests" button sets Judge to null
 * Logout link doesn't work when working on a problem
 * problem: balloons
 * define_problem: make link to test the reference solution
 * rules: when phase changes, recalculate all teams scores
-* user: eliminate 'ordinal' property
 * submissions: assign ids in counting order
 * edit_clarification: make Cancel button release the submission if it hasn't
     been responded to yet
@@ -13,6 +12,10 @@
 * contestants: when a clarification is answered, notify the contestant
 * contestants: allow viewing submission after it's been answered
 * submit tab: show status of most recent submission if any
+* submit tab: do not allow submission if problem start time is null or in future
+* scoreboard: auto-refresh
+* listsubmissions:
+   - auto-refresh on new submissions
 
 --future--
 * clarifications: allow "general" clarification questions and answers
@@ -29,6 +32,7 @@
 * judges: specify which problems are seen by judges on the edit-judge screen,
     not on the edit-problem screen
 * sort usernames having numbers numerically
+* let some problems have non-text input and/or output files
 
 --OLD--
 * message acknowledgement:
@@ -46,7 +50,3 @@
    - unique image for congratulations popup
    - specify runtime limit
    - specify that output file should be treated as text
-* general notification architecture:
-   - notify completion of a run
-* listsubmissions:
-   - auto-refresh on new submissions

@@ -60,7 +60,6 @@ public class TemplateVariables
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
 		Query q = new Query("Problem")
 			.setAncestor(contestKey)
-		//	.addSort("ordinal")
 			.addSort("name")
 			;
 		PreparedQuery pq = ds.prepare(q);
@@ -722,7 +721,6 @@ public class TemplateVariables
 		public String username;
 		public String name;
 		public String description;
-		public int ordinal;
 		public boolean is_director;
 		public boolean is_judge;
 		public boolean is_contestant;
@@ -1598,9 +1596,6 @@ public class TemplateVariables
 			false;
 		u.name = (String) ent.getProperty("name");
 		u.description = (String) ent.getProperty("description");
-		u.ordinal = ent.hasProperty("ordinal") ?
-			(int)((Long)ent.getProperty("ordinal")).longValue() :
-			0;
 		u.score = ent.hasProperty("score") ?
 			(int)((Long)ent.getProperty("score")).longValue() :
 			0;

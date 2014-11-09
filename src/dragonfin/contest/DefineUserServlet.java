@@ -57,7 +57,6 @@ public class DefineUserServlet extends CoreServlet
 			form.put("username", u.username);
 			form.put("name", u.name);
 			form.put("description", u.description);
-			form.put("ordinal", u.ordinal);
 
 			form.put("is_director", u.is_director);
 			form.put("is_judge", u.is_judge);
@@ -71,7 +70,6 @@ public class DefineUserServlet extends CoreServlet
 			// creating a new record
 
 			Map<String,Object> form = new HashMap<String,Object>();
-			form.put("ordinal", "0");
 			form.put("visible", Boolean.TRUE);
 			form.put("is_contestant", Boolean.TRUE);
 
@@ -89,7 +87,6 @@ public class DefineUserServlet extends CoreServlet
 		public boolean can_change_name;
 		public boolean can_change_description;
 		public boolean can_change_password;
-		public boolean can_change_ordinal;
 		public boolean can_change_flags;
 	}
 
@@ -118,7 +115,6 @@ public class DefineUserServlet extends CoreServlet
 			p.can_change_name = true;
 			p.can_change_description = true;
 			p.can_change_password = true;
-			p.can_change_ordinal = true;
 			p.can_change_flags = true;
 			return p;
 		}
@@ -303,11 +299,6 @@ public class DefineUserServlet extends CoreServlet
 		String tmpPass = POST.get("password");
 		if (tmpPass != null && tmpPass.length() != 0 && p.can_change_password) {
 			ent1.setProperty("password", tmpPass);
-		}
-
-		// integers
-		if (p.can_change_ordinal) {
-			updateFromForm_int(ent1, POST, "ordinal");
 		}
 
 		// booleans

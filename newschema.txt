@@ -45,7 +45,6 @@ User [ "Contest.id" / "username" ]
 	is_contestant     Boolean
 	name              String
 	description       String
-	ordinal           Integer
 	visible           Boolean
 	online            Boolean
 	score             Integer
