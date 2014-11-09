@@ -10,7 +10,6 @@
     been responded to yet
 * edit_submission: make Cancel button release the submission if it hasn't
     been judged yet
-* worker script: put under resources directory
 * contestants: when a clarification is answered, notify the contestant
 * contestants: allow viewing submission after it's been answered
 * submit tab: show status of most recent submission if any
