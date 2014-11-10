@@ -206,11 +206,50 @@ public class CoreServlet extends HttpServlet
 			sa.user = userC;
 		}
 
+		Callable< List<BalloonInfo> > balloonsC = new Callable< List<BalloonInfo> >() {
+			public List<BalloonInfo> call() throws Exception
+			{
+				return enumBalloons();
+			}
+		};
+		ctx.put("all_balloon_images", balloonsC);
+
 		moreVars(tv, ctx);
 
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
+	}
+
+	public static class BalloonInfo
+	{
+		public String id;
+		public String name;
+	}
+
+	List<BalloonInfo> enumBalloons()
+		throws IOException
+	{
+		BufferedReader in = new BufferedReader(
+			new InputStreamReader(
+			getServletContext().getResourceAsStream("/images/scoreboard/balloons.txt")
+			));
+		try {
+
+			ArrayList<BalloonInfo> list = new ArrayList<BalloonInfo>();
+			String tmp;
+			while ( (tmp = in.readLine()) != null ) {
+				BalloonInfo b = new BalloonInfo();
+				b.id = tmp;
+				b.name = tmp;
+				list.add(b);
+			}
+			return list;
+		}
+		finally {
+
+			in.close();
+		}
 	}
 
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)

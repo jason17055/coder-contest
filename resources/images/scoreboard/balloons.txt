@@ -1,0 +1,12 @@
+blue
+brown
+cyan
+gray
+green
+olive
+orange
+pink
+purple
+red
+white
+yellow
