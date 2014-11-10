@@ -190,6 +190,14 @@ public class DefineProblemServlet extends CoreServlet
 		ent1.setProperty("input_is_text", new Boolean(POST.containsKey("input_is_text")));
 		ent1.setProperty("output_is_text", new Boolean(POST.containsKey("output_is_text")));
 
+		String t1 = POST.get("scoreboard_image");
+		if (t1 != null && t1.length() != 0) {
+			ent1.setProperty("scoreboard_image", t1);
+		}
+		else {
+			ent1.setProperty("scoreboard_image", null);
+		}
+
 		updateFromFormInt(ent1, POST, "difficulty");
 		updateFromFormInt(ent1, POST, "allocated_minutes");
 		updateFromFormInt(ent1, POST, "runtime_limit");

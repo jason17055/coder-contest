@@ -240,8 +240,15 @@ public class CoreServlet extends HttpServlet
 			String tmp;
 			while ( (tmp = in.readLine()) != null ) {
 				BalloonInfo b = new BalloonInfo();
-				b.id = tmp;
-				b.name = tmp;
+				int eq = tmp.indexOf('=');
+				if (eq != -1) {
+					b.id = tmp.substring(0, eq);
+					b.name = tmp.substring(eq+1);
+				}
+				else {
+					b.id = tmp;
+					b.name = tmp;
+				}
 				list.add(b);
 			}
 			return list;
