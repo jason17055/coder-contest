@@ -103,8 +103,9 @@ Submission [ User / id* ]
 	(parent key)      Key(User) submitter of the problem
 	created           Date
 	contest           String
-        problem           Key(Problem)
+	problem           Key(Problem)
 	status            String
+	ready             Boolean ready for judge to look at
 	judge             Key(User)
 	type              String 'submission', 'question'
   if type==submission:

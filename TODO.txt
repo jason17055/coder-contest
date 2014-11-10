@@ -1,5 +1,3 @@
-* edit_submission: the "Redo Tests" button sets Judge to null
-* problem: balloons
 * rules: when phase changes, recalculate all teams scores
 * submissions: assign ids in counting order
 * edit_clarification: make Cancel button release the submission if it hasn't
@@ -9,7 +7,9 @@
 * contestants: when a clarification is answered, notify the contestant
 * contestants: allow viewing submission after it's been answered
 * submit tab: do not allow submission if problem start time is null or in future
-* scoreboard: auto-refresh
+* scoreboard:
+   - auto-refresh
+   - check that balloons (both default and non-default) display correctly
 * listsubmissions:
    - auto-refresh on new submissions
    - filter by New, Opened, or Closed/Responded
