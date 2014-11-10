@@ -42,6 +42,7 @@ public class UpdateScoreTask extends HttpServlet
 	{
 		HttpServletRequest req;
 		HttpServletResponse resp;
+		TemplateVariables tv;
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		long sumScore;
 		long sumScoreAlt;
@@ -49,6 +50,7 @@ public class UpdateScoreTask extends HttpServlet
 		MyTask(HttpServletRequest req, HttpServletResponse resp) {
 			this.req = req;
 			this.resp = resp;
+			this.tv = new TemplateVariables(req);
 		}
 
 		void run()
@@ -61,6 +63,7 @@ public class UpdateScoreTask extends HttpServlet
 
 			String contestId = getContestFromUserKey(userKey);
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
+			TemplateVariables.Contest contest = tv.fetchContest(contestKey);
 
 			Query q = new Query("Result");
 			q.setAncestor(userKey);
@@ -69,9 +72,9 @@ public class UpdateScoreTask extends HttpServlet
 
 				// get the problem associated with this result
 				Key problemKey = KeyFactory.createKey(contestKey, "Problem", resultEnt.getKey().getId());
-				Entity problemEnt = ds.get(problemKey);
+				TemplateVariables.Problem p = tv.fetchProblem(problemKey);
 
-				if (!booleanProperty(problemEnt, "visible")) {
+				if (!p.onScoreboard(contest.current_phase_id)) {
 					// invisible problem; skip
 					continue;
 				}
