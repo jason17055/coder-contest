@@ -69,6 +69,7 @@ submission    - the currently-selected submission
 .minutes
 .test_results - TestResult[]
 .correct      - Boolean- true iff status is a "correct" status
+.ready        - Boolean- true if ready for judge to see
 
 system_test
 .edit_url

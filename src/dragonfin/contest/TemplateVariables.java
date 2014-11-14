@@ -273,7 +273,7 @@ public class TemplateVariables
 
 				try {
 					Problem p = s.getProblem();
-					if (p.canJudge(me)) {
+					if (p.canJudge(me) && checkSubmissionFilter(s)) {
 						list.add(s);
 					}
 				}
@@ -941,6 +941,32 @@ public class TemplateVariables
 			);
 	}
 
+	boolean checkSubmissionFilter(Submission s)
+	{
+		String f = req.getParameter("status");
+		if (f == null || f.equals("") || f.equals("all")) { return true; }
+
+		boolean isResponded = s.status != null && !s.status.equals("");
+		boolean isTaken = s.judgeKey != null;
+
+		if (f.equals("new")) {
+			return !s.ready;
+		}
+		else if (f.equals("ready")) {
+			return s.ready && !isTaken && !isResponded;
+		}
+		else if (f.equals("taken")) {
+			return isTaken && !isResponded;
+		}
+		else if (f.equals("closed")) {
+			return isResponded;
+		}
+		else {
+			// unrecognized status?
+			return false;
+		}
+	}
+
 	public class Submission
 	{
 		public final Key dsKey;
@@ -952,6 +978,7 @@ public class TemplateVariables
 		public String question;
 		public String answer;
 		public String answer_type;
+		public boolean ready;
 
 		Submission(Key dsKey)
 		{
@@ -971,7 +998,8 @@ public class TemplateVariables
 
 		public String getTake_url()
 		{
-			return makeUrl("take_submission?id="+escapeUrl(id));
+			return makeUrl("take_submission?id="+escapeUrl(id)
+				+"&next="+escapeUrl(getMyUrl(req)));
 		}
 
 		public String getSteal_url()
@@ -1689,6 +1717,7 @@ public class TemplateVariables
 		s.question = (String) ent.getProperty("question");
 		s.answer = (String) ent.getProperty("answer");
 		s.answer_type = (String) ent.getProperty("answer_type");
+		s.ready = handleBooleanProperty(ent, "ready");
 		return s;
 	}
 

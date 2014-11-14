@@ -9,6 +9,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+
 public class TakeSubmissionServlet extends CoreServlet
 {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -43,6 +45,9 @@ public class TakeSubmissionServlet extends CoreServlet
 		}
 
 		String url = s.getEdit_url();
+		if (req.getParameter("next") != null) {
+			url += "&next=" + escapeUrl(req.getParameter("next"));
+		}
 		resp.sendRedirect(url);
 
 		}

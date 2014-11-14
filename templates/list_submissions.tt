@@ -2,11 +2,20 @@
 	page_title = 'List Submissions'
 %]
 
+<form method="get" action="[% r.uri |html %]">
 <p>
 Status:
+<select name="status">
+<option value="all"[% r.status=='all' ? ' selected="selected"' : ''%]>All</option>
+<option value="new"[% r.status=='new' ? ' selected="selected"' : ''%]>New</option>
+<option value="ready"[% r.status=='ready' ? ' selected="selected"' : ''%]>Ready</option>
+<option value="taken"[% r.status=='taken' ? ' selected="selected"' : ''%]>Taken</option>
+<option value="closed"[% r.status=='closed' ? ' selected="selected"' : ''%]>Closed</option>
+</select>
+<button type="submit">Go</button>
 </p>
+</form>
 
-<form method="post" action="[% r.uri |html %]">
 <table class="realtable">
 <tr>
 <th>&nbsp;</th>
@@ -36,15 +45,6 @@ Status:
 </tr>
 [% END %]
 </table>
-<p>
-Assign selected submissions to:
-<select name="assign_to">
-<option value="">--nobody--</option>
-</select>
-<button name="action:assign">Go</button>
-</p>
-
-</form>
 
 <p>
 <a href=".">Home</a> |
