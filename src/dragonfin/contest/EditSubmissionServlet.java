@@ -39,14 +39,16 @@ public class EditSubmissionServlet extends CoreServlet
 	}
 
 	boolean checkAccess(HttpServletRequest req, HttpServletResponse resp, boolean modifyAccess)
-		throws IOException, ServletException
+		throws IOException
 	{
 		try {
 
 		String contestId = req.getParameter("contest");
 		String id = req.getParameter("id");
 		if (contestId == null || id == null) {
-			throw new ServletException("invalid request");
+
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return true;
 		}
 
 		TemplateVariables tv = makeTemplateVariables(req);
@@ -85,7 +87,9 @@ public class EditSubmissionServlet extends CoreServlet
 		} //end try
 		catch (EntityNotFoundException e) {
 
-			throw new ServletException("Entity unexpectedly missing from datastore", e);
+
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
+			return true;
 		}
 	}
 
