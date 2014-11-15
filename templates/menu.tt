@@ -62,7 +62,7 @@ Solution: [% m.source.name |html %]
 Clarification: [% m.question.substr(0,60) |html %]
 [% END %]
 </td>
-<td><a href="[% m.edit_url |html %]">[% m.answer ? m.answer.substr(0,60) : status |html %]</a></td>
+<td><a href="[% m.edit_url |html %]">[% m.answer ? m.answer.substr(0,60) : status || 'Pending' |html %]</a></td>
 </tr>
 [% END #foreach %]
 </table>
