@@ -4,19 +4,29 @@
     been responded to yet
 * edit_submission: make Cancel button release the submission if it hasn't
     been judged yet
-* contestants: when a clarification is answered, notify the contestant
-* contestants: allow viewing submission after it's been answered
-* submit tab: do not allow submission if problem start time is null or in future
+* submit tab
+   - do not allow submission if problem start time is null or in future
+   - prior submission status should say "Pending" if not judged yet
 * scoreboard:
    - auto-refresh
    - check that balloons (both default and non-default) display correctly
+* submissions:
+   - when contestant clicks Cancel, return contestant where they came from
+* clarifications:
+   - allow contestants to view their own before (or after) it's answered
+   - notify contestants when a new clarification is answered
 * listsubmissions:
    - auto-refresh on new submissions
-   - filter by New, Opened, or Closed/Responded
+   - after stealing a submission, we lose which status was being filtered
+   - hide 'Controller' link if not signed in as director
+* define_problems:
+   - allow judges access to this page
 * format_date: implement some sort of "format date" function
 * accepted file types: replace "TODO" with an actual list
+* auto-start/stop job broker on need
 
 --future--
+* contest: set runtime limit at contest level
 * clarifications: allow "general" clarification questions and answers
 * scoreboard: show time remaining in current round
 * programming language support
@@ -30,6 +40,7 @@
    - implement output file size limit
 * judges: specify which problems are seen by judges on the edit-judge screen,
     not on the edit-problem screen
+* cloud-based worker(s)
 * sort usernames having numbers numerically
 * let some problems have non-text input and/or output files
 * define_problem: make link to test the reference solution
