@@ -9,6 +9,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.TemplateVariables.makeSubmissionId;
+
 public class EditClarificationServlet extends CoreServlet
 {
 	String getTemplate()
@@ -183,16 +185,32 @@ public class EditClarificationServlet extends CoreServlet
 			throw new ServletException("Entity unexpectedly missing from datastore", e);
 		}
 
+		boolean answerChanged;
+		boolean firstAnswer;
+		boolean hadAnswer;
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
+		Entity ent;
 
 		try {
 
-			Entity ent = ds.get(submissionKey);
+			ent = ds.get(submissionKey);
+
+			String oldAnswer = (String) ent.getProperty("answer");
+			oldAnswer = oldAnswer != null ? oldAnswer : "";
+			String newAnswer = POST.get("answer");
+			answerChanged = !oldAnswer.equals(newAnswer);
+
+			String oldAnswerType = (String) ent.getProperty("answer_type");
+			oldAnswerType = oldAnswerType != null ? oldAnswerType : "";
+			hadAnswer = oldAnswerType.length() != 0;
+			String newAnswerType = POST.get("answer_type");
+			firstAnswer = !oldAnswerType.equals(newAnswerType);
 
 			ent.setProperty("question", POST.get("question"));
-			ent.setProperty("answer", POST.get("answer"));
-			ent.setProperty("answer_type", POST.get("answer_type"));
+			ent.setProperty("answer", newAnswer);
+			ent.setProperty("answer_type", newAnswerType);
 
 			ds.put(ent);
 			txn.commit();
@@ -207,6 +225,41 @@ public class EditClarificationServlet extends CoreServlet
 			}
 		}
 
+		if (firstAnswer || (answerChanged && hadAnswer)) {
+			notifyJudgment(ds, ent, firstAnswer);
+		}
+
 		doCancel(req, resp);
+	}
+
+	void notifyJudgment(DatastoreService ds, Entity subEnt, boolean firstJudgment)
+	{
+		Key userKey = subEnt.getKey().getParent();
+		String contestId = (String) subEnt.getProperty("contest");
+		Key problemKey = (Key) subEnt.getProperty("problem");
+
+		String problemName;
+		try {
+			Entity problemEnt = ds.get(problemKey);
+			problemName = (String) problemEnt.getProperty("name");
+		}
+		catch (EntityNotFoundException e) {
+			problemName = "Problem "+Long.toString(problemKey.getId());
+		}
+
+		String message = firstJudgment ?
+			String.format("Your question about %s has been answered.", problemName) :
+			String.format("Your question about %s has a new answer.", problemName);
+
+		String url = makeContestUrl(
+			contestId, "clarification",
+			String.format("id=%s", makeSubmissionId(subEnt.getKey()))
+			);
+
+		Entity messageEnt = new Entity("Message", userKey);
+		messageEnt.setProperty("created", new Date());
+		messageEnt.setProperty("message", message);
+		messageEnt.setProperty("url", url);
+		ds.put(messageEnt);
 	}
 }
