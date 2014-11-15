@@ -56,11 +56,6 @@ public class CheckMessageServlet extends HttpServlet
 		}
 		json.close();
 
-		String dismissMessage = req.getParameter("dismiss_message");
-		if (dismissMessage != null) {
-			m.dismissMessage(dismissMessage);
-		}
-
 		if (m.checkMultiple()) {
 			return;
 		}
@@ -123,11 +118,6 @@ public class CheckMessageServlet extends HttpServlet
 			}
 		}
 
-		String dismissMessage = req.getParameter("dismiss_message");
-		if (dismissMessage != null) {
-			m.dismissMessage(dismissMessage);
-		}
-
 		if (m.checkMultiple()) {
 			return;
 		}
@@ -164,11 +154,18 @@ public class CheckMessageServlet extends HttpServlet
 
 		void pokeUser()
 		{
+			String dismissMsgId = req.getParameter("dismiss_message");
+
 			Transaction txn = ds.beginTransaction();
 			try {
 				Entity ent = ds.get(userKey);
 				Date lastAccess = (Date) ent.getProperty("last_access");
 				ent.setProperty("last_access", new Date());
+
+				if (dismissMsgId != null) {
+					dismissMessage(ent, dismissMsgId);
+				}
+
 				ds.put(ent);
 				txn.commit();
 			}
@@ -255,10 +252,17 @@ public class CheckMessageServlet extends HttpServlet
 			checks.add(new UserStatusCheck(ds, contestId, username, status));
 		}
 
-		void dismissMessage(String messageId)
+		void dismissMessage(Entity ent, String messageId)
 		{
-			Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
-			ds.delete(messageKey);
+			if (messageId.startsWith("A:")) {
+				long announcementNumber = Long.parseLong(messageId.substring(2));
+				Key annKey = KeyFactory.createKey(makeContestKey(contestId), "Announcement", announcementNumber);
+				ent.setProperty("last_announcement_seen", annKey);
+			}
+			else {
+				Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
+				ds.delete(messageKey);
+			}
 		}
 
 		boolean checkForMessage(HttpServletRequest req, HttpServletResponse resp)
@@ -339,11 +343,19 @@ public class CheckMessageServlet extends HttpServlet
 		void emitMessageDetails(Entity ent)
 			throws IOException
 		{
+			String msgId;
+			if (ent.getKind().equals("Announcement")) {
+				msgId = "A:"+Long.toString(ent.getKey().getId());
+			}
+			else {
+				msgId = Long.toString(ent.getKey().getId());
+			}
+
 			resp.setContentType("text/json;charset=UTF-8");
 			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
 			out.writeStartObject();
 			out.writeStringField("class", "message");
-			out.writeStringField("message_id", Long.toString(ent.getKey().getId()));
+			out.writeStringField("message_id", msgId);
 			out.writeStringField("message", (String)ent.getProperty("message"));
 			out.writeStringField("url", (String)ent.getProperty("url"));
 			out.writeStringField("messagetype",
