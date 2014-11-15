@@ -1,5 +1,6 @@
 [% WRAPPER "common.inc"
-	page_title = submission ? 'Edit Submission' : 'New Submission'
+	page_title = submission && submission.can_judge ? 'Edit Submission' :
+		submission ? 'View Submission' : 'New Submission'
 %]
 
 [% INCLUDE 'check_submission_ownership.inc' %]
@@ -63,13 +64,13 @@
 
 </form>
 
-[% IF submission %]
+[% IF submission && submission.can_judge %]
 <h3 class="submission_h3">Source Code:</h3>
 <iframe id="source_code_iframe" src="[% submission.source.inline_text_url |html %]"></iframe>
 [% END #if editing an existing submission %]
 
 </td>
-[% IF submission %]
+[% IF submission && submission.can_judge %]
 <td id="rhs_column" width="40%" valign="top">
 <h3 class="submission_h3">Test Results:</h3>
 <table border="1" width="100%">

@@ -649,6 +649,9 @@ public class TemplateVariables
 			if (this.judged_by == null) {
 				return false;
 			}
+			if (!u.is_judge) {
+				return false;
+			}
 			for (String j : this.judged_by.split(",\\s*")) {
 				if (j.equals("*")) {
 					return true;
@@ -993,6 +996,19 @@ public class TemplateVariables
 			}
 			else {
 				return "submission?id="+id;
+			}
+		}
+
+		public boolean getCan_judge()
+		{
+			Key userKey = getLoggedInUserKey(req);
+			try {
+				User me = fetchUser(userKey);
+				return getProblem().canJudge(me);
+			}
+			catch (EntityNotFoundException e) {
+				// invalid user
+				return false;
 			}
 		}
 

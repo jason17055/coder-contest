@@ -72,8 +72,7 @@ public class EditSubmissionServlet extends CoreServlet
 		}
 
 		// check judge access
-		TemplateVariables.Problem p = s.getProblem();
-		if (p.canJudge(user)) {
+		if (s.getCan_judge()) {
 
 			return false;
 		}
