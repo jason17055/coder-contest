@@ -1020,10 +1020,15 @@ public class TemplateVariables
 			return problemKey != null ? fetchProblem(problemKey) : null;
 		}
 
+		Key getSubmitterKey()
+		{
+			return dsKey.getParent();
+		}
+
 		public User getSubmitter()
 			throws EntityNotFoundException
 		{
-			return fetchUser(dsKey.getParent());
+			return fetchUser(getSubmitterKey());
 		}
 
 		Key judgeKey;

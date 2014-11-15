@@ -28,12 +28,66 @@ public class EditSubmissionServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireJudge(req, resp)) { return; }
+		if (requireContest(req, resp)) { return; }
+
+		if (checkAccess(req, resp, false)) { return; }
 
 		//TODO- check that the judge can actually access this specific
 		// submission
 
 		renderTemplate(req, resp, getTemplate());
+	}
+
+	boolean checkAccess(HttpServletRequest req, HttpServletResponse resp, boolean modifyAccess)
+		throws IOException, ServletException
+	{
+		try {
+
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+		if (contestId == null || id == null) {
+			throw new ServletException("invalid request");
+		}
+
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Submission s = tv.fetchSubmission(contestId, id);
+		TemplateVariables.User user = tv.fetchUser(getLoggedInUserKey(req));
+
+		if (modifyAccess) {
+			// to modify, the user must be the "judge" of this submission
+			if (s.getJudge() == user) {
+				return false;
+			}
+
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"Someone else is responding to this submission.");
+			return true;
+		}
+
+		// check submitter access
+		if (s.getSubmitterKey().equals(getLoggedInUserKey(req))) {
+
+			// ok, the submitter can see their own submission
+			return false;
+		}
+
+		// check judge access
+		TemplateVariables.Problem p = s.getProblem();
+		if (p.canJudge(user)) {
+
+			return false;
+		}
+
+		resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+			"You do not have access to this submission."
+			);
+		return true;
+
+		} //end try
+		catch (EntityNotFoundException e) {
+
+			throw new ServletException("Entity unexpectedly missing from datastore", e);
+		}
 	}
 
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
