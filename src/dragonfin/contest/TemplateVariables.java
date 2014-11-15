@@ -946,7 +946,7 @@ public class TemplateVariables
 		String f = req.getParameter("status");
 		if (f == null || f.equals("") || f.equals("all")) { return true; }
 
-		boolean isResponded = s.status != null && !s.status.equals("");
+		boolean isResponded = s.status != null && !s.status.equals("") && !s.status.equals("Pending");
 		boolean isTaken = s.judgeKey != null;
 
 		if (f.equals("new")) {
@@ -1708,6 +1708,10 @@ public class TemplateVariables
 		s.problemKey = (Key) ent.getProperty("problem");
 		s.created = (Date) ent.getProperty("created");
 		s.status = (String) ent.getProperty("status");
+		if (s.status == null || s.status.equals("")) {
+			s.status = "Pending";
+		}
+
 		s.judgeKey = (Key) ent.getProperty("judge");
 		s.minutes = ent.hasProperty("minutes") ?
 			(int)((Long) ent.getProperty("minutes")).longValue() :
