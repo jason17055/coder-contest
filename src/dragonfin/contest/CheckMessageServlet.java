@@ -267,17 +267,27 @@ public class CheckMessageServlet extends HttpServlet
 				return false;
 			}
 
+			Entity msgEnt = fetchFirstMessage();
+			if (msgEnt != null) {
+				emitMessageDetails(msgEnt);
+				return true;
+			}
+
+			return false;
+		}
+
+		Entity fetchFirstMessage()
+		{
 			Query q = new Query("Message");
 			q.setAncestor(userKey);
 			q.addSort("created");
 
 			PreparedQuery pq = ds.prepare(q);
 			for (Entity ent : pq.asIterable()) {
-				emitMessageDetails(ent);
-				return true;
+				return ent;
 			}
 
-			return false;
+			return null;
 		}
 
 		void emitMessageDetails(Entity ent)
