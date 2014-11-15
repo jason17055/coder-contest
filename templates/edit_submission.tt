@@ -18,45 +18,50 @@
 </tr>
 <tr>
 <td>Problem:</td>
-<td><a href="[% f.problem.edit_url |html %]">[% f.problem.name |html %]</a></td>
+<td><a href="[% f.problem.url |html %]">[% f.problem.name |html %]</a></td>
 </tr>
 <tr>
 <td>Minutes:</td>
-<td><input type="text" name="minutes" value="[% submission.minutes |html %]"></td>
+<td><input type="text" name="minutes" value="[% submission.minutes |html %]"[% submission.is_mine ? '' : ' disabled="disabled"' %]></td>
 </tr>
 <tr>
 <td><label>Submission Time:</label></td>
-<td><input type="text" name="created" value="[% submission.created |html %]"></td>
+<td><input type="text" name="created" value="[% submission.created |html %]"[% submission.is_mine ? '' : ' disabled="disabled"' %]></td>
 </tr>
 <tr>
 <td valign="top"><label>Source code:</label></td>
 <td valign="top">
-<div>[% INCLUDE 'select_file_widget.inc' name = 'source' value = submission.source %]</div>
+<div>[% INCLUDE 'select_file_widget.inc' name = 'source' value = submission.source readonly = !submission.is_mine %]</div>
 </td>
 </tr>
 <tr>
 <td><label>Status:</label></td>
-<td><select name="status">
+<td>[% IF submission.is_mine %]<select name="status">
 [% found=!submission.status %]
 <option value=""[% !submission.status ? ' selected="selected"' : '' %]>(not judged)</option>
 [% FOREACH opt IN contest.status_choices %]
 [% IF submission.status==opt found='1' END %]
 <option value="[% opt |html %]"[% submission.status==opt ? ' selected="selected"' : '' %]>[% opt |html %]</option>
-[% END %]
+[% END #each opt %]
 <option value="**other**"[% !found ? ' selected="selected"' : '' %]>(other)</option>
 </select>
 <input type="text" name="status_other" value="[% !found ? submission.status : '' |html %]">
+[% ELSE
+	submission.status || 'Pending' |html
+   END %]
 </td>
 </tr>
 </table>
 
 <div>
 [% IF submission %]
+[% IF submission.is_mine %]
 <button type="submit">Save Changes</button>
+[% END %]
 [% IF session.is_director %]
 <button type="submit" name="action:delete_submission" onclick='return confirm("Really delete this submission?")'>Delete</button>
 [% END #if is_director %]
-[% ELSE %]
+[% ELSE #not existing submission %]
 <button type="submit" name="action:create_submission">Create Submission</button>
 [% END %]
 <button type="submit" name="action:cancel">Cancel</button>
