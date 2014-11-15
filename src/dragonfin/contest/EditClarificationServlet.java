@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
+import static dragonfin.contest.EditAnnouncementServlet.createAnnouncement;
 
 public class EditClarificationServlet extends CoreServlet
 {
@@ -226,40 +227,65 @@ public class EditClarificationServlet extends CoreServlet
 		}
 
 		if (firstAnswer || (answerChanged && hadAnswer)) {
+			try {
 			notifyJudgment(ds, ent, firstAnswer);
+			}
+			catch (EntityNotFoundException e) {
+				throw new ServletException("Unexpectedly missing entity in datastore", e);
+			}
 		}
 
 		doCancel(req, resp);
 	}
 
 	void notifyJudgment(DatastoreService ds, Entity subEnt, boolean firstJudgment)
+		throws EntityNotFoundException
 	{
+		String answerType = (String) subEnt.getProperty("answer_type");
+		boolean broadcast = answerType != null && answerType.equals("REPLY_ALL");
+
 		Key userKey = subEnt.getKey().getParent();
 		String contestId = (String) subEnt.getProperty("contest");
 		Key problemKey = (Key) subEnt.getProperty("problem");
 
-		String problemName;
-		try {
-			Entity problemEnt = ds.get(problemKey);
-			problemName = (String) problemEnt.getProperty("name");
-		}
-		catch (EntityNotFoundException e) {
+		Entity problemEnt = ds.get(problemKey);
+		String problemName = (String) problemEnt.getProperty("name");
+		if (problemName == null || problemName.equals("")) {
 			problemName = "Problem "+Long.toString(problemKey.getId());
 		}
 
-		String message = firstJudgment ?
+		String message;
+		if (broadcast) {
+			message =
+			String.format("A clarification on %s has been issued.", problemName);
+		}
+		else {
+			message = firstJudgment ?
 			String.format("Your question about %s has been answered.", problemName) :
 			String.format("Your question about %s has a new answer.", problemName);
+		}
 
 		String url = makeContestUrl(
 			contestId, "clarification",
 			String.format("id=%s", makeSubmissionId(subEnt.getKey()))
 			);
+		if (broadcast) {
+			url = makeContestUrl(
+			contestId, String.format("problem.%d/clarifications",
+				problemKey.getId()));
+		}
 
-		Entity messageEnt = new Entity("Message", userKey);
-		messageEnt.setProperty("created", new Date());
-		messageEnt.setProperty("message", message);
-		messageEnt.setProperty("url", url);
-		ds.put(messageEnt);
+		if (broadcast) {
+
+			createAnnouncement(contestId, "*", message, url);
+
+		}
+		else {
+			Entity messageEnt = new Entity("Message", userKey);
+			messageEnt.setProperty("created", new Date());
+			messageEnt.setProperty("message", message);
+			messageEnt.setProperty("url", url);
+			ds.put(messageEnt);
+		}
 	}
 }

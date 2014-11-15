@@ -85,7 +85,7 @@ public class EditAnnouncementServlet extends CoreServlet
 			// true announcement
 			try {
 
-			createAnnouncement(contestId, recipient, message);
+			createAnnouncement(contestId, recipient, message, null);
 
 			}
 			catch (EntityNotFoundException e) {
@@ -101,7 +101,7 @@ public class EditAnnouncementServlet extends CoreServlet
 		doCancel(req, resp);
 	}
 
-	void createAnnouncement(String contestId, String recipientGroup, String message)
+	static void createAnnouncement(String contestId, String recipientGroup, String message, String url)
 		throws EntityNotFoundException
 	{
 		Key contestKey = KeyFactory.createKey("Contest", contestId);
@@ -125,6 +125,9 @@ public class EditAnnouncementServlet extends CoreServlet
 			ent1.setProperty("recipient_group", recipientGroup);
 			ent1.setProperty("message", message);
 			ent1.setProperty("number", announceId);
+			if (url != null) {
+				ent1.setProperty("url", url);
+			}
 			ds.put(ent1);
 
 			txn.commit();
