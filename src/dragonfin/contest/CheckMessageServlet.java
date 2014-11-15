@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 import com.fasterxml.jackson.core.*;
 
+import static dragonfin.contest.TemplateVariables.makeContestKey;
 import static dragonfin.contest.TemplateVariables.makeUserKey;
 import static dragonfin.contest.TemplateVariables.makeTestResultId;
 import static dragonfin.contest.TemplateVariables.parseTestResultId;
@@ -268,8 +269,25 @@ public class CheckMessageServlet extends HttpServlet
 			}
 
 			Entity msgEnt = fetchFirstMessage();
-			if (msgEnt != null) {
+			Entity annEnt = fetchNextAnnouncement();
+
+			if (msgEnt != null && annEnt != null) {
+				Date msgDate = (Date) msgEnt.getProperty("created");
+				Date annDate = (Date) annEnt.getProperty("created");
+				if (msgDate.compareTo(annDate) < 0) {
+					emitMessageDetails(msgEnt);
+				}
+				else {
+					emitMessageDetails(annEnt);
+				}
+				return true;
+			}
+			else if (msgEnt != null) {
 				emitMessageDetails(msgEnt);
+				return true;
+			}
+			else if (annEnt != null) {
+				emitMessageDetails(annEnt);
 				return true;
 			}
 
@@ -290,16 +308,46 @@ public class CheckMessageServlet extends HttpServlet
 			return null;
 		}
 
+		Entity fetchNextAnnouncement()
+		{
+			try {
+			Entity userEnt = ds.get(userKey);
+			Key lastAnnouncement = (Key) userEnt.getProperty("last_announcement_seen");
+			long lastNumber = lastAnnouncement != null ? lastAnnouncement.getId() : 0;
+
+			Query q = new Query("Announcement");
+			q.setAncestor(makeContestKey(contestId));
+			q.setFilter(
+				Query.FilterOperator.GREATER_THAN.of("number", lastNumber)
+				);
+			q.addSort("number");
+
+			PreparedQuery pq = ds.prepare(q);
+			for (Entity ent : pq.asIterable()) {
+				String rcpt = (String) ent.getProperty("recipient_group");
+				if (rcpt != null && rcpt.equals("*")) {
+					return ent;
+				}
+			}
+
+			}
+			catch (EntityNotFoundException e) {}
+
+			return null;
+		}
+
 		void emitMessageDetails(Entity ent)
 			throws IOException
 		{
 			resp.setContentType("text/json;charset=UTF-8");
 			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
 			out.writeStartObject();
+			out.writeStringField("class", "message");
 			out.writeStringField("message_id", Long.toString(ent.getKey().getId()));
 			out.writeStringField("message", (String)ent.getProperty("message"));
 			out.writeStringField("url", (String)ent.getProperty("url"));
-			out.writeStringField("messagetype", "N");
+			out.writeStringField("messagetype",
+				ent.getKind().equals("Announcement") ? "A" : "N");
 			out.writeEndObject();
 			out.close();
 		}

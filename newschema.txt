@@ -50,6 +50,7 @@ User [ "Contest.id" / "username" ]
 	score             Integer
 	score_alt         Integer
 	last_access       Date
+	last_announcement_seen Key
 
 Problem [ Contest / id ]
 	name                  String
@@ -161,8 +162,10 @@ Worker [ Contest / id* ]
 
 Announcement [ Contest / id* ]
 	created           Date
+	number            Integer
 	recipient_group   String (one of *, judges, scoreboard, etc.)
 	message           String
+	url               String
 
 Message [ User / id* ]
 	(parent key)      Key(User) recipient of the message

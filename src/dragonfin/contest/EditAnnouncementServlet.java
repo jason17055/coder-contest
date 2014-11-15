@@ -124,6 +124,7 @@ public class EditAnnouncementServlet extends CoreServlet
 			ent1.setProperty("created", new Date());
 			ent1.setProperty("recipient_group", recipientGroup);
 			ent1.setProperty("message", message);
+			ent1.setProperty("number", announceId);
 			ds.put(ent1);
 
 			txn.commit();

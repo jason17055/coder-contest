@@ -1242,11 +1242,16 @@ public class TemplateVariables
 	{
 	}
 
+	static Key makeContestKey(String contestId)
+	{
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		return contestKey;
+	}
+
 	Contest fetchContest(String contestId)
 		throws EntityNotFoundException
 	{
-		Key contestKey = KeyFactory.createKey("Contest", contestId);
-		return fetchContest(contestKey);
+		return fetchContest(makeContestKey(contestId));
 	}
 
 	HashMap<Key,Contest> cachedContests = new HashMap<Key,Contest>();
