@@ -15,6 +15,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
 import static dragonfin.contest.TemplateVariables.parseSubmissionId;
+import static dragonfin.contest.TemplateVariables.handleIntProperty;
 
 public class EditSubmissionServlet extends BaseSubmissionServlet
 {
@@ -170,7 +171,7 @@ public class EditSubmissionServlet extends BaseSubmissionServlet
 		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
 			req.getAttribute("POST");
 
-		boolean statusChanged;
+		boolean resultChanged;
 		boolean firstJudgment;
 
 		Key userKey = submissionKey.getParent();
@@ -193,10 +194,15 @@ public class EditSubmissionServlet extends BaseSubmissionServlet
 				firstJudgment = false;
 			}
 
+			int oldMinutes = handleIntProperty(ent, "minutes", 0);
+
 			updateFromForm(ent, POST);
 
 			String newStatus = (String) ent.getProperty("status");
-			statusChanged = !oldStatus.equals(newStatus);
+			int newMinutes = handleIntProperty(ent, "minutes", 0);
+
+			resultChanged = !oldStatus.equals(newStatus) ||
+				oldMinutes != newMinutes;
 
 			ds.put(ent);
 
@@ -212,7 +218,7 @@ public class EditSubmissionServlet extends BaseSubmissionServlet
 			}
 		}
 
-		if (statusChanged) {
+		if (resultChanged) {
 
 			// send a message to the submitter
 			notifyJudgment(ds, ent, firstJudgment);
