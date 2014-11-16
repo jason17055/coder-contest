@@ -43,6 +43,8 @@ problem      - properties of the currently-selected problem
 .clarifications - Clarification[]
 .new_system_test_url
 .new_clarification_url
+.scoreboard_image
+.scoreboard_image_url
 
 contest_links
 .controller

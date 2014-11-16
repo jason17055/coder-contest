@@ -485,6 +485,13 @@ public class TemplateVariables
 			return makeUrl("clarification?problem="+id);
 		}
 
+		public String getScoreboard_image_url()
+		{
+			return req.getContextPath()+"/images/scoreboard/"+
+				(scoreboard_image != null ? scoreboard_image : "balloon")+
+				".png";
+		}
+
 		public String getUrl()
 		{
 			return makeUrl("problem."+id+"/");
