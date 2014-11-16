@@ -45,3 +45,33 @@ function initializeClock()
 }
 
 $(initializeClock);
+
+//////////////////////////////////////////////////////////////////////////////
+/// Hilight element if one is selected by the url
+///
+$(function() {
+	if (location.hash) {
+		var el = document.getElementById(location.hash.substring(1));
+		if (el) {
+			flashElement(el, 0);
+		}
+		else {
+			console.log('could not find '+location.hash);
+		}
+	}
+});
+
+function flashElement(el, count)
+{
+	if (count % 2 == 0) {
+		$(el).addClass('hilight');
+		$(el).removeClass('hilight_out');
+	}
+	else {
+		$(el).addClass('hilight_out');
+		$(el).removeClass('hilight');
+	}
+	if (count < 6) {
+		setTimeout(function() { flashElement(el,count+1); }, 500);
+	}
+}

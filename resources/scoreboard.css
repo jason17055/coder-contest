@@ -341,3 +341,11 @@ tr.solution_row.selected {
 	background-color: #f88;
 	color: black;
 }
+
+.clarification.hilight .clarification-answer {
+	transition: background-color 400ms linear;
+	background-color: #ff8;
+}
+.clarification.hilight_out .clarification-answer {
+	transition: background-color 400ms linear;
+}
