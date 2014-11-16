@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
+import static dragonfin.contest.TemplateVariables.parseSubmissionId;
 import static dragonfin.contest.EditAnnouncementServlet.createAnnouncement;
 
 public class EditClarificationServlet extends CoreServlet
@@ -75,8 +76,10 @@ public class EditClarificationServlet extends CoreServlet
 	}
 
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException
+		throws IOException, ServletException
 	{
+		maybeReleaseSubmission(req);
+
 		String u = req.getParameter("next");
 		if (u == null) {
 			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
@@ -148,6 +151,42 @@ public class EditClarificationServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
+	}
+
+	void maybeReleaseSubmission(HttpServletRequest req)
+		throws ServletException
+	{
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+
+		Key userKey = getLoggedInUserKey(req);
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Transaction txn = ds.beginTransaction();
+		try {
+
+			Entity ent = ds.get(parseSubmissionId(contestId, id));
+			String answerType = (String) ent.getProperty("answer_type");
+			Key judgeKey = (Key) ent.getProperty("judge");
+
+			if ((answerType == null || answerType.equals(""))
+				&&
+				(judgeKey != null && judgeKey.equals(userKey)))
+			{
+				ent.setProperty("judge", null);
+				ds.put(ent);
+			}
+
+			txn.commit();
+		}
+		catch (EntityNotFoundException e) {
+			throw new ServletException("Unexpectedly missing some entities in datastore", e);
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
 	}
 
 	void doUpdateClarification(HttpServletRequest req, HttpServletResponse resp)
