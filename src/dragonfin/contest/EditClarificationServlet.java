@@ -14,7 +14,7 @@ import static dragonfin.contest.TemplateVariables.parseSubmissionId;
 import static dragonfin.contest.EditAnnouncementServlet.createAnnouncement;
 import static dragonfin.contest.HBase64.html64;
 
-public class EditClarificationServlet extends CoreServlet
+public class EditClarificationServlet extends BaseSubmissionServlet
 {
 	String getTemplate()
 	{
@@ -74,18 +74,6 @@ public class EditClarificationServlet extends CoreServlet
 			// new clarification
 			doCreateClarification(req, resp);
 		}
-	}
-
-	void doCancel(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException, ServletException
-	{
-		maybeReleaseSubmission(req);
-
-		String u = req.getParameter("next");
-		if (u == null) {
-			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
-		}
-		resp.sendRedirect(u);
 	}
 
 	void doCreateClarification(HttpServletRequest req, HttpServletResponse resp)
@@ -152,42 +140,6 @@ public class EditClarificationServlet extends CoreServlet
 		}
 
 		doCancel(req, resp);
-	}
-
-	void maybeReleaseSubmission(HttpServletRequest req)
-		throws ServletException
-	{
-		String contestId = req.getParameter("contest");
-		String id = req.getParameter("id");
-
-		Key userKey = getLoggedInUserKey(req);
-
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = ds.beginTransaction();
-		try {
-
-			Entity ent = ds.get(parseSubmissionId(contestId, id));
-			String answerType = (String) ent.getProperty("answer_type");
-			Key judgeKey = (Key) ent.getProperty("judge");
-
-			if ((answerType == null || answerType.equals(""))
-				&&
-				(judgeKey != null && judgeKey.equals(userKey)))
-			{
-				ent.setProperty("judge", null);
-				ds.put(ent);
-			}
-
-			txn.commit();
-		}
-		catch (EntityNotFoundException e) {
-			throw new ServletException("Unexpectedly missing some entities in datastore", e);
-		}
-		finally {
-			if (txn.isActive()) {
-				txn.rollback();
-			}
-		}
 	}
 
 	void doUpdateClarification(HttpServletRequest req, HttpServletResponse resp)

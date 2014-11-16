@@ -16,7 +16,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
 import static dragonfin.contest.TemplateVariables.parseSubmissionId;
 
-public class EditSubmissionServlet extends CoreServlet
+public class EditSubmissionServlet extends BaseSubmissionServlet
 {
 	private static final Logger log = Logger.getLogger(EditSubmissionServlet.class.getName());
 
@@ -36,61 +36,6 @@ public class EditSubmissionServlet extends CoreServlet
 		// submission
 
 		renderTemplate(req, resp, getTemplate());
-	}
-
-	boolean checkAccess(HttpServletRequest req, HttpServletResponse resp, boolean modifyAccess)
-		throws IOException
-	{
-		try {
-
-		String contestId = req.getParameter("contest");
-		String id = req.getParameter("id");
-		if (contestId == null || id == null) {
-
-			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-			return true;
-		}
-
-		TemplateVariables tv = makeTemplateVariables(req);
-		TemplateVariables.Submission s = tv.fetchSubmission(contestId, id);
-		TemplateVariables.User user = tv.fetchUser(getLoggedInUserKey(req));
-
-		if (modifyAccess) {
-			// to modify, the user must be the "judge" of this submission
-			if (s.getJudge() == user) {
-				return false;
-			}
-
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-				"Someone else is responding to this submission.");
-			return true;
-		}
-
-		// check submitter access
-		if (s.getSubmitterKey().equals(getLoggedInUserKey(req))) {
-
-			// ok, the submitter can see their own submission
-			return false;
-		}
-
-		// check judge access
-		if (s.getCan_judge()) {
-
-			return false;
-		}
-
-		resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-			"You do not have access to this submission."
-			);
-		return true;
-
-		} //end try
-		catch (EntityNotFoundException e) {
-
-
-			resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
-			return true;
-		}
 	}
 
 	void moreVars(TemplateVariables tv, SimpleBindings ctx)
@@ -158,16 +103,6 @@ public class EditSubmissionServlet extends CoreServlet
 
 		// show the current page again
 		resp.sendRedirect(getMyUrl(req));
-	}
-
-	void doCancel(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException
-	{
-		String u = req.getParameter("next");
-		if (u == null) {
-			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
-		}
-		resp.sendRedirect(u);
 	}
 
 	void doCreateSubmission(HttpServletRequest req, HttpServletResponse resp)
