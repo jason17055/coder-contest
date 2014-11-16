@@ -5,6 +5,7 @@ import static dragonfin.contest.CoreServlet.getBaseUrl;
 import static dragonfin.contest.CoreServlet.getMyUrl;
 import static dragonfin.contest.CoreServlet.getLoggedInUserKey;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+import static dragonfin.contest.HBase64.html64;
 
 import java.util.*;
 import java.util.regex.*;
@@ -987,6 +988,11 @@ public class TemplateVariables
 		{
 			this.dsKey = dsKey;
 			this.id = makeSubmissionId(dsKey);
+		}
+
+		public String getHtml_id()
+		{
+			return "s-"+html64(id);
 		}
 
 		public String getEdit_url()

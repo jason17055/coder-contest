@@ -10,6 +10,7 @@
 <h2>[% problem.name |html %]</h2>
 
 [% FOREACH c IN problem.clarifications %]
+<div class="clarification" id="[% c.html_id |html %]">
 [% cl = 'own-question' %]
 <div class="clarification-question [% cl %]">
 <div class="clarification-author"><span class="author">[% c.submitter.name |html %]</span> asked:</div>
@@ -32,6 +33,7 @@
 [% ELSE # clarification has no response %]
 <div class="clarification-answer-none">No response at this time.</div>
 [% END # if clarification no response %]
+</div>
 [% END #each clarification %]
 [% IF problem.clarifications.size == 0 %]
 <p>

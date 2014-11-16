@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.*;
 import static dragonfin.contest.TemplateVariables.makeSubmissionId;
 import static dragonfin.contest.TemplateVariables.parseSubmissionId;
 import static dragonfin.contest.EditAnnouncementServlet.createAnnouncement;
+import static dragonfin.contest.HBase64.html64;
 
 public class EditClarificationServlet extends CoreServlet
 {
@@ -305,14 +306,10 @@ public class EditClarificationServlet extends CoreServlet
 		}
 
 		String url = makeContestUrl(
-			contestId, "clarification",
-			String.format("id=%s", makeSubmissionId(subEnt.getKey()))
-			);
-		if (broadcast) {
-			url = makeContestUrl(
-			contestId, String.format("problem.%d/clarifications",
-				problemKey.getId()));
-		}
+			contestId, String.format("problem.%d/clarifications#s-%s",
+				problemKey.getId(),
+				html64(makeSubmissionId(subEnt.getKey()))
+				));
 
 		if (broadcast) {
 
