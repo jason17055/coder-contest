@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="[%resources_prefix|html%]/scoreboard_live.css">
 <script type="text/javascript" src="[%resources_prefix|html%]/jquery-latest.min.js"></script>
 <script type="text/javascript" src="[%resources_prefix|html%]/scoreboard_live.js"></script>
+<meta http-equiv="refresh" content="60">
 </head>
 <body data-checkmessage-url="[% ajax_url|html %]/checkmessage">
 
@@ -64,7 +65,7 @@
 <html>
 <head>
 <title>Scoreboard Disabled</title>
-<meta http-equiv="refresh" content="180">
+<meta http-equiv="refresh" content="60">
 </head>
 <body>
 <h1>Scoreboard Disabled</h1>
