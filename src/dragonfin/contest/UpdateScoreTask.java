@@ -16,6 +16,15 @@ public class UpdateScoreTask extends HttpServlet
 {
 	private static final Logger log = Logger.getLogger(UpdateScoreTask.class.getName());
 
+	public static void enqueueTask_all(String contestId)
+	{
+		Queue taskQueue = QueueFactory.getDefaultQueue();
+		taskQueue.add(
+			TaskOptions.Builder.withUrl("/_task/update_score")
+			.param("contest", contestId)
+			);
+	}
+
 	public static void enqueueTask(Key userKey)
 	{
 		Queue taskQueue = QueueFactory.getDefaultQueue();
@@ -53,9 +62,28 @@ public class UpdateScoreTask extends HttpServlet
 			this.tv = new TemplateVariables(req);
 		}
 
+		void updateAllScores()
+			throws EntityNotFoundException
+		{
+			log.info("update score for ALL users");
+
+			String contestId = req.getParameter("contest");
+			Key contestKey = KeyFactory.createKey("Contest", contestId);
+			TemplateVariables.Contest contest = tv.fetchContest(contestKey);
+
+			for (TemplateVariables.User u : contest.getUsers()) {
+				enqueueTask(u.dsKey);
+			}
+		}
+
 		void run()
 			throws EntityNotFoundException
 		{
+			if (req.getParameter("contest") != null && req.getParameter("user") == null) {
+				updateAllScores();
+				return;
+			}
+
 			String userId = req.getParameter("user");
 			Key userKey = KeyFactory.createKey("User", userId);
 

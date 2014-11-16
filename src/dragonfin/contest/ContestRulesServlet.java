@@ -100,10 +100,10 @@ public class ContestRulesServlet extends CoreServlet
 		Transaction txn = ds.beginTransaction();
 
 		boolean phaseChanged = false;
+		String contestId = req.getParameter("contest");
 
 		try {
 
-			String contestId = req.getParameter("contest");
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
 
 			Entity ent = ds.get(contestKey);
@@ -158,7 +158,8 @@ public class ContestRulesServlet extends CoreServlet
 		}
 
 		if (phaseChanged) {
-			// TODO- recalculate all teams' scores
+			// recalculate all teams' scores
+			UpdateScoreTask.enqueueTask_all(contestId);
 		}
 
 		doCancel(req, resp);
