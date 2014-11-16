@@ -163,6 +163,32 @@ public class TemplateVariables
 		return list;
 	}
 
+	static final Comparator<User> ORDER_USER_BY_NAME = new Comparator<User>() {
+		public int compare(User a, User b) {
+			return a.name.compareTo(b.name);
+		}
+	};
+	static final Comparator<User> ORDER_USER_BY_SCORE = new Comparator<User>() {
+		public int compare(User a, User b) {
+			if (a.score == b.score) {
+				return a.score_alt > b.score_alt ? -1 :
+					a.score_alt < b.score_alt ? 1 :
+					ORDER_USER_BY_NAME.compare(a, b);
+			}
+			else if (a.score > b.score) {
+				return -1;
+			}
+			else {
+				return 1;
+			}
+		}
+	};
+	static final Comparator<User> ORDER_USER_BY_ID = new Comparator<User>() {
+		public int compare(User a, User b) {
+			return a.username.compareTo(b.username);
+		}
+	};
+
 	public static final int MAX_PHASE_NUMBER = 4;
 	public class Contest
 	{
@@ -313,6 +339,10 @@ public class TemplateVariables
 					list.add(u);
 				}
 			}
+			Collections.sort(list,
+				scoreboard_order.equals("n") ? ORDER_USER_BY_NAME :
+				scoreboard_order.equals("s") ? ORDER_USER_BY_SCORE :
+				ORDER_USER_BY_ID);
 			return list;
 		}
 

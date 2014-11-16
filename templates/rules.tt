@@ -87,7 +87,7 @@ Change password</label>
 <div class="not_implemented"><small>(Not implemented.)</small></div></td>
 <td>
 <label><input type="radio" name="scoreboard_order" value="n"[% f.scoreboard_order=='n' ? ' checked="checked"' : '' %]>Team name</label>
-<label><input type="radio" name="scoreboard_order" value="o"[% f.scoreboard_order=='o' ? ' checked="checked"' : '' %]>Team ordinal</label>
+<label><input type="radio" name="scoreboard_order" value="o"[% f.scoreboard_order=='o' ? ' checked="checked"' : '' %]>Team login id</label>
 <label><input type="radio" name="scoreboard_order" value="s"[% f.scoreboard_order=='s' ? ' checked="checked"' : '' %]>Score</label>
 </td>
 </tr>
