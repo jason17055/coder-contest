@@ -170,17 +170,14 @@ public class TemplateVariables
 	};
 	static final Comparator<User> ORDER_USER_BY_SCORE = new Comparator<User>() {
 		public int compare(User a, User b) {
-			if (a.score == b.score) {
-				return a.score_alt > b.score_alt ? -1 :
-					a.score_alt < b.score_alt ? 1 :
-					ORDER_USER_BY_NAME.compare(a, b);
+			int rv = -Integer.compare(a.score, b.score);
+			if (rv == 0) {
+				rv = -Integer.compare(a.score_alt, b.score_alt);
 			}
-			else if (a.score > b.score) {
-				return -1;
+			if (rv == 0) {
+				rv = ORDER_USER_BY_NAME.compare(a, b);
 			}
-			else {
-				return 1;
-			}
+			return rv;
 		}
 	};
 	static final Comparator<User> ORDER_USER_BY_ID = new Comparator<User>() {
