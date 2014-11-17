@@ -527,6 +527,23 @@ public class TemplateVariables
 				".png";
 		}
 
+		public Contest getContest()
+			throws EntityNotFoundException
+		{
+			return fetchContest(dsKey.getParent());
+		}
+
+		public Date getEffective_start_time()
+			throws EntityNotFoundException
+		{
+			if (start_time != null) {
+				return start_time;
+			}
+			else {
+				return getContest().started;
+			}
+		}
+
 		public String getUrl()
 		{
 			return makeUrl("problem."+id+"/");

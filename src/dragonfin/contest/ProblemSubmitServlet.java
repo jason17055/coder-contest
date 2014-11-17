@@ -30,10 +30,52 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 		doCreateSubmission(req, resp);
 	}
 
+	boolean checkSubmitAccess(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("problem");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return true;
+		}
+
+		try {
+
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Problem p = tv.fetchProblem(contestId, problemId);
+
+		Date t = p.getEffective_start_time();
+		if (t == null || t.after(tv.curTime)) {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"Oops. Problem start time is not defined or in the future."
+				);
+			return true;
+		}
+
+		Date t2 = p.getContest().getCurrent_phase_ends();
+		if (t2 != null && t2.before(tv.curTime)) {
+			resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+				"Sorry, contest has ended. No more submissions can be accepted."
+				);
+			return true;
+		}
+
+		return false;
+
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return true;
+		}
+	}
+
 	void doCreateSubmission(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
 		if (requireContest(req, resp)) { return; }
+		if (checkProblemAccess(req, resp)) { return; }
+		if (checkSubmitAccess(req, resp)) { return; }
 
 		String contestId = req.getParameter("contest");
 		String problemId = req.getParameter("problem");
