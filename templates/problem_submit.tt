@@ -13,7 +13,7 @@
 You submitted
 <a href="[% result.submission.source.url |html %]">[% result.submission.source.name |html %]</a>
 at <span class="minutes">[% result.submission.minutes |html %]</span> minutes.
-Its status is: <a href="[% result.submission.edit_url |html %]" class="status">[% result.submission.status || 'Pending' |html %]</span>
+Its status is: <a href="[% result.submission.edit_url |html %]" class="status">[% result.submission.status || 'Pending' |html %]</a></span>
 </div>
 [% END %]
 
