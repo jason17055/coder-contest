@@ -25,6 +25,14 @@ public class TemplateVariables
 		this.curTime = new Date();
 	}
 
+	String urlContestPrefix()
+	{
+		return String.format("%s/%s/",
+			req.getContextPath(),
+			req.getParameter("contest")
+			);
+	}
+
 	Contest getContest()
 		throws EntityNotFoundException
 	{
@@ -1032,11 +1040,21 @@ public class TemplateVariables
 		public String getEdit_url()
 		{
 			if ("question".equals(type)) {
-				return "clarification?id="+id;
+				return getEdit_clarification_url();
 			}
 			else {
-				return "submission?id="+id;
+				return getEdit_submission_url();
 			}
+		}
+
+		public String getEdit_clarification_url()
+		{
+			return urlContestPrefix()+"clarification?id="+id;
+		}
+
+		public String getEdit_submission_url()
+		{
+			return urlContestPrefix()+"submission?id="+id;
 		}
 
 		public boolean getCan_judge()
