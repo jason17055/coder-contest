@@ -36,6 +36,7 @@
 <div id="announcementPopup">
 <div style="text-align:center" id="announcementTitleBar">Message</div>
 <div id="announcementContent">&nbsp;</div>
+<div id="announcementAge"></div>
 <div id="announcementButtons">
 <button type="button" id="announcementOpenBtn" onclick="openAnnouncement()">Open</button>
 <button type="button" onclick="dismissAnnouncement()">Dismiss</button>

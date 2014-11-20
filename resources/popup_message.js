@@ -79,6 +79,32 @@ function displayAnnouncement(data)
 	document.getElementById('announcementOpenBtn').style.display =
 		data.url != null ? 'inline' : 'none';
 
+	if (data.message_date) {
+		var d = new Date(data.message_date);
+		var age = (new Date().getTime() - d.getTime())/1000;
+		if (age < 180) {
+			$('#announcementAge').hide();
+		}
+		else if (age < 90*60) {
+			var minutes = Math.round(age/60);
+			$('#announcementAge').text(minutes+' minutes ago');
+			$('#announcementAge').show();
+		}
+		else if (age < 40*60*60) {
+			var hours = Math.round(age/(60*60));
+			$('#announcementAge').text(hours + ' hours ago');
+			$('#announcementAge').show();
+		}
+		else {
+			var days = Math.round(age/86400);
+			$('#announcementAge').text(days + ' days ago');
+			$('#announcementAge').show();
+		}
+	}
+	else {
+		$('#announcementAge').hide();
+	}
+
 	$("#announcementTitleBar").text(
 			data.messagecount > 1 ? "Message (1 of "+data.messagecount+")" :
 			"Message");

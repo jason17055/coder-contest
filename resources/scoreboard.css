@@ -73,6 +73,12 @@ body.adminpage div#contentarea {
 	padding-right: 4pt;
 }
 
+#announcementAge {
+	text-align: center;
+	color: #888;
+	font-size: 10pt;
+}
+
 #announcementButtons {
 	text-align: center;
 	padding-bottom: 8pt;

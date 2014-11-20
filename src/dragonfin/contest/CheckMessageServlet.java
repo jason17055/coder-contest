@@ -1,6 +1,7 @@
 package dragonfin.contest;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.regex.*;
@@ -371,6 +372,11 @@ public class CheckMessageServlet extends HttpServlet
 				msgId = Long.toString(ent.getKey().getId());
 			}
 
+			Date messageDate = (Date) ent.getProperty("created");
+			SimpleDateFormat JSON_DATE_FMT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+			JSON_DATE_FMT.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+
 			resp.setContentType("text/json;charset=UTF-8");
 			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
 			out.writeStartObject();
@@ -381,6 +387,8 @@ public class CheckMessageServlet extends HttpServlet
 			out.writeStringField("messagetype",
 				ent.getKind().equals("Announcement") ? "A" : "N");
 			out.writeNumberField("messagecount", messageCount);
+			out.writeStringField("message_date",
+				JSON_DATE_FMT.format(messageDate));
 			out.writeEndObject();
 			out.close();
 		}
