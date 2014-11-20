@@ -293,10 +293,7 @@ public class TemplateVariables
 				return new ArrayList<Submission>();
 			}
 
-			if (me.is_director) {
-				return getAll_submissions();
-			}
-			else if (!me.is_judge) {
+			if (!(me.is_director || me.is_judge)) {
 				return new ArrayList<Submission>();
 			}
 
