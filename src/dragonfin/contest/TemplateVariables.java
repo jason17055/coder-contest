@@ -1054,9 +1054,25 @@ public class TemplateVariables
 			return "s-"+html64(id);
 		}
 
+		public String getUrl()
+		{
+			if (isQuestion()) {
+				long problemNumber = getProblem_number();
+				return makeUrl("problem."+problemNumber+"/clarifications#"+getHtml_id());
+			}
+			else {
+				return getEdit_submission_url();
+			}
+		}
+
+		boolean isQuestion()
+		{
+			return "question".equals(type);
+		}
+
 		public String getEdit_url()
 		{
-			if ("question".equals(type)) {
+			if (isQuestion()) {
 				return getEdit_clarification_url();
 			}
 			else {
@@ -1111,6 +1127,11 @@ public class TemplateVariables
 			throws EntityNotFoundException
 		{
 			return problemKey != null ? fetchProblem(problemKey) : null;
+		}
+
+		public long getProblem_number()
+		{
+			return problemKey != null ? problemKey.getId() : 0;
 		}
 
 		Key getSubmitterKey()
