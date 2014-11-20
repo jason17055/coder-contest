@@ -505,6 +505,11 @@ public class TemplateVariables
 			this.id = Long.toString(dsKey.getId());
 		}
 
+		boolean hasSpecFile()
+		{
+			return specFileKey != null;
+		}
+
 		public String getEdit_url()
 		{
 			return makeUrl("problem?id="+id);
@@ -866,6 +871,11 @@ public class TemplateVariables
 
 		Result(Key dsKey) {
 			this.dsKey = dsKey;
+		}
+
+		boolean hasSourceFile()
+		{
+			return sourceFileKey != null;
 		}
 
 		public File getSource()
@@ -1628,8 +1638,13 @@ public class TemplateVariables
 		String problemId = parts[1];
 
 		Key userKey = makeUserKey(contestId, username);
-		Key resultKey = KeyFactory.createKey(userKey, "Result", Long.parseLong(problemId));
+		Key resultKey = makeResultKey(userKey, problemId);
 		return fetchResultOptional(resultKey);
+	}
+
+	static Key makeResultKey(Key userKey, String problemId)
+	{
+		return KeyFactory.createKey(userKey, "Result", Long.parseLong(problemId));
 	}
 
 	HashMap<Key,Result> cachedResults = new HashMap<Key,Result>();
