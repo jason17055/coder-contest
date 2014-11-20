@@ -172,7 +172,7 @@ public class ContestRulesServlet extends CoreServlet
 		ent.setProperty(propName, Boolean.valueOf(req.getParameter(propName) != null));
 	}
 
-	static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 	static Date asDate(String s)
 	{
 		if (s == null || s.equals("")) {
