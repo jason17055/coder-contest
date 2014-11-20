@@ -1066,12 +1066,14 @@ public class TemplateVariables
 
 		public String getEdit_clarification_url()
 		{
-			return urlContestPrefix()+"clarification?id="+id;
+			return makeUrl("clarification?id="+escapeUrl(id)+
+			"&next="+escapeUrl(getMyUrl(req)));
 		}
 
 		public String getEdit_submission_url()
 		{
-			return urlContestPrefix()+"submission?id="+id;
+			return makeUrl("submission?id="+escapeUrl(id)+
+			"&next="+escapeUrl(getMyUrl(req)));
 		}
 
 		public boolean getCan_judge()
