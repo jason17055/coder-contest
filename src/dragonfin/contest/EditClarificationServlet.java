@@ -273,6 +273,7 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 			messageEnt.setProperty("created", new Date());
 			messageEnt.setProperty("message", message);
 			messageEnt.setProperty("url", url);
+			messageEnt.setProperty("dismissed", Boolean.FALSE);
 			ds.put(messageEnt);
 		}
 	}

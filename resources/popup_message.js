@@ -79,6 +79,9 @@ function displayAnnouncement(data)
 	document.getElementById('announcementOpenBtn').style.display =
 		data.url != null ? 'inline' : 'none';
 
+	$("#announcementTitleBar").text(
+			data.messagecount > 1 ? "Message (1 of "+data.messagecount+")" :
+			"Message");
 	$("#announcementPopup").fadeIn(1000, delayThenHide);
 }
 function checkForAnnouncement()

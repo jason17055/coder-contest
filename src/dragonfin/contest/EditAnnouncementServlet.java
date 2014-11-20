@@ -147,6 +147,7 @@ public class EditAnnouncementServlet extends CoreServlet
 		Entity ent = new Entity("Message", userKey);
 		ent.setProperty("created", new Date());
 		ent.setProperty("message", message);
+		ent.setProperty("dismissed", Boolean.FALSE);
 		ds.put(ent);
 	}
 }

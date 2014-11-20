@@ -172,6 +172,7 @@ Message [ User / id* ]
 	created           Date
 	message           String
 	url               String
+	dismissed         Boolean
 
 File [ "id" ]
 	given_name        String

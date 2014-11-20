@@ -272,48 +272,68 @@ public class CheckMessageServlet extends HttpServlet
 				return false;
 			}
 
-			Entity msgEnt = fetchFirstMessage();
-			Entity annEnt = fetchNextAnnouncement();
+			MessageResult mr1 = fetchFirstMessage();
+			MessageResult mr2 = fetchNextAnnouncement();
 
-			if (msgEnt != null && annEnt != null) {
-				Date msgDate = (Date) msgEnt.getProperty("created");
-				Date annDate = (Date) annEnt.getProperty("created");
+			if (mr1.ent != null && mr2.ent != null) {
+				Date msgDate = (Date) mr1.ent.getProperty("created");
+				Date annDate = (Date) mr2.ent.getProperty("created");
 				if (msgDate.compareTo(annDate) < 0) {
-					emitMessageDetails(msgEnt);
+					emitMessageDetails(mr1.ent, mr1.totalCount+mr2.totalCount);
 				}
 				else {
-					emitMessageDetails(annEnt);
+					emitMessageDetails(mr2.ent, mr1.totalCount+mr2.totalCount);
 				}
 				return true;
 			}
-			else if (msgEnt != null) {
-				emitMessageDetails(msgEnt);
+			else if (mr1.ent != null) {
+				emitMessageDetails(mr1.ent, mr1.totalCount+mr2.totalCount);
 				return true;
 			}
-			else if (annEnt != null) {
-				emitMessageDetails(annEnt);
+			else if (mr2.ent != null) {
+				emitMessageDetails(mr2.ent, mr1.totalCount+mr2.totalCount);
 				return true;
 			}
 
 			return false;
 		}
 
-		Entity fetchFirstMessage()
+		class MessageResult {
+			Entity ent;
+			int totalCount;
+
+			void hit(Entity ent)	
+			{
+				if (this.ent == null) {
+					this.ent = ent;
+				}
+				this.totalCount++;
+			}
+		}
+
+		MessageResult fetchFirstMessage()
 		{
+			MessageResult mr = new MessageResult();
+
 			Query q = new Query("Message");
 			q.setAncestor(userKey);
+			q.setFilter(
+				Query.FilterOperator.EQUAL.of("dismissed", Boolean.FALSE)
+				);
 			q.addSort("created");
 
 			PreparedQuery pq = ds.prepare(q);
 			for (Entity ent : pq.asIterable()) {
-				return ent;
+				mr.hit(ent);
 			}
 
-			return null;
+			return mr;
 		}
 
-		Entity fetchNextAnnouncement()
+		MessageResult fetchNextAnnouncement()
 		{
+			MessageResult mr = new MessageResult();
+
 			try {
 			Entity userEnt = ds.get(userKey);
 			Key lastAnnouncement = (Key) userEnt.getProperty("last_announcement_seen");
@@ -330,17 +350,17 @@ public class CheckMessageServlet extends HttpServlet
 			for (Entity ent : pq.asIterable()) {
 				String rcpt = (String) ent.getProperty("recipient_group");
 				if (rcpt != null && rcpt.equals("*")) {
-					return ent;
+					mr.hit(ent);
 				}
 			}
 
 			}
 			catch (EntityNotFoundException e) {}
 
-			return null;
+			return mr;
 		}
 
-		void emitMessageDetails(Entity ent)
+		void emitMessageDetails(Entity ent, int messageCount)
 			throws IOException
 		{
 			String msgId;
@@ -360,6 +380,7 @@ public class CheckMessageServlet extends HttpServlet
 			out.writeStringField("url", (String)ent.getProperty("url"));
 			out.writeStringField("messagetype",
 				ent.getKind().equals("Announcement") ? "A" : "N");
+			out.writeNumberField("messagecount", messageCount);
 			out.writeEndObject();
 			out.close();
 		}
