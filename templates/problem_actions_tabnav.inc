@@ -3,7 +3,8 @@
 [% IF show_problem_tab %]
 <li[% show_mode=='description' ? ' class="selected"' : '' %]><a href="[% problem.url |html %]description">Problem</a></li>
 [% END %]
-<li[% show_mode=='clarifications' ? ' class="selected"' : '' %]><a href="[% problem.url |html %]clarifications">Clarifications</a></li>
+<li[% show_mode=='clarifications' ? ' class="selected"' : '' %]><a href="[% problem.url |html %]clarifications">Clarifications[%
+	IF problem.broadcasted_clarifications.size %] ([% problem.broadcasted_clarifications.size |html %])[% END %]</a></li>
 [% IF show_write_tab %]
 <li[% show_mode=='write' ? ' class="selected"' : '' %]><a href="[% problem.url |html %]write">Write Code</a></li>
 [% END %]
