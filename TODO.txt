@@ -1,31 +1,19 @@
-* rules: when phase changes, recalculate all teams scores
-* submissions: assign ids in counting order
-* edit_clarification: make Cancel button release the submission if it hasn't
-    been responded to yet
-* edit_submission: make Cancel button release the submission if it hasn't
-    been judged yet
-* submit tab
-   - do not allow submission if problem start time is null or in future
-   - prior submission status should say "Pending" if not judged yet
-* scoreboard:
-   - auto-refresh
-   - check that balloons (both default and non-default) display correctly
-* submissions:
-   - when contestant clicks Cancel, return contestant where they came from
-* clarifications:
-   - allow contestants to view their own before (or after) it's answered
-   - notify contestants when a new clarification is answered
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
    - hide 'Controller' link if not signed in as director
-* define_problems:
-   - allow judges access to this page
 * format_date: implement some sort of "format date" function
 * accepted file types: replace "TODO" with an actual list
 * auto-start/stop job broker on need
+* result page: implement "Add Submission"
+* use shared memory instead of datastore for users' last access times
+* avoid sending 'dismiss_message' many times
 
 --future--
+* define_problems:
+   - allow judges access to this page
+* problems: let start_time be set
+* let users see messages they've already dismissed
 * contest: set runtime limit at contest level
 * clarifications: allow "general" clarification questions and answers
 * scoreboard: show time remaining in current round
