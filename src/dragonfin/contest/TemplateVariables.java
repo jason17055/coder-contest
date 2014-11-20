@@ -931,8 +931,9 @@ public class TemplateVariables
 		{
 			Submission best = null;
 			for (Submission s : getSubmissions()) {
-				if (best == null ||
-					s.created.compareTo(best.created) > 0)
+				if ((best == null || s.created.compareTo(best.created) > 0)
+					&&
+					s.isCodeSubmission())
 				{
 					best = s;
 				}
@@ -1063,6 +1064,11 @@ public class TemplateVariables
 			else {
 				return getEdit_submission_url();
 			}
+		}
+
+		boolean isCodeSubmission()
+		{
+			return "submission".equals(type);
 		}
 
 		boolean isQuestion()
