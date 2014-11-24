@@ -253,16 +253,24 @@ public class CheckMessageServlet extends HttpServlet
 			checks.add(new UserStatusCheck(ds, contestId, username, status));
 		}
 
-		void dismissMessage(Entity ent, String messageId)
+		void dismissMessage(Entity userEnt, String messageId)
 		{
 			if (messageId.startsWith("A:")) {
 				long announcementNumber = Long.parseLong(messageId.substring(2));
 				Key annKey = KeyFactory.createKey(makeContestKey(contestId), "Announcement", announcementNumber);
-				ent.setProperty("last_announcement_seen", annKey);
+				userEnt.setProperty("last_announcement_seen", annKey);
 			}
 			else {
 				Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
-				ds.delete(messageKey);
+				try {
+
+					Entity mEnt = ds.get(messageKey);
+					mEnt.setProperty("dismissed", Boolean.TRUE);
+					ds.put(mEnt);
+				}
+				catch (EntityNotFoundException e) {
+					// shouldn't happen, but safe to ignore
+				}
 			}
 		}
 
