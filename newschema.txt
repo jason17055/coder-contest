@@ -155,7 +155,7 @@ Worker [ Contest / id* ]
 	name               String
 	description        String
 	system             String
-	accepted_languages String
+	accepted_languages String comma-separated list of file extensions
 	last_refreshed     Date
 	worker_status      String
 	busy               Boolean

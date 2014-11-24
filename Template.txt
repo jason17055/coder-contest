@@ -20,6 +20,7 @@ contest         - properties of the current contest
 .title
 .config_url     - takes user to Admin Contest definition page
 .workers        - Worker[]
+.accepted_languages - String[] file extensions accepted
 .scoreboard     - 'Y'=enabled, 'N'=disabled
 .status_choices - String[]
 .phases         - Phase[]

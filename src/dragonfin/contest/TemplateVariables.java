@@ -272,6 +272,20 @@ public class TemplateVariables
 			return workersCached;
 		}
 
+		public ArrayList<String> getAccepted_languages()
+		{
+			HashSet<String> values = new HashSet<String>();
+			for (Worker w : getWorkers()) {
+				for (String fileExt : w.accepted_languages.split(",")) {
+					values.add(fileExt);
+				}
+			}
+			ArrayList<String> list = new ArrayList<String>();
+			list.addAll(values);
+			Collections.sort(list);
+			return list;
+		}
+
 		ArrayList<Submission> submissionsCached;
 		public ArrayList<Submission> getAll_submissions()
 		{
