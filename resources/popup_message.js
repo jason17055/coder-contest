@@ -3,7 +3,6 @@ function doReload()
 	window.location.reload();
 }
 var count = 0;
-var last_message_id = sessionStorage.getItem("lastmessage");
 var current_announcement = null;
 var orig_title = null;
 var blinking = false;
@@ -55,8 +54,8 @@ function dismissAnnouncement()
 {
 	if (current_announcement != null)
 	{
+		var last_message_id = current_announcement.message_id;
 		sessionStorage.setItem("lastmessage", current_announcement.message_id);
-		last_message_id = current_announcement.message_id;
 		current_announcement = null;
 	}
 
@@ -123,6 +122,12 @@ function checkForAnnouncement()
 		if (data.message != null || data['class'] == 'message')
 		{
 			displayAnnouncement(data);
+		}
+		else if (data['class'] == 'dismissed_message')
+		{
+			console.log('confirmed dismissal of '+data.message_id);
+			sessionStorage.removeItem("lastmessage");
+			checkForAnnouncement();
 		}
 		else if (data['class'] == 'job_completed' ||
 			data['class'] == 'test_result_completed' ||
@@ -214,7 +219,9 @@ function checkForAnnouncement()
 		assertions: assertion_tags
 		};
 
+	var last_message_id = sessionStorage.getItem("lastmessage");
 	if (last_message_id) {
+		console.log('requesting dismissal of message '+last_message_id);
 		url += '&dismiss_message='+escape(last_message_id);
 	}
 	console.log('checking '+url);

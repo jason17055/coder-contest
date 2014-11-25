@@ -36,6 +36,9 @@ public class CheckMessageServlet extends HttpServlet
 			String username = (String) sess.getAttribute("username");
 			if (m.contestId != null && username != null) {
 				m.userKey = makeUserKey(m.contestId, username);
+				if (m.checkMessageDismissal()) {
+					return;
+				}
 				m.pokeUser();
 			}
 		}
@@ -72,68 +75,6 @@ public class CheckMessageServlet extends HttpServlet
 		out.close();
 	}
 
-	@Override
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-		throws IOException
-	{
-		CheckMessage m = new CheckMessage();
-		m.req = req;
-		m.resp = resp;
-		m.timeout = req.getParameter("timeout");
-		m.type = req.getParameter("type");
-		m.after = req.getParameter("after");
-
-		m.userKey = null;
-		HttpSession sess = req.getSession(false);
-		if (sess != null) {
-			m.contestId = (String) sess.getAttribute("contest");
-			String username = (String) sess.getAttribute("username");
-			if (m.contestId != null && username != null) {
-				m.userKey = makeUserKey(m.contestId, username);
-				m.pokeUser();
-			}
-		}
-
-		String [] job_ids = req.getParameterValues("jobcompletion");
-		if (job_ids != null) {
-			for (String jobId : job_ids) {
-				m.addJobCompletionCheck(jobId);
-			}
-		}
-
-		String [] test_ids = req.getParameterValues("testresultcompletion");
-		if (test_ids != null) {
-			for (String testResultId : test_ids) {
-				m.addTestResultCompletionCheck(testResultId);
-			}
-		}
-
-		String [] test_status = req.getParameterValues("testresultstatus");
-		if (test_status != null) {
-			for (String status_info : test_status) {
-				int sep = status_info.indexOf("//");
-				if (sep == -1) { continue; }
-				String testResultId = status_info.substring(0,sep);
-				String statusStr = status_info.substring(sep+2);
-				m.addTestResultStatusCheck(testResultId, statusStr);
-			}
-		}
-
-		if (m.checkMultiple()) {
-			return;
-		}
-
-		if (m.checkForMessage(req, resp)) {
-			return;
-		}
-
-		resp.setContentType("text/json;charset=UTF-8");
-		JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
-		out.writeStartObject();
-		out.writeEndObject();
-		out.close();
-	}
-
 	class CheckMessage
 	{
 		HttpServletRequest req;
@@ -153,19 +94,33 @@ public class CheckMessageServlet extends HttpServlet
 			this.ds = DatastoreServiceFactory.getDatastoreService();
 		}
 
-		void pokeUser()
+		boolean checkMessageDismissal()
+			throws IOException
 		{
 			String dismissMsgId = req.getParameter("dismiss_message");
+			if (dismissMsgId == null) {
+				return false;
+			}
 
+			dismissMessage(dismissMsgId);
+
+			resp.setContentType("text/json;charset=UTF-8");
+			JsonGenerator out = new JsonFactory().createJsonGenerator(resp.getWriter());
+			out.writeStartObject();
+			out.writeStringField("class", "dismissed_message");
+			out.writeStringField("message_id", dismissMsgId);
+			out.writeEndObject();
+			out.close();
+			return true;
+		}
+
+		void pokeUser()
+		{
 			Transaction txn = ds.beginTransaction();
 			try {
 				Entity ent = ds.get(userKey);
 				Date lastAccess = (Date) ent.getProperty("last_access");
 				ent.setProperty("last_access", new Date());
-
-				if (dismissMsgId != null) {
-					dismissMessage(ent, dismissMsgId);
-				}
 
 				ds.put(ent);
 				txn.commit();
@@ -253,23 +208,33 @@ public class CheckMessageServlet extends HttpServlet
 			checks.add(new UserStatusCheck(ds, contestId, username, status));
 		}
 
-		void dismissMessage(Entity userEnt, String messageId)
+		void dismissMessage(String messageId)
 		{
+			Transaction txn = ds.beginTransaction();
+			try {
+
 			if (messageId.startsWith("A:")) {
+				Entity userEnt = ds.get(userKey);
 				long announcementNumber = Long.parseLong(messageId.substring(2));
 				Key annKey = KeyFactory.createKey(makeContestKey(contestId), "Announcement", announcementNumber);
 				userEnt.setProperty("last_announcement_seen", annKey);
+				ds.put(userEnt);
 			}
 			else {
 				Key messageKey = KeyFactory.createKey(userKey, "Message", Long.parseLong(messageId));
-				try {
+				Entity mEnt = ds.get(messageKey);
+				mEnt.setProperty("dismissed", Boolean.TRUE);
+				ds.put(mEnt);
+			}
 
-					Entity mEnt = ds.get(messageKey);
-					mEnt.setProperty("dismissed", Boolean.TRUE);
-					ds.put(mEnt);
-				}
-				catch (EntityNotFoundException e) {
-					// shouldn't happen, but safe to ignore
+			txn.commit();
+			}
+			catch (EntityNotFoundException e) {
+				// shouldn't happen, but safe to ignore
+			}
+			finally {
+				if (txn.isActive()) {
+					txn.rollback();
 				}
 			}
 		}
