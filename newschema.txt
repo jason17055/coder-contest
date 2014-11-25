@@ -49,8 +49,9 @@ User [ "Contest.id" / "username" ]
 	online            Boolean
 	score             Integer
 	score_alt         Integer
-	last_access       Date
 	last_announcement_seen Key
+   //moved to memcache:
+	last_access       Date
 
 Problem [ Contest / id ]
 	name                  String

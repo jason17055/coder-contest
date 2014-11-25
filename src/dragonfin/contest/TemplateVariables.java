@@ -11,16 +11,19 @@ import java.util.*;
 import java.util.regex.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.memcache.*;
 
 public class TemplateVariables
 {
 	final DatastoreService ds;
+	final MemcacheService memcache;
 	final HttpServletRequest req;
 	final Date curTime;
 
 	public TemplateVariables(HttpServletRequest req)
 	{
 		this.ds = DatastoreServiceFactory.getDatastoreService();
+		this.memcache = MemcacheServiceFactory.getMemcacheService();
 		this.req = req;
 		this.curTime = new Date();
 	}
@@ -803,11 +806,9 @@ public class TemplateVariables
 		public boolean is_director;
 		public boolean is_judge;
 		public boolean is_contestant;
-		public boolean online;
 		public boolean visible;
 		public int score;
 		public int score_alt;
-		public Date last_access;
 		public boolean has_password;
 
 		public int clarifications_total;
@@ -866,6 +867,17 @@ public class TemplateVariables
 				submissionsCached = enumerateSubmissionsByUser(dsKey);
 			}
 			return submissionsCached;
+		}
+
+		boolean online_cached;
+		boolean online_checked;
+		public boolean getOnline()
+		{
+			if (!online_checked) {
+				online_cached = checkUserOnline(dsKey);
+				online_checked = true;
+			}
+			return online_cached;
 		}
 	}
 
@@ -1800,27 +1812,22 @@ public class TemplateVariables
 			(int)((Long)ent.getProperty("score_alt")).longValue() :
 			0;
 
-		u.last_access = (Date)ent.getProperty("last_access");
-		if (u.last_access != null) {
-			if (curTime.getTime() - u.last_access.getTime() < USER_ONLINE_THRESHOLD) {
-				u.online = true;
-			}
-		}
-
 		u.has_password = ent.getProperty("password") != null;
 
 		return u;
 	}
 
 	static long USER_ONLINE_THRESHOLD = 60000;
-	static boolean checkUserOnline(Entity ent)
+	boolean checkUserOnline(Key userKey)
 	{
-		Date lastAccess = (Date)ent.getProperty("last_access");
-		if (lastAccess != null) {
-			Date curTime = new Date();
-			return curTime.getTime() - lastAccess.getTime() < USER_ONLINE_THRESHOLD;
+		String k = "last_access["+userKey.getName()+"]";
+		Date lastAccess = (Date)memcache.get(k);
+		if (lastAccess == null) {
+			return false;
 		}
-		return false;
+
+		Date curTime = new Date();
+		return curTime.getTime() - lastAccess.getTime() < USER_ONLINE_THRESHOLD;
 	}
 
 	HashMap<Key,Submission> cachedSubmissions = new HashMap<Key,Submission>();

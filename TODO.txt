@@ -5,7 +5,6 @@
 * format_date: implement some sort of "format date" function
 * auto-start/stop job broker on need
 * result page: implement "Add Submission"
-* use shared memory instead of datastore for users' last access times
 
 --future--
 * define_problems:

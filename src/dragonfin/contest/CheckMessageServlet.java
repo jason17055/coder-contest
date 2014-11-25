@@ -8,13 +8,13 @@ import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.memcache.*;
 import com.fasterxml.jackson.core.*;
 
 import static dragonfin.contest.TemplateVariables.makeContestKey;
 import static dragonfin.contest.TemplateVariables.makeUserKey;
 import static dragonfin.contest.TemplateVariables.makeTestResultId;
 import static dragonfin.contest.TemplateVariables.parseTestResultId;
-import static dragonfin.contest.TemplateVariables.checkUserOnline;
 
 public class CheckMessageServlet extends HttpServlet
 {
@@ -22,12 +22,7 @@ public class CheckMessageServlet extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
-		CheckMessage m = new CheckMessage();
-		m.req = req;
-		m.resp = resp;
-		m.timeout = req.getParameter("timeout");
-		m.type = req.getParameter("type");
-		m.after = req.getParameter("after");
+		CheckMessage m = new CheckMessage(req, resp);
 
 		m.userKey = null;
 		HttpSession sess = req.getSession(false);
@@ -79,6 +74,7 @@ public class CheckMessageServlet extends HttpServlet
 	{
 		HttpServletRequest req;
 		HttpServletResponse resp;
+		TemplateVariables tv;
 		String contestId;
 		Key userKey;
 		DatastoreService ds;
@@ -89,8 +85,14 @@ public class CheckMessageServlet extends HttpServlet
 
 		ArrayList<Check> checks = new ArrayList<Check>();
 
-		CheckMessage()
+		CheckMessage(HttpServletRequest req, HttpServletResponse resp)
 		{
+			this.req = req;
+			this.resp = resp;
+			this.timeout = req.getParameter("timeout");
+			this.type = req.getParameter("type");
+			this.after = req.getParameter("after");
+			this.tv = new TemplateVariables(req);
 			this.ds = DatastoreServiceFactory.getDatastoreService();
 		}
 
@@ -116,23 +118,9 @@ public class CheckMessageServlet extends HttpServlet
 
 		void pokeUser()
 		{
-			Transaction txn = ds.beginTransaction();
-			try {
-				Entity ent = ds.get(userKey);
-				Date lastAccess = (Date) ent.getProperty("last_access");
-				ent.setProperty("last_access", new Date());
-
-				ds.put(ent);
-				txn.commit();
-			}
-			catch (EntityNotFoundException e) {
-				// just ignore
-			}
-			finally {
-				if (txn.isActive()) {
-					txn.rollback();
-				}
-			}
+			MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+			String k = "last_access["+userKey.getName()+"]";
+			syncCache.put(k, new Date());
 		}
 
 		boolean checkMultiple()
@@ -205,7 +193,7 @@ public class CheckMessageServlet extends HttpServlet
 		void addUserStatusCheck(String username, String status)
 		{
 			if (contestId == null) { return; }
-			checks.add(new UserStatusCheck(ds, contestId, username, status));
+			checks.add(new UserStatusCheck(tv, contestId, username, status));
 		}
 
 		void dismissMessage(String messageId)
@@ -464,14 +452,14 @@ public class CheckMessageServlet extends HttpServlet
 
 	static class UserStatusCheck extends Check
 	{
-		final DatastoreService ds;
+		final TemplateVariables tv;
 		final Key userKey;
 		final String status;
 		final String username;
 
-		UserStatusCheck(DatastoreService ds, String contestId, String username, String status)
+		UserStatusCheck(TemplateVariables tv, String contestId, String username, String status)
 		{
-			this.ds = ds;
+			this.tv = tv;
 			this.userKey = makeUserKey(contestId, username);
 			this.status = status;
 			this.username = username;
@@ -480,17 +468,7 @@ public class CheckMessageServlet extends HttpServlet
 		@Override
 		public boolean doCheck()
 		{
-			boolean isOnline;
-			try {
-
-				Entity ent = ds.get(userKey);
-				isOnline = checkUserOnline(ent);
-			}
-			catch (EntityNotFoundException e) {
-
-				return false;
-			}
-
+			boolean isOnline = tv.checkUserOnline(userKey);
 			if (isOnline && !status.equals("Y")) {
 				return true;
 			}
