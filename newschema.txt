@@ -151,6 +151,11 @@ TestResult [ Submission / SystemTest.id ]
 	output             Key(File) from corresponding Job
 	error_output       Key(File) from corresponding Job
 
+JobQueue [ "id" ]
+	broker             String
+	job_count          Integer
+	last_job_claimed   Date
+
 Worker [ Contest / id* ]
 	created            Date
 	name               String

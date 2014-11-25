@@ -4,9 +4,11 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.modules.*;
 
 public class JobQueue
 {
+	final String name;
 	ArrayList<Entity> pendingJobs = new ArrayList<Entity>();
 	HashSet<Key> knownJobs = new HashSet<Key>();
 
@@ -15,6 +17,14 @@ public class JobQueue
 
 	static final long SCAN_CYCLE = 180000; //three minutes
 	private static final Logger log = Logger.getLogger(JobQueue.class.getName());
+
+	int claimCount;
+	Date lastClaimDate;
+
+	JobQueue(String name)
+	{
+		this.name = name;
+	}
 
 	synchronized Entity claim(String contestId, Set<String> languages, Key workerKey, long timeout)
 	{
@@ -32,6 +42,9 @@ public class JobQueue
 					if (tryClaim(workerKey, ent.getKey())) {
 
 						// successful claim
+						claimCount++;
+						lastClaimDate = new Date();
+
 						return ent;
 					}
 				}
@@ -146,6 +159,43 @@ public class JobQueue
 			txn.commit();
 
 			return true;
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+	}
+
+	synchronized void postStatus()
+	{
+		Key jqKey = KeyFactory.createKey("JobQueue", this.name);
+		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
+
+		Transaction txn = ds.beginTransaction();
+		try {
+
+			Entity ent;
+			try {
+				ent = ds.get(jqKey);
+			}
+			catch (EntityNotFoundException e) {
+				ent = new Entity(jqKey);
+			}
+
+			ent.setProperty("broker",
+				modulesApi.getInstanceHostname(
+				modulesApi.getCurrentModule(),
+				modulesApi.getCurrentVersion(),
+				modulesApi.getCurrentInstanceId()
+				));
+			ent.setProperty("job_count", claimCount);
+			if (lastClaimDate != null) {
+				ent.setProperty("last_job_claimed", lastClaimDate);
+			}
+
+			ds.put(ent);
+			txn.commit();
 		}
 		finally {
 			if (txn.isActive()) {
