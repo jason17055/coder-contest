@@ -28,8 +28,7 @@ class BackgroundRunner implements Runnable
 
 		for (;;) {
 
-//TODO- catch datastore exceptions (esp. concurrent modifications)
-//  and retry
+			try {
 
 			log.info("background thread updating datastore");
 			boolean keepRunning = postStatus();
@@ -38,8 +37,13 @@ class BackgroundRunner implements Runnable
 				maybeInvokeShutdown();
 			}
 
+			}
+			catch (Exception e) {
+				log.warning("background thread error: " + e.getMessage());
+			}
+
 			log.info("background thread going to sleep");
-			Thread.sleep(5*60*1000); //five minutes
+			Thread.sleep(SLEEP_INTERVAL); //five minutes
 
 		}//end loop
 
@@ -50,6 +54,8 @@ class BackgroundRunner implements Runnable
 	}
 
 	static final long MIN_RUN_TIME = 30*60*1000; //30 minutes
+	static final long SLEEP_INTERVAL = 5*60*1000; //5 minutes
+
 	long getRunTime()
 	{
 		return new Date().getTime() - startDate.getTime();
