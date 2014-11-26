@@ -152,7 +152,8 @@ TestResult [ Submission / SystemTest.id ]
 	error_output       Key(File) from corresponding Job
 
 JobBroker [ "name" ]
-	target_state       String "online", "offline"
+	target_state       String "running", "shutdown"
+	last_started       Date
 	last_heartbeat     Date
 
 JobQueue [ "id" ]

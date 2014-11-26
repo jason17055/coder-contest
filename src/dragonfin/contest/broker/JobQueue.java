@@ -166,7 +166,10 @@ public class JobQueue
 		}
 	}
 
-	synchronized void postStatus(Key brokerKey)
+	/**
+	 * @return true if a job was recently dispatched from this queue
+	 */
+	synchronized boolean postStatus(Key brokerKey)
 	{
 		Key jqKey = KeyFactory.createKey("JobQueue", this.name);
 
@@ -189,6 +192,9 @@ public class JobQueue
 
 			ds.put(ent);
 			txn.commit();
+
+			return lastClaimDate != null &&
+				(new Date().getTime() - lastClaimDate.getTime()) < RECENT_JOB_THRESHOLD;
 		}
 		finally {
 			if (txn.isActive()) {
@@ -196,4 +202,6 @@ public class JobQueue
 			}
 		}
 	}
+
+	static final long RECENT_JOB_THRESHOLD = 30*60*1000; //30 minutes
 }
