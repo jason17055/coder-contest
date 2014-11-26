@@ -19,14 +19,17 @@
 	<property name="contest" direction="asc"/>
 	<property name="created" direction="asc"/>
 </datastore-index>
-
-<datastore-index kind="Submission" ancestor="true">
+<datastore-index kind="Submission" ancestor="false">
+	<property name="answer_type" direction="asc"/>
 	<property name="problem" direction="asc"/>
 	<property name="type" direction="asc"/>
 	<property name="created" direction="asc"/>
 </datastore-index>
-<datastore-index kind="Submission" ancestor="false">
-	<property name="answer_type" direction="asc"/>
+
+<datastore-index kind="Submission" ancestor="true">
+	<property name="created" direction="asc"/>
+</datastore-index>
+<datastore-index kind="Submission" ancestor="true">
 	<property name="problem" direction="asc"/>
 	<property name="type" direction="asc"/>
 	<property name="created" direction="asc"/>
