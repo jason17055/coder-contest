@@ -151,8 +151,12 @@ TestResult [ Submission / SystemTest.id ]
 	output             Key(File) from corresponding Job
 	error_output       Key(File) from corresponding Job
 
+JobBroker [ "name" ]
+	target_state       String "online", "offline"
+	last_heartbeat     Date
+
 JobQueue [ "id" ]
-	broker             String
+	broker             Key(JobBroker)
 	job_count          Integer
 	last_job_claimed   Date
 

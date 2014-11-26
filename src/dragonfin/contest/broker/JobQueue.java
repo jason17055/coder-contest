@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 import com.google.appengine.api.datastore.*;
-import com.google.appengine.api.modules.*;
 
 public class JobQueue
 {
@@ -167,10 +166,9 @@ public class JobQueue
 		}
 	}
 
-	synchronized void postStatus()
+	synchronized void postStatus(Key brokerKey)
 	{
 		Key jqKey = KeyFactory.createKey("JobQueue", this.name);
-		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 
 		Transaction txn = ds.beginTransaction();
 		try {
@@ -183,12 +181,7 @@ public class JobQueue
 				ent = new Entity(jqKey);
 			}
 
-			ent.setProperty("broker",
-				modulesApi.getInstanceHostname(
-				modulesApi.getCurrentModule(),
-				modulesApi.getCurrentVersion(),
-				modulesApi.getCurrentInstanceId()
-				));
+			ent.setProperty("broker", brokerKey);
 			ent.setProperty("job_count", claimCount);
 			if (lastClaimDate != null) {
 				ent.setProperty("last_job_claimed", lastClaimDate);
