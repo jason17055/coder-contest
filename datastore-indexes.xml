@@ -9,7 +9,15 @@
 </datastore-index>
 
 <datastore-index kind="Worker" ancestor="true"><property name="last_refreshed" direction="asc"/></datastore-index>
-<datastore-index kind="Message" ancestor="true"><property name="created" direction="asc"/></datastore-index>
+
+<datastore-index kind="Message" ancestor="true">
+	<property name="created" direction="asc"/>
+</datastore-index>
+<datastore-index kind="Message" ancestor="true">
+	<property name="dismissed" direction="asc"/>
+	<property name="created" direction="asc"/>
+</datastore-index>
+
 <datastore-index kind="TestJob" ancestor="true">
 	<property name="claimed" direction="asc"/>
 	<property name="created" direction="asc"/>
