@@ -155,6 +155,8 @@ JobBroker [ "name" ]
 	target_state       String "running", "shutdown"
 	last_started       Date
 	last_heartbeat     Date
+	last_start_attempt Date
+	retire_after       Date
 
 JobQueue [ "id" ]
 	broker             Key(JobBroker)

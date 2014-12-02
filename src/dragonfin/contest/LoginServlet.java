@@ -78,6 +78,9 @@ public class LoginServlet extends CoreServlet
 			s.setAttribute("is_judge", ent.getProperty("is_judge"));
 
 			log.info("Login success (User "+contestId+"/"+userId+")");
+
+			JobBroker.startBrokerIfNeeded();
+
 			return true;
 		}
 

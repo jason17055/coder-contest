@@ -13,7 +13,7 @@ class BackgroundRunner implements Runnable
 	private static final Logger log = Logger.getLogger(BackgroundRunner.class.getName());
 	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 	ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-	Date startDate;
+	Date retireAfter = null; //earliest time we can shut down
 
 	BackgroundRunner(ServletContext ctx)
 	{
@@ -22,8 +22,6 @@ class BackgroundRunner implements Runnable
 
 	public void run()
 	{
-		this.startDate = new Date();
-
 		try {
 
 		for (;;) {
@@ -33,7 +31,7 @@ class BackgroundRunner implements Runnable
 			log.info("background thread updating datastore");
 			boolean keepRunning = postStatus();
 
-			if (!keepRunning && getRunTime() >= MIN_RUN_TIME) {
+			if (!keepRunning && (retireAfter == null || new Date().getTime() >= retireAfter.getTime())) {
 				maybeInvokeShutdown();
 			}
 
@@ -53,13 +51,7 @@ class BackgroundRunner implements Runnable
 		}
 	}
 
-	static final long MIN_RUN_TIME = 30*60*1000; //30 minutes
 	static final long SLEEP_INTERVAL = 5*60*1000; //5 minutes
-
-	long getRunTime()
-	{
-		return new Date().getTime() - startDate.getTime();
-	}
 
 	void maybeInvokeShutdown()
 	{
@@ -80,6 +72,13 @@ class BackgroundRunner implements Runnable
 			}
 			catch (EntityNotFoundException e) {
 				ent = new Entity(brokerKey);
+			}
+
+			this.retireAfter = (Date) ent.getProperty("retire_after");
+			if (retireAfter != null && new Date().getTime() < retireAfter.getTime()) {
+
+				// not ok to retire yet
+				return;
 			}
 
 			ent.setProperty("target_state", "shutdown");
@@ -121,7 +120,6 @@ class BackgroundRunner implements Runnable
 				ent = new Entity(brokerKey);
 			}
 
-			ent.setProperty("last_started", startDate);
 			ent.setProperty("last_heartbeat", new Date());
 
 			ds.put(ent);
