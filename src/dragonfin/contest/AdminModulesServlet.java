@@ -36,6 +36,15 @@ public class AdminModulesServlet extends AdminPageServlet
 			String defVersion = modules.getDefaultVersion("job-broker");
 			out.println("<p>Default version: " +defVersion + "</p>");
 
+			out.println("<p>Available modules:</p><ul>");
+			for (String sm : modules.getModules()) {
+				out.println("<li>"+sm + " ( ");
+				for (String sv : modules.getVersions(sm)) {
+					out.println(sv);
+				}
+				out.println(")</li>");
+			}
+			out.println("</ul>");
 		}
 		catch (Throwable e) {
 			out.println("<p>Error: "+e.toString()+"</p>");
