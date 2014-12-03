@@ -67,6 +67,9 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 		if (POST.containsKey("action:cancel")) {
 			doCancel(req, resp);
 		}
+		else if (POST.containsKey("action:delete_clarification")) {
+			doDeleteClarification(req, resp);
+		}
 		else if (req.getParameter("id") != null) {
 			doUpdateClarification(req, resp);
 		}
@@ -140,6 +143,12 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 		}
 
 		doCancel(req, resp);
+	}
+
+	void doDeleteClarification(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		doDeleteSubmission(req, resp);
 	}
 
 	void doUpdateClarification(HttpServletRequest req, HttpServletResponse resp)

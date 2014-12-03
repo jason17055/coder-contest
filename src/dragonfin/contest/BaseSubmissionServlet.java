@@ -68,12 +68,48 @@ public abstract class BaseSubmissionServlet extends CoreServlet
 		throws IOException, ServletException
 	{
 		maybeReleaseSubmission(req);
+		doCancelNoRelease(req, resp);
+	}
 
+	void doCancelNoRelease(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
 		String u = req.getParameter("next");
 		if (u == null) {
 			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
 		}
 		resp.sendRedirect(u);
+	}
+
+	void doDeleteSubmission(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		String contestId = req.getParameter("contest");
+		String id = req.getParameter("id");
+		if (contestId == null || id == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Key submissionKey = TemplateVariables.parseSubmissionId(contestId, id);
+
+		// delete test results for this submission
+
+		Query q = new Query("TestResult");
+		q.setAncestor(submissionKey);
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		PreparedQuery pq = ds.prepare(q);
+		for (Entity ent : pq.asIterable()) {
+			ds.delete(ent.getKey());
+		}
+
+		// delete the submission itself
+		ds.delete(submissionKey);
+
+		doCancelNoRelease(req, resp);
 	}
 
 	void maybeReleaseSubmission(HttpServletRequest req)

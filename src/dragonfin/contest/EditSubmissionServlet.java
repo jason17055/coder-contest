@@ -75,7 +75,7 @@ public class EditSubmissionServlet extends BaseSubmissionServlet
 			doCancel(req, resp);
 		}
 		else if (POST.containsKey("action:delete_submission")) {
-			resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
+			doDeleteSubmission(req, resp);
 		}
 		else if (POST.containsKey("action:create_submission")) {
 			doCreateSubmission(req, resp);
