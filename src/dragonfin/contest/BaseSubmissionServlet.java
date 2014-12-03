@@ -81,6 +81,9 @@ public abstract class BaseSubmissionServlet extends CoreServlet
 	{
 		String contestId = req.getParameter("contest");
 		String id = req.getParameter("id");
+		if (id == null) {
+			return;
+		}
 
 		Key userKey = getLoggedInUserKey(req);
 
