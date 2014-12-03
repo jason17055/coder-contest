@@ -174,6 +174,36 @@ public class DefineUserServlet extends CoreServlet
 				contestId+"/"+username);
 
 			//
+			// delete all test results for submissions by this user
+			//
+			Query q1 = new Query("TestResult");
+			q1.setAncestor(userKey);
+			PreparedQuery pq1 = ds.prepare(q1);
+			for (Entity ent : pq1.asIterable()) {
+				ds.delete(ent.getKey());
+			}
+
+			//
+			// delete all scoreboard results for this user
+			//
+			Query q2 = new Query("Result");
+			q2.setAncestor(userKey);
+			PreparedQuery pq2 = ds.prepare(q2);
+			for (Entity ent : pq2.asIterable()) {
+				ds.delete(ent.getKey());
+			}
+
+			//
+			// delete all messages for this user
+			//
+			Query q3 = new Query("Message");
+			q3.setAncestor(userKey);
+			PreparedQuery pq3 = ds.prepare(q3);
+			for (Entity ent : pq3.asIterable()) {
+				ds.delete(ent.getKey());
+			}
+
+			//
 			// delete all submissions by this user
 			//
 			Query q = new Query("Submission");
