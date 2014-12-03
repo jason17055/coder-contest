@@ -94,7 +94,26 @@ public class DefineSystemTestServlet extends CoreServlet
 	{
 		if (requireDirector(req, resp)) { return; }
 
-		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("problem");
+		String testNumber = req.getParameter("number");
+		if (contestId == null || problemId == null || testNumber == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key prbKey = KeyFactory.createKey(contestKey,
+			"Problem", Long.parseLong(problemId));
+		Key testKey = KeyFactory.createKey(prbKey,
+			"SystemTest", Long.parseLong(testNumber));
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		//TODO- delete TestResults that reference this system test
+
+		ds.delete(testKey);
+		doCancel(req, resp);
 	}
 
 	void doCreateSystemTest(HttpServletRequest req, HttpServletResponse resp)
