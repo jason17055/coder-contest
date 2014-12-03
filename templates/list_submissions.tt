@@ -29,7 +29,7 @@ Status:
 [% FOREACH u IN contest.submissions %]
 <tr>
 <td><input type="checkbox" name="[% u.id |html %]"></td>
-<td><a href="[% u.take_url |html %]">
+<td><a href="[% call_url(u.take_url) |html %]">
 [% u.created |html %]</a></td>
 <td>[% u.problem.name |html %]</td>
 <td>

@@ -23,7 +23,7 @@
 [% END %]
 <div>
 <img src="[% online_img |html %]" alt="[% online_lbl |html %]" width="14" height="14" class="online-indicator" data-user="[% team.username |html %]" data-user-online="[% team.online ? 'Y' : 'N' %]">
-<a href="[% team.edit_url |html %]">[% team.name |html %]</a>
+<a href="[% call_url(team.edit_url) |html %]">[% team.name |html %]</a>
 [% IF NOT team.visible %] (Invisible)[% END %]
 </div>
 </td>
@@ -72,7 +72,7 @@
 
 <tr>
 <td height="32"><img src="[% online_img |html %]" alt="[% online_lbl %]" width="14" height="14" class="online-indicator" data-user="[% judge.username |html %]" data-user-online="[% judge.online ? 'Y' : 'N' %]">
-<a href="[% judge.edit_url |html %]">[% judge.name |html %]</a>
+<a href="[% call_url(judge.edit_url) |html %]">[% judge.name |html %]</a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
 <img src="[% images_url %]/clarification.png" alt="Clarifications:"

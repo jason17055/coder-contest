@@ -184,6 +184,17 @@ public class CoreServlet extends HttpServlet
 
 		final TemplateVariables tv = makeTemplateVariables(req);
 		ctx.put("contest", tv.getContest());
+		ctx.put("call_url", new Function() {
+			public Object invoke(Bindings args) throws Exception
+			{
+				Object arg1 = args.get("1");
+				if (arg1 != null) {
+					return tv.makeCallUrl(arg1.toString());
+				}
+				else {
+					return null;
+				}
+			}});
 
 		HttpSession s = req.getSession(false);
 		if (s != null)

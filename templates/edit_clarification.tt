@@ -25,7 +25,7 @@ function checkAnswerClarificationForm()
 <table>
 <tr>
 <td><label>Problem:</label></td>
-<td><a href="[% f.problem.edit_url |html %]">[% f.problem.name |html %]</a></td>
+<td><a href="[% call_url(f.problem.edit_url) |html %]">[% f.problem.name |html %]</a></td>
 </tr>
 <tr>
 <td valign="top"><label>Message:</label></td>

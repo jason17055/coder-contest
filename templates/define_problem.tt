@@ -148,7 +148,7 @@ At a fixed time:</label>
 </tr>
 [% FOREACH st IN problem.system_tests %]
 <tr>
-<td><a href="[% st.edit_url |html %]">[% st.test_number |html %]</a></td>
+<td><a href="[% call_url(st.edit_url) |html %]">[% st.test_number |html %]</a></td>
 <td><a href="[% st.input.url |html %]">[% st.input.name |html %]</a></td>
 <td><a href="[% st.expected.url |html %]">[% st.expected.name |html %]</a></td>
 <td>[% st.sample ? '&#x2713;' : '' %]</td>
@@ -163,7 +163,7 @@ At a fixed time:</label>
 <table border="1">
 [% FOREACH c IN problem.clarifications %]
 <tr>
-<td><a href="[% c.edit_url |html %]">Clarification [% c.id %]</a></td>
+<td><a href="[% call_url(c.edit_url) |html %]">Clarification [% c.id %]</a></td>
 </tr>
 [% END #each clarification %]
 </table>

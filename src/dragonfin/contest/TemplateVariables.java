@@ -28,6 +28,12 @@ public class TemplateVariables
 		this.curTime = new Date();
 	}
 
+	String makeCallUrl(String u)
+	{
+		return u + (u.indexOf('?') == -1 ? "?" : "&") +
+			"next=" + escapeUrl(getMyUrl(req));
+	}
+
 	String urlContestPrefix()
 	{
 		return String.format("%s/%s/",
@@ -827,7 +833,7 @@ public class TemplateVariables
 
 		public String getEdit_url()
 		{
-			return makeUrl("user?id="+escapeUrl(username)+"&next="+escapeUrl(getMyUrl(req)));
+			return makeUrl("user?id="+escapeUrl(username));
 		}
 
 		//public Map<String,Result> result_by_problem;
@@ -1121,14 +1127,12 @@ public class TemplateVariables
 
 		public String getEdit_clarification_url()
 		{
-			return makeUrl("clarification?id="+escapeUrl(id)+
-			"&next="+escapeUrl(getMyUrl(req)));
+			return makeUrl("clarification?id="+escapeUrl(id));
 		}
 
 		public String getEdit_submission_url()
 		{
-			return makeUrl("submission?id="+escapeUrl(id)+
-			"&next="+escapeUrl(getMyUrl(req)));
+			return makeUrl("submission?id="+escapeUrl(id));
 		}
 
 		public boolean getCan_judge()
@@ -1146,8 +1150,7 @@ public class TemplateVariables
 
 		public String getTake_url()
 		{
-			return makeUrl("take_submission?id="+escapeUrl(id)
-				+"&next="+escapeUrl(getMyUrl(req)));
+			return makeUrl("take_submission?id="+escapeUrl(id));
 		}
 
 		public String getSteal_url()

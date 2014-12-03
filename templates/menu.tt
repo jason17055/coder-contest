@@ -3,7 +3,7 @@
 %]
 
 <p>
-Your name: <a href="[% session.user.edit_url |html %]">[% session.user.name |html %]</a>
+Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user.name |html %]</a>
 </p>
 
 <h3>Problems</h3>

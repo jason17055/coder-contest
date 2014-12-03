@@ -21,7 +21,7 @@
 [% IF prb.scoreboard_image %]
 <img style="vertical-align: middle" src="[% images_url %]/scoreboard/[% prb.scoreboard_image |html %].png" alt="">
 [% END #if scoreboard_image %]
-<a href="[% prb.edit_url |html %]">[% prb.name |html %]</a>
+<a href="[% call_url(prb.edit_url) |html %]">[% prb.name |html %]</a>
 </td>
 <td align="center">[% prb.phases_visible |html %]</td>
 <td align="center">[% prb.phases_open |html %]</td>

@@ -17,7 +17,7 @@
 [% FOREACH user IN contest.contestants %]
 <tr>
 <td>
-<a href="[% user.edit_url |html %]">[% user.username |html %]</a>
+<a href="[% call_url(user.edit_url) |html %]">[% user.username |html %]</a>
 </td>
 <td>[% user.name |html %]</td>
 <td>[% user.description |html %]</td>
@@ -43,7 +43,7 @@
 [% FOREACH user IN contest.noncontestants %]
 <tr>
 <td>
-<a href="[% user.edit_url |html %]">[% user.username |html %]</a>
+<a href="[% call_url(user.edit_url) |html %]">[% user.username |html %]</a>
 </td>
 <td>[% user.name |html %]</td>
 <td>[% user.description |html %]</td>
