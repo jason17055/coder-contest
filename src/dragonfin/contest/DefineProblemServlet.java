@@ -114,6 +114,9 @@ public class DefineProblemServlet extends CoreServlet
 		else if (POST.containsKey("action:create_problem")) {
 			doCreateProblem(req, resp);
 		}
+		else if (POST.containsKey("action:delete_problem")) {
+			doDeleteProblem(req, resp);
+		}
 		else {
 			doUpdateProblem(req, resp);
 		}
@@ -225,6 +228,31 @@ public class DefineProblemServlet extends CoreServlet
 			}
 		}
 		ent.setProperty(pp_option, phases);
+	}
+
+	void doDeleteProblem(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		if (requireDirector(req, resp)) { return; }
+
+		String contestId = req.getParameter("contest");
+		String problemId = req.getParameter("id");
+		if (contestId == null || problemId == null) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		//TODO- delete this problem's system tests, clarifications,
+		// submissions
+
+		Key contestKey = KeyFactory.createKey("Contest", contestId);
+		Key prbKey = KeyFactory.createKey(contestKey,
+			"Problem", Long.parseLong(problemId));
+		ds.delete(prbKey);
+
+		doCancel(req, resp);
 	}
 
 	void doUpdateProblem(HttpServletRequest req, HttpServletResponse resp)
