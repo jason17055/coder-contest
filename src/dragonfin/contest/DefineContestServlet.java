@@ -112,6 +112,7 @@ public class DefineContestServlet extends AdminPageServlet
 			}
 		}
 
+		//FIXME: use absolute url
 		String newUrl = "contests";
 		resp.sendRedirect(newUrl);
 	}

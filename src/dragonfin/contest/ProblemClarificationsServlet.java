@@ -87,7 +87,7 @@ public class ProblemClarificationsServlet extends ProblemCoreServlet
 			.param("submission", Long.toString(submissionKey.getId()))
 			);
 
-		String url = "..";
+		String url = makeContestUrl(contestId, "");
 		resp.sendRedirect(url);
 	}
 }

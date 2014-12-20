@@ -91,7 +91,7 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			JobBroker.notifyNewJob(jobKey);
 
 			String jobId = Long.toString(jobKey.getId());
-			String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/test_result?id="+escapeUrl(jobId);
+			String url = makeContestUrl(contestId, "problem."+problemId+"/test_result?id="+escapeUrl(jobId));
 			resp.sendRedirect(url);
 		}
 		finally {

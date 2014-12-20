@@ -97,7 +97,7 @@ public class ProblemCoderServlet extends ProblemCoreServlet
 			}
 		}
 
-		String url = req.getContextPath()+"/"+contestId+"/problem."+problemId+"/write";
+		String url = makeContestUrl(contestId, "problem."+problemId+"/write");
 		resp.sendRedirect(url);
 	}
 }

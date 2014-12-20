@@ -21,7 +21,10 @@ public class LoginServlet extends CoreServlet
 			{
 				s.invalidate();
 			}
-			resp.sendRedirect("login");
+
+			String contestId = req.getParameter("contest");
+			String url = makeContestUrl(contestId, "login");
+			resp.sendRedirect(url);
 			return;
 		}
 

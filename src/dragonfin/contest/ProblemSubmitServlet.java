@@ -130,7 +130,7 @@ public class ProblemSubmitServlet extends ProblemCoreServlet
 		// enqueue a task for processing this new submission
 		NewSubmissionTask.enqueueTask(submissionKey);
 
-		String url = "..";
+		String url = makeContestUrl(contestId, "");
 		resp.sendRedirect(url);
 	}
 }
