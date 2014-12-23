@@ -1,10 +1,30 @@
+--v1.0--
+* when deleting problems
+   - ensure that all "Result" entities for that problem are deleted
+* UpdateScoreTask
+   - when finding a result in which the problem does not exist, treat it
+     same as a hidden problem
+
+--v1.1--
+* system test deletion: delete any corresponding test results as well
+* system test: after creating a new test, go back to problem page,
+    NOT the list problems page
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
    - hide 'Controller' link if not signed in as director
 * format_date: implement some sort of "format date" function
-* auto-start/stop job broker on need
 * result page: implement "Add Submission"
+* test result page: implement "Another Test" link
+* broker startup: when initiating a broker startup, schedule a task
+  that will run a minute later to check whether the broker heartbeat has
+  occurred and if not, try to start it up again. (This may be necessary in
+  the case that a broker startup occurs while the broker is still shutting
+  down.)
+* when contestant clicks Cancel on View Submission screen, they are taken to
+  the ListSubmissions page and they see an access denied error
+* do not show contest clock on Login page
+* rules page: when clicking OK, return to controller page
 
 --future--
 * define_problems:
