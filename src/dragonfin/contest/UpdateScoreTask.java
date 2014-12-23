@@ -43,6 +43,7 @@ public class UpdateScoreTask extends HttpServlet
 		}
 		catch (EntityNotFoundException e) {
 
+			log.warning("got error: "+e);
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
