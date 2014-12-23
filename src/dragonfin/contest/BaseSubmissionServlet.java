@@ -76,7 +76,7 @@ public abstract class BaseSubmissionServlet extends CoreServlet
 	{
 		String u = req.getParameter("next");
 		if (u == null) {
-			u = makeContestUrl(req.getParameter("contest"), "submissions", null);
+			u = makeContestUrl(req.getParameter("contest"), "");
 		}
 		resp.sendRedirect(u);
 	}
