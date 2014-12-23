@@ -101,8 +101,16 @@ public class UpdateScoreTask extends HttpServlet
 
 				// get the problem associated with this result
 				Key problemKey = KeyFactory.createKey(contestKey, "Problem", resultEnt.getKey().getId());
-				TemplateVariables.Problem p = tv.fetchProblem(problemKey);
+				TemplateVariables.Problem p;
+				try {
+					p = tv.fetchProblem(problemKey);
+				}
+				catch (EntityNotFoundException e) {
+					// problem definition missing; skip
+					continue;
+				}
 
+				assert p != null;
 				if (!p.onScoreboard(contest.current_phase_id)) {
 					// invisible problem; skip
 					continue;
