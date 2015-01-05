@@ -129,9 +129,12 @@ public abstract class BaseSubmissionServlet extends CoreServlet
 
 			Entity ent = ds.get(parseSubmissionId(contestId, id));
 			String answerType = (String) ent.getProperty("answer_type");
+			String status = (String) ent.getProperty("status");
 			Key judgeKey = (Key) ent.getProperty("judge");
 
 			if ((answerType == null || answerType.equals(""))
+				&&
+				(status == null || status.equals(""))
 				&&
 				(judgeKey != null && judgeKey.equals(userKey)))
 			{
