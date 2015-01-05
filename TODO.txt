@@ -1,11 +1,8 @@
 --v1.0--
-* when deleting problems
-   - ensure that all "Result" entities for that problem are deleted
-* UpdateScoreTask
-   - when finding a result in which the problem does not exist, treat it
-     same as a hidden problem
+* when judging a submission, the Judge field should not be cleared
 
 --v1.1--
+* problem deletion: delete any corresponding Result entites as well
 * system test deletion: delete any corresponding test results as well
 * system test: after creating a new test, go back to problem page,
     NOT the list problems page
@@ -21,8 +18,6 @@
   occurred and if not, try to start it up again. (This may be necessary in
   the case that a broker startup occurs while the broker is still shutting
   down.)
-* when contestant clicks Cancel on View Submission screen, they are taken to
-  the ListSubmissions page and they see an access denied error
 * do not show contest clock on Login page
 * rules page: when clicking OK, return to controller page
 
