@@ -54,6 +54,7 @@ public class LoginServlet extends CoreServlet
 		}
 
 		if (c.auth_external == null || !c.auth_external.startsWith("cas:")) {
+			log.info("Login failure (Bad auth_external string for contest "+c.id+")");
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -83,14 +84,45 @@ public class LoginServlet extends CoreServlet
 		}
 		catch (Exception e) {
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			log.info("CAS validation failure for contest "+c.id+" ("+e.toString()+")");
 			return;
 		}
 
-		PrintWriter out = resp.getWriter();
-		out.println("got validation response");
-		out.println("line 1 :: "+line1);
-		out.println("line 2 :: "+line2);
-		out.close();
+		if (!(line1 != null && line1.equals("yes"))) {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			log.info("CAS validation failure for contest "+c.id+" (response was "+line1+")");
+			return;
+		}
+
+		String casUserName = line2.toLowerCase();
+		log.info("CAS validation success for contest "+c.id+" user "+casUserName);
+
+		finishCasLogin(req, c.id, casUserName);
+		sendUserOnTheirWay(req, resp);
+	}
+
+	private void finishCasLogin(HttpServletRequest req, String contestId, String userId)
+	{
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Key userKey = KeyFactory.createKey("User",
+				contestId+"/"+userId);
+		Entity ent;
+		try {
+			ent = ds.get(userKey);
+		}
+		catch (EntityNotFoundException e) {
+			log.info("CAS login auto-creating user "+contestId+"/"+userId);
+			ent = new Entity(userKey);
+			ent.setProperty("contest", contestId);
+			ent.setProperty("name", userId);
+			ent.setProperty("password", null);
+			ent.setProperty("is_contestant", Boolean.TRUE);
+			ent.setProperty("visible", Boolean.TRUE);
+			ent.setProperty("created_by_method", "LoginServlet::finishCasLogin");
+			ds.put(ent);
+		}
+
+		loginOk(req, contestId, userId, ent);
 	}
 
 	private void sendUserOnTheirWay(HttpServletRequest req,
@@ -134,23 +166,28 @@ public class LoginServlet extends CoreServlet
 
 		if (checkPassword(password, (String) ent.getProperty("password"))) {
 			// login ok
-			HttpSession s = req.getSession(true);
-			s.setAttribute("contest", contestId);
-			s.setAttribute("username", userId);
-
-			s.setAttribute("is_director", ent.getProperty("is_director"));
-			s.setAttribute("is_contestant", ent.getProperty("is_contestant"));
-			s.setAttribute("is_judge", ent.getProperty("is_judge"));
-
-			log.info("Login success (User "+contestId+"/"+userId+")");
-
-			JobBroker.startBrokerIfNeeded();
+			loginOk(req, contestId, userId, ent);
 
 			return true;
 		}
 
 		log.info("Login failure (User "+contestId+"/"+userId+" wrong password)");
 		return false;
+	}
+
+	private void loginOk(HttpServletRequest req, String contestId, String userId, Entity ent)
+	{
+		HttpSession s = req.getSession(true);
+		s.setAttribute("contest", contestId);
+		s.setAttribute("username", userId);
+
+		s.setAttribute("is_director", ent.getProperty("is_director"));
+		s.setAttribute("is_contestant", ent.getProperty("is_contestant"));
+		s.setAttribute("is_judge", ent.getProperty("is_judge"));
+
+		log.info("Login success (User "+contestId+"/"+userId+")");
+
+		JobBroker.startBrokerIfNeeded();
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)

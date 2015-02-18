@@ -104,6 +104,7 @@ public class DefineContestServlet extends AdminPageServlet
 			ent2.setProperty("name", directorName);
 			ent2.setProperty("password", directorPassword);
 			ent2.setProperty("is_director", Boolean.TRUE);
+			ent2.setProperty("created_by_method", "DefineContestServlet");
 			ds.put(ent2);
 
 			txn.commit();

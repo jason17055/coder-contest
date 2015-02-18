@@ -51,6 +51,7 @@ User [ "Contest.id" / "username" ]
 	score             Integer
 	score_alt         Integer
 	last_announcement_seen Key
+	created_by_method String
    //moved to memcache:
 	last_access       Date
 
