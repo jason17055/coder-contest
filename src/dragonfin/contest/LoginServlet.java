@@ -1,11 +1,14 @@
 package dragonfin.contest;
 
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class LoginServlet extends CoreServlet
 {
@@ -28,7 +31,66 @@ public class LoginServlet extends CoreServlet
 			return;
 		}
 
+		if (req.getParameter("ticket") != null)
+		{
+			doCasLogin(req, resp);
+			return;
+		}
+
 		renderTemplate(req, resp, "login.tt");
+	}
+
+	private void doCasLogin(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Contest c;
+		try {
+			c = tv.getContest();
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		if (c.auth_external == null || !c.auth_external.startsWith("cas:")) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		String casUrl = c.auth_external.substring(4);
+		String appUrl = String.format("%s/%s/login",
+			getBaseUrl(req),
+			escapeUrl(c.id)
+			);
+		String ticketStr = req.getParameter("ticket");
+
+		String vUrl = String.format("%svalidate?service=%s&ticket=%s",
+			casUrl,
+			appUrl,
+			ticketStr);
+		String line1 = null;
+		String line2 = null;
+
+		try {
+			InputStream inStream = new URL(vUrl).openStream();
+			BufferedReader br = new BufferedReader(
+				new InputStreamReader(inStream, HBase64.UTF8)
+				);
+			line1 = br.readLine();
+			line2 = br.readLine();
+			br.close();
+		}
+		catch (Exception e) {
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+
+		PrintWriter out = resp.getWriter();
+		out.println("got validation response");
+		out.println("line 1 :: "+line1);
+		out.println("line 2 :: "+line2);
+		out.close();
 	}
 
 	private void sendUserOnTheirWay(HttpServletRequest req,

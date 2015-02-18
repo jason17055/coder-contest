@@ -346,6 +346,30 @@ public class CoreServlet extends HttpServlet
 	protected void showLoginPage(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
+		TemplateVariables tv = makeTemplateVariables(req);
+		TemplateVariables.Contest c;
+		try {
+			c = tv.getContest();
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		if (c.auth_external != null && c.auth_external.startsWith("cas:")) {
+			//TODO- save myUrl for later redirection
+			String myUrl = getMyUrl(req);
+			String appUrl = String.format("%s/%s/login",
+				getBaseUrl(req),
+				escapeUrl(c.id)
+				);
+			String newUrl = String.format("%slogin?service=%s",
+				c.auth_external.substring(4),
+				escapeUrl(appUrl));
+			resp.sendRedirect(newUrl);
+			return;
+		}
+
 		String myUrl = getMyUrl(req);
 		String newUrl = makeContestUrl(
 			req.getParameter("contest"),
