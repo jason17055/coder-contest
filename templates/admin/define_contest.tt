@@ -1,5 +1,5 @@
 [% WRAPPER 'common.inc'
-	page_title = 'New Contest'
+	page_title = r.contest ? 'Edit Contest' : 'New Contest'
 %]
 
 [% IF message %]
@@ -23,8 +23,16 @@ First character must not be a number.</small>
 </tr>
 [% END %]
 <tr>
+<td><label for="director_username_entry">Director Username:</label></td>
+<td><input type="text" name="director_username" id="director_username_entry" value="[% f.director_username |html %]"></td>
+</tr>
+<tr>
 <td><label for="password_entry">Director Password:</label></td>
 <td><input type="text" name="password" id="password_entry" value="[% f.password |html %]"></td>
+</tr>
+<tr>
+<td><label for="auth_external_entry">Auth External:</label></td>
+<td><input type="text" name="auth_external" id="auth_external_entry" value="[% f.auth_external |html %]"></td>
 </tr>
 </table>
 <div>

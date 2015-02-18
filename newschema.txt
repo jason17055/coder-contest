@@ -37,6 +37,7 @@ Contest [ "id" ]
 	phase4_name       String
 	phase4_ends       Date
 	no_responses      String[]
+	auth_external     String e.g. "cas:URL"
 
 User [ "Contest.id" / "username" ]
 	password          String

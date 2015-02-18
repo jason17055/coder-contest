@@ -33,6 +33,7 @@ public class DefineContestServlet extends AdminPageServlet
 			TemplateVariables.Contest c = tv.fetchContest(contestId);
 			HashMap<String,String> form = new HashMap<String,String>();
 			form.put("id", c.id);
+			form.put("auth_external", c.auth_external);
 			ctx.put("f", form);
 		}
 		else {
@@ -49,6 +50,9 @@ public class DefineContestServlet extends AdminPageServlet
 		if (req.getParameter("action:create_contest") != null) {
 			doCreateContest(req, resp);
 		}
+		else if (req.getParameter("action:update_contest") != null) {
+			doUpdateContest(req, resp);
+		}
 		else if (req.getParameter("action:cancel") != null) {
 			doCancel(req, resp);
 		}
@@ -60,11 +64,7 @@ public class DefineContestServlet extends AdminPageServlet
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String u = req.getParameter("next");
-		if (u == null) {
-			u = req.getContextPath()+"/_admin/contests";
-		}
-		resp.sendRedirect(u);
+		resp.sendRedirect(getNextUrl(req));
 	}
 
 	void doCreateContest(HttpServletRequest req, HttpServletResponse resp)
@@ -73,6 +73,7 @@ public class DefineContestServlet extends AdminPageServlet
 		String contestId = req.getParameter("contest");
 		String directorName = "director";
 		String directorPassword = req.getParameter("password");
+		String externalAuthStr = req.getParameter("auth_external");
 
 		// TODO- check parameters
 
@@ -93,6 +94,7 @@ public class DefineContestServlet extends AdminPageServlet
 				"Incomplete Output",
 				"Excessive Output"
 				}));
+			ent1.setProperty("auth_external", externalAuthStr);
 			ds.put(ent1);
 
 			Key userKey = KeyFactory.createKey(
@@ -105,15 +107,78 @@ public class DefineContestServlet extends AdminPageServlet
 			ds.put(ent2);
 
 			txn.commit();
+
+			resp.sendRedirect(getNextUrl(req));
 		}
 		finally {
 			if (txn.isActive()) {
 				txn.rollback();
 			}
 		}
+	}
 
-		//FIXME: use absolute url
-		String newUrl = "contests";
-		resp.sendRedirect(newUrl);
+	void doUpdateContest(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException, ServletException
+	{
+		String contestId = req.getParameter("contest");
+		String directorName = req.getParameter("director_username");
+		String directorPassword = req.getParameter("password");
+		String externalAuthStr = req.getParameter("auth_external");
+
+		// TODO- check parameters
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		TransactionOptions options = TransactionOptions.Builder.withXG(true);
+		Transaction txn = ds.beginTransaction(options);
+
+		try {
+
+			Key contestKey = KeyFactory.createKey("Contest", contestId);
+			Entity ent1 = ds.get(contestKey);
+			ent1.setProperty("auth_external", externalAuthStr);
+			ds.put(ent1);
+
+			if (directorName != null &&
+				directorName.length() != 0 &&
+				directorPassword != null &&
+				directorPassword.length() != 0)
+			{
+				Key userKey = KeyFactory.createKey(
+					"User", contestId+"/"+directorName);
+				Entity ent2;
+				try {
+					ent2 = ds.get(userKey);
+				}
+				catch (EntityNotFoundException e) {
+					ent2 = new Entity(userKey);
+				}
+				ent2.setProperty("contest", contestId);
+				ent2.setProperty("name", directorName);
+				ent2.setProperty("password", directorPassword);
+				ent2.setProperty("is_director", Boolean.TRUE);
+				ds.put(ent2);
+			}
+
+			txn.commit();
+
+			resp.sendRedirect(getNextUrl(req));
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+		finally {
+			if (txn.isActive()) {
+				txn.rollback();
+			}
+		}
+	}
+
+	String getNextUrl(HttpServletRequest req)
+	{
+		String u = req.getParameter("next");
+		if (u == null) {
+			u = req.getContextPath()+"/_admin/contests";
+		}
+		return u;
 	}
 }

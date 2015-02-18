@@ -236,6 +236,7 @@ public class TemplateVariables
 		public Date started;
 		public List<String> no_responses;
 		public int current_phase_id;
+		public String auth_external;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -1431,6 +1432,7 @@ public class TemplateVariables
 		c.scoreboard_order = ent.hasProperty("scoreboard_order") ?
 			(String)ent.getProperty("scoreboard_order") :
 			"s";
+		c.auth_external = (String) ent.getProperty("auth_external");
 
 		@SuppressWarnings("unchecked")
 		List<String> no_responses_arr = (List<String>) ent.getProperty("no_responses");
