@@ -21,12 +21,12 @@
 <td><a href="[% f.problem.url |html %]">[% f.problem.name |html %]</a></td>
 </tr>
 <tr>
-<td>Minutes:</td>
-<td><input type="text" name="minutes" value="[% submission.minutes |html %]"[% submission.is_mine ? '' : ' disabled="disabled"' %]></td>
+<td><label>Submission Time:</label></td>
+<td>[% submission.created |html %]</td>
 </tr>
 <tr>
-<td><label>Submission Time:</label></td>
-<td><input type="text" name="created" value="[% submission.created |html %]"[% submission.is_mine ? '' : ' disabled="disabled"' %]></td>
+<td>Minutes:</td>
+<td><input type="text" name="minutes" value="[% submission.minutes |html %]"[% submission.is_mine ? '' : ' disabled="disabled"' %]></td>
 </tr>
 <tr>
 <td valign="top"><label>Source code:</label></td>
