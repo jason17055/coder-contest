@@ -75,7 +75,7 @@
 <a href="[% call_url(judge.edit_url) |html %]">[% judge.name |html %]</a>
 </td>
 <td style="padding-left: 6pt; padding-right: 6pt">
-<img src="[% images_url %]/clarification.png" alt="Clarifications:"
+<img src="[% images_url %]/question.png" alt="Clarifications:"
 	class="task-count-indicator"
 	id="ind_clarificationcount_judge_[% judge.username |html %]_[% judge.clarifications_total |html %]">
 [% judge.clarifications_pending |html %]
