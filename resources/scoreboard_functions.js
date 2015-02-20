@@ -75,3 +75,66 @@ function flashElement(el, count)
 		setTimeout(function() { flashElement(el,count+1); }, 500);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////
+// BEGIN CODE ORIGINALLY IN submission.php
+//
+var lastInputFileUrl;
+function showTestResult(inputFile, outputFile)
+{
+	lastInputFileUrl = inputFile;
+	document.getElementById('testResult_Input').contentWindow.location.href = inputFile;
+	document.getElementById('testResult_Output').contentWindow.location.href = outputFile;
+	$('#customTestDiv').hide();
+	$('#testResultDiv').show();
+	onResize();
+}
+
+function onResize()
+{
+	var $i = $('#testResult_Input');
+	var $o = $('#testResult_Output');
+	var y = $o.offset().top - $i.height();
+
+	var slack = window.innerHeight - y;
+	var idealHeight = Math.floor(slack / 2) - 13;
+	idealHeight = idealHeight < 100 ? 100 : idealHeight;
+	document.getElementById('testResult_Input').height = idealHeight;
+	document.getElementById('testResult_Output').height = idealHeight;
+
+	var w = Math.floor(window.innerWidth * .4 - 10);
+	document.getElementById('testResult_Input').width = w;
+	document.getElementById('testResult_Output').width = w;
+
+	var w = Math.floor(window.innerWidth * .6 - 60);
+	document.getElementById('source_code_iframe').width = w;
+
+	var h = window.innerHeight - $('#source_code_iframe').offset().top - 25;
+	document.getElementById('source_code_iframe').height = h;
+}
+$(onResize);
+window.onresize = onResize;
+
+function doCustomTest()
+{
+	$('#testResultDiv').hide();
+	if (!lastInputFileUrl)
+	{
+		$('#customTestDiv').show();
+		return;
+	}
+
+	var onSuccess = function(data, tStatus)
+	{
+		document.customTestForm.input_content.value = data;
+		$('#customTestDiv').show();
+	};
+
+	$.ajax({
+		url: lastInputFileUrl,
+		success: onSuccess,
+		dataType: 'text'
+		});
+}
+//
+//////////////////////////////////////////////////////////////////////

@@ -100,6 +100,25 @@
 </p>
 </form>
 
+<div id="customTestDiv" style="display:none">
+<form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
+<form name="customTestForm" method="post" action="[% r.uri |html %]">
+<div><b>Input for Custom Test:</b></div>
+<input type="hidden" name="source_name" value="[% submission.source.name |html %]">
+<input type="hidden" name="source_file" value="[% submission.source.id |html %]">
+<input type="hidden" name="next_url" value="[% r.uri |html %]">
+<textarea name="input_content" rows="12" cols="40"></textarea>
+<div><button name="action:custom_test" type="submit">Submit</button></div>
+</form>
+</div>
+
+<div id="testResultDiv" style="display:none">
+<div><b>Input File</b></div>
+<iframe id="testResult_Input"></iframe>
+<div><b>Output File</b></div>
+<iframe id="testResult_Output"></iframe>
+</div>
+
 </td>
 [% END #if editing an existing submission %]
 </tr>
