@@ -93,6 +93,14 @@ function showTestResult(inputFile, outputFile)
 function onResize()
 {
 	var $i = $('#testResult_Input');
+	if ($i.length) {
+		return onResize_editSubmissionPage();
+	}
+}
+
+function onResize_editSubmissionPage()
+{
+	var $i = $('#testResult_Input');
 	var $o = $('#testResult_Output');
 	var y = $o.offset().top - $i.height();
 
