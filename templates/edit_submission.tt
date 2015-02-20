@@ -93,9 +93,9 @@
 
 <form method="post" enctype="multipart/form-data" action="[% r.uri |html %]">
 <p>
-[% IF submission.test_results.size %]
+[% IF submission.problem.system_tests.size %]
 <button type="submit" name="action:redo_tests">Redo Tests</button>
-[% END #if any test results %]
+[% END #if any system test results %]
 <button type="button" onclick="doCustomTest()">Custom Test</button>
 </p>
 </form>
