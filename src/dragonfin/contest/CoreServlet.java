@@ -5,7 +5,7 @@ import dragonfin.contest.common.File;
 import dragonfin.templates.*;
 
 import java.io.*;
-import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 import javax.servlet.*;
@@ -195,6 +195,7 @@ public class CoreServlet extends HttpServlet
 					return null;
 				}
 			}});
+		ctx.put("format_time", new FormatTimeFunction());
 
 		HttpSession s = req.getSession(false);
 		if (s != null)
@@ -230,6 +231,37 @@ public class CoreServlet extends HttpServlet
 		if (args != null)
 			ctx.putAll(args);
 		return ctx;
+	}
+
+	static class FormatTimeFunction implements Function
+	{
+		public Object invoke(Bindings args) throws Exception
+		{
+			Object arg1 = args.get("1");
+			if (arg1 instanceof Date) {
+				return doFormatTime((Date)arg1);
+			}
+			else {
+				return null;
+			}
+		}
+	}
+
+	static String doFormatTime(Date d)
+	{
+		Date curTime = new Date();
+		long ageSeconds = Math.abs(curTime.getTime() - d.getTime()) / 1000;
+		if (ageSeconds < 8*60*60) {
+			//less than eight hours
+			return new SimpleDateFormat("h:ma").format(d);
+		}
+		else if (ageSeconds < 3*86400) {
+			//less than three days
+			return new SimpleDateFormat("E h:ma").format(d);
+		}
+		else {
+			return new SimpleDateFormat("E d M h:ma").format(d);
+		}
 	}
 
 	public static class BalloonInfo
@@ -306,10 +338,6 @@ public class CoreServlet extends HttpServlet
 		out.close();
 		}
 		catch (IOException e) { throw e; }
-		catch (SQLException e)
-		{
-			throw new ServletException("Database error", e);
-		}
 		catch (Exception e)
 		{
 			throw new ServletException("Template Engine error", e);

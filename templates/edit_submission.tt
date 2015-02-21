@@ -22,7 +22,7 @@
 </tr>
 <tr>
 <td><label>Submission Time:</label></td>
-<td>[% submission.created |html %]</td>
+<td>[% format_time(submission.created) |html %]</td>
 </tr>
 <tr>
 <td>Minutes:</td>
