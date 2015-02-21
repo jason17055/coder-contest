@@ -18,7 +18,6 @@ Status:
 
 <table class="realtable">
 <tr>
-<th>&nbsp;</th>
 <th>Submitted</th>
 <th>Problem</th>
 <th>Type</th>
@@ -28,7 +27,6 @@ Status:
 </tr>
 [% FOREACH u IN contest.submissions %]
 <tr>
-<td><input type="checkbox" name="[% u.id |html %]"></td>
 <td><a href="[% call_url(u.take_url) |html %]">
 [% format_time(u.created) |html %]</a></td>
 <td>[% u.problem.name |html %]</td>
@@ -48,7 +46,9 @@ Status:
 
 <p>
 <a href=".">Home</a> |
+[% IF session.is_director %]
 <a href="[% contest_links.controller |html %]">Controller</a> |
+[% END %]
 <a href="[% contest_links.problems_list |html %]">Define Problems</a> |
 <a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
 </p>

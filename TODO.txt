@@ -1,15 +1,11 @@
---v1.0--
-* when judging a submission, the Judge field should not be cleared
-
 --v1.1--
-* problem deletion: delete any corresponding Result entites as well
+* problem deletion: delete any corresponding Result entities as well
 * system test deletion: delete any corresponding test results as well
 * system test: after creating a new test, go back to problem page,
     NOT the list problems page
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
-   - hide 'Controller' link if not signed in as director
 * result page: implement "Add Submission"
 * test result page: implement "Another Test" link
 * broker startup: when initiating a broker startup, schedule a task
@@ -19,6 +15,9 @@
   down.)
 * do not show contest clock on Login page
 * rules page: when clicking OK, return to controller page
+* _admin/contests: show when contest was created, last accessed,
+  number of problems, etc.
+* contest logo: allow uploading a file
 
 --future--
 * define_contest: give list of all valid timezone names
