@@ -82,14 +82,21 @@ public class ContestRulesServlet extends CoreServlet
 		}
 	}
 
+	String getNextUrl(HttpServletRequest req)
+	{
+		String u = req.getParameter("next");
+		if (u != null) {
+			return u;
+		}
+		else {
+			return makeContestUrl(req.getParameter("contest"), "rules", null);
+		}
+	}
+
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String u = req.getParameter("next");
-		if (u == null) {
-			u = makeContestUrl(req.getParameter("contest"), "", null);
-		}
-		resp.sendRedirect(u);
+		resp.sendRedirect(getNextUrl(req));
 	}
 
 	void doUpdateRules(HttpServletRequest req, HttpServletResponse resp)
