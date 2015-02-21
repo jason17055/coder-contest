@@ -45,7 +45,9 @@
 <p>
 [% IF session.is_director %]
 <a href="[% contest_links.new_problem |html %]">New Problem</a> |
+<!--
 <a href="[% contest_links.download_all_problems |html %]">Download as Zip</a> |
+-->
 <a href="[% contest_links.controller |html %]">Controller</a>
 [% ELSE %]
 <a href="[% contest_links.submissions |html %]">Submissions</a> |
