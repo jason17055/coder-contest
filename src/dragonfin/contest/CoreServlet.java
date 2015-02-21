@@ -195,7 +195,7 @@ public class CoreServlet extends HttpServlet
 					return null;
 				}
 			}});
-		ctx.put("format_time", new FormatTimeFunction());
+		ctx.put("format_time", new FormatTimeFunction(tv.getContest()));
 
 		HttpSession s = req.getSession(false);
 		if (s != null)
@@ -235,6 +235,25 @@ public class CoreServlet extends HttpServlet
 
 	static class FormatTimeFunction implements Function
 	{
+		TimeZone tz;
+		SimpleDateFormat df_sameDay;
+		SimpleDateFormat df_sameWeek;
+		SimpleDateFormat df_other;
+
+		FormatTimeFunction(TemplateVariables.Contest contest)
+		{
+			df_sameDay = new SimpleDateFormat("h:ma");
+			df_sameWeek = new SimpleDateFormat("h:ma E");
+			df_other = new SimpleDateFormat("h:ma E d M");
+
+			if (contest != null && contest.time_zone != null) {
+				this.tz = TimeZone.getTimeZone(contest.time_zone);
+				df_sameDay.setTimeZone(this.tz);
+				df_sameWeek.setTimeZone(this.tz);
+				df_other.setTimeZone(this.tz);
+			}
+		}
+
 		public Object invoke(Bindings args) throws Exception
 		{
 			Object arg1 = args.get("1");
@@ -245,22 +264,22 @@ public class CoreServlet extends HttpServlet
 				return null;
 			}
 		}
-	}
 
-	static String doFormatTime(Date d)
-	{
-		Date curTime = new Date();
-		long ageSeconds = Math.abs(curTime.getTime() - d.getTime()) / 1000;
-		if (ageSeconds < 8*60*60) {
-			//less than eight hours
-			return new SimpleDateFormat("h:ma").format(d);
-		}
-		else if (ageSeconds < 3*86400) {
-			//less than three days
-			return new SimpleDateFormat("E h:ma").format(d);
-		}
-		else {
-			return new SimpleDateFormat("E d M h:ma").format(d);
+		String doFormatTime(Date d)
+		{
+			Date curTime = new Date();
+			long ageSeconds = Math.abs(curTime.getTime() - d.getTime()) / 1000;
+			if (ageSeconds < 8*60*60) {
+				//less than eight hours
+				return df_sameDay.format(d);
+			}
+			else if (ageSeconds < 3*86400) {
+				//less than three days
+				return df_sameWeek.format(d);
+			}
+			else {
+				return df_other.format(d);
+			}
 		}
 	}
 
