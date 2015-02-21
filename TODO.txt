@@ -1,8 +1,6 @@
 --v1.1--
 * problem deletion: delete any corresponding Result entities as well
 * system test deletion: delete any corresponding test results as well
-* system test: after creating a new test, go back to problem page,
-    NOT the list problems page
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
@@ -20,6 +18,8 @@
 * contest logo: allow uploading a file
 
 --future--
+* system_test: after creating a new test, automatically create new test
+    results for all existing submissions of the problem
 * define_contest: give list of all valid timezone names
 * define_problems:
    - allow judges access to this page

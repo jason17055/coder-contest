@@ -9,6 +9,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+
 public class DefineSystemTestServlet extends CoreServlet
 {
 	public String getTemplate()
@@ -79,14 +81,27 @@ public class DefineSystemTestServlet extends CoreServlet
 		}
 	}
 
+	String getNextUrl(HttpServletRequest req)
+	{
+		String u = req.getParameter("next");
+		if (u != null) {
+			return u;
+		}
+
+		String t = req.getParameter("problem");
+		if (t != null) {
+			return makeContestUrl(req.getParameter("contest"),
+				"problem", "id="+escapeUrl(t)
+				);
+		}
+
+		return makeContestUrl(req.getParameter("contest"), "problems", null);
+	}
+
 	void doCancel(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		String u = req.getParameter("next");
-		if (u == null) {
-			u = makeContestUrl(req.getParameter("contest"), "problems", null);
-		}
-		resp.sendRedirect(u);
+		resp.sendRedirect(getNextUrl(req));
 	}
 
 	void doDeleteSystemTest(HttpServletRequest req, HttpServletResponse resp)
