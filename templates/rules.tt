@@ -28,6 +28,12 @@
 </td>
 </tr>
 <tr>
+<td><label for="time_zone_entry">Time Zone:</label></td>
+<td><input type="text" name="time_zone" id="time_zone_entry"
+	value="[% f.time_zone |html %]" size="40" disabled="disabled">
+</td>
+</tr>
+<tr>
 <td><label>Contestant options:</label></td>
 <td>
 <label><input type="checkbox" name="contestants_can_change_name"[% f.contestants_can_change_name ? ' checked="checked"' : '' %]>

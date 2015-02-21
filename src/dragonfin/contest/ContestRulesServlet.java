@@ -57,6 +57,7 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("phase3_ends", fromDate(c.phase3_ends));
 		form.put("phase4_ends", fromDate(c.phase4_ends));
 		form.put("started", fromDate(c.started));
+		form.put("time_zone", c.time_zone);
 
 		{
 			StringBuilder sb = new StringBuilder();

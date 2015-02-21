@@ -18,6 +18,7 @@ contest         - properties of the current contest
 .submissions    - Submission[] those judgable by the current user
 .id
 .title
+.time_zone
 .config_url     - takes user to Admin Contest definition page
 .workers        - Worker[]
 .accepted_languages - String[] file extensions accepted

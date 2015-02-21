@@ -38,6 +38,7 @@ Contest [ "id" ]
 	phase4_ends       Date
 	no_responses      String[]
 	auth_external     String e.g. "cas:URL"
+	time_zone         String e.g. "UTC" or "America/Los_Angeles"
 
 User [ "Contest.id" / "username" ]
 	password          String

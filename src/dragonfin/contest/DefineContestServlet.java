@@ -34,6 +34,7 @@ public class DefineContestServlet extends AdminPageServlet
 			HashMap<String,String> form = new HashMap<String,String>();
 			form.put("id", c.id);
 			form.put("auth_external", c.auth_external);
+			form.put("time_zone", c.time_zone);
 			ctx.put("f", form);
 		}
 		else {
@@ -71,9 +72,10 @@ public class DefineContestServlet extends AdminPageServlet
 		throws IOException, ServletException
 	{
 		String contestId = req.getParameter("contest");
-		String directorName = "director";
+		String directorName = req.getParameter("director_username");
 		String directorPassword = req.getParameter("password");
 		String externalAuthStr = req.getParameter("auth_external");
+		String timeZoneStr = req.getParameter("time_zone");
 
 		// TODO- check parameters
 
@@ -95,6 +97,7 @@ public class DefineContestServlet extends AdminPageServlet
 				"Excessive Output"
 				}));
 			ent1.setProperty("auth_external", externalAuthStr);
+			ent1.setProperty("time_zone", timeZoneStr);
 			ds.put(ent1);
 
 			Key userKey = KeyFactory.createKey(
@@ -125,6 +128,7 @@ public class DefineContestServlet extends AdminPageServlet
 		String directorName = req.getParameter("director_username");
 		String directorPassword = req.getParameter("password");
 		String externalAuthStr = req.getParameter("auth_external");
+		String timeZoneStr = req.getParameter("time_zone");
 
 		// TODO- check parameters
 
@@ -137,6 +141,7 @@ public class DefineContestServlet extends AdminPageServlet
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
 			Entity ent1 = ds.get(contestKey);
 			ent1.setProperty("auth_external", externalAuthStr);
+			ent1.setProperty("time_zone", timeZoneStr);
 			ds.put(ent1);
 
 			if (directorName != null &&

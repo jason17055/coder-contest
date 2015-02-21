@@ -237,6 +237,7 @@ public class TemplateVariables
 		public List<String> no_responses;
 		public int current_phase_id;
 		public String auth_external;
+		public String time_zone;
 
 		Contest(Key dsKey) {
 			this.dsKey = dsKey;
@@ -1433,6 +1434,7 @@ public class TemplateVariables
 			(String)ent.getProperty("scoreboard_order") :
 			"s";
 		c.auth_external = (String) ent.getProperty("auth_external");
+		c.time_zone = (String) ent.getProperty("time_zone");
 
 		@SuppressWarnings("unchecked")
 		List<String> no_responses_arr = (List<String>) ent.getProperty("no_responses");

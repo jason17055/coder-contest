@@ -32,7 +32,11 @@ First character must not be a number.</small>
 </tr>
 <tr>
 <td><label for="auth_external_entry">Auth External:</label></td>
-<td><input type="text" name="auth_external" id="auth_external_entry" value="[% f.auth_external |html %]"></td>
+<td><input type="text" name="auth_external" id="auth_external_entry" value="[% f.auth_external |html %]" size="40"></td>
+</tr>
+<tr>
+<td><label for="time_zone_entry">Time Zone:</label></td>
+<td><input type="text" name="time_zone" id="time_zone_entry" value="[% f.time_zone |html %]" size="40"></td>
 </tr>
 </table>
 <div>
