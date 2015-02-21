@@ -133,6 +133,7 @@ perl worker.pl [% contest.abs_url |html %]</pre>
 </table>
 
 <p style="clear:both">
+<a href=".">Home</a> |
 <a href="[% contest_links.edit_contest |html %]">Contest Options</a> |
 <a href="[% contest_links.problems_list |html %]">Define Problems</a> |
 <a href="[% contest_links.users_list |html %]">Define Users</a> |
