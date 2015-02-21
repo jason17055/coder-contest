@@ -10,7 +10,6 @@
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
    - hide 'Controller' link if not signed in as director
-* format_date: implement some sort of "format date" function
 * result page: implement "Add Submission"
 * test result page: implement "Another Test" link
 * broker startup: when initiating a broker startup, schedule a task
@@ -22,6 +21,7 @@
 * rules page: when clicking OK, return to controller page
 
 --future--
+* define_contest: give list of all valid timezone names
 * define_problems:
    - allow judges access to this page
 * problems: let start_time be set
