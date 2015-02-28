@@ -89,7 +89,7 @@ public class ContestRulesServlet extends CoreServlet
 			return u;
 		}
 		else {
-			return makeContestUrl(req.getParameter("contest"), "rules", null);
+			return makeContestUrl(req.getParameter("contest"), "controller", null);
 		}
 	}
 
