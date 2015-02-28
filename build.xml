@@ -25,6 +25,8 @@
 <copy todir="build/resources">
 	<fileset dir="resources" />
 </copy>
+<unzip src="codemirror.zip" dest="build/resources"/>
+
 </target>
 
 <target name="compile" depends="init-builddir">
