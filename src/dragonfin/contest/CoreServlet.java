@@ -244,7 +244,7 @@ public class CoreServlet extends HttpServlet
 		{
 			df_sameDay = new SimpleDateFormat("h:ma");
 			df_sameWeek = new SimpleDateFormat("h:ma E");
-			df_other = new SimpleDateFormat("h:ma E d M");
+			df_other = new SimpleDateFormat("h:ma E d MMM");
 
 			if (contest != null && contest.time_zone != null) {
 				this.tz = TimeZone.getTimeZone(contest.time_zone);
