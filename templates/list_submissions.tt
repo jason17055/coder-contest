@@ -53,7 +53,7 @@ Status:
 <a href="[% contest_links.scoreboard |html %]" target="_new">Live Scoreboard</a>
 </p>
 
-<audio id="newSubmissionAudio" src="audio/microsoft/REMINDER.ogg"></audio>
+<audio id="newSubmissionAudio" src="[% resources_prefix %]/audio/microsoft/REMINDER.ogg"></audio>
 <script type="text/javascript"><!--
 function ringaling()
 {

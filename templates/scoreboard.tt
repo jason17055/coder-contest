@@ -30,10 +30,10 @@
 <div id="announcementPopup">
   <div id="announcementTitleBar" align="center">Message</div>
   <div>&nbsp;</div>
-  <img id="announcementImage" src="[% images_url %]/balloons.png" align="left">
+  <img id="announcementImage" src="[% images_url %]/scoreboard/balloons.png" align="left">
   <div id="announcementContent">&nbsp;</div>
   <div id="announcementButtons"></div>
-  <audio id="announcementAudio" src="[% resources_prefix %]/Medieval_Fanfare.ogg"></audio>
+  <audio id="announcementAudio" src="[% resources_prefix %]/audio/Medieval_Fanfare.ogg"></audio>
 </div>
 
 <center>
