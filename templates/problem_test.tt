@@ -16,7 +16,7 @@ displayed for you.
 </p>
 
 [% INCLUDE 'form_messages.inc' %]
-<form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
+<form name="problem_test_form" method="post" enctype="multipart/form-data" action="[% r.url |html %]">
 <table>
 <tr>
 <td valign="top">Source code:</td>

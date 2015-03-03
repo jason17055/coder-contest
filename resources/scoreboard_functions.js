@@ -76,6 +76,26 @@ function flashElement(el, count)
 	}
 }
 
+function on_example_input_file_selected(evt)
+{
+	var onSuccess = function(data) {
+		document.problem_test_form.input_content.value = data;
+	};
+
+	if (this.value) {
+		$.ajax({
+			type: "GET",
+			url: "/_f/"+this.value+"/input.txt",
+			dataType: "text",
+			success: onSuccess
+			});
+	}
+}
+
+$(function() {
+	$('#example_input_file_select').change(on_example_input_file_selected);
+});
+
 //////////////////////////////////////////////////////////////////////
 // BEGIN CODE ORIGINALLY IN submission.php
 //
