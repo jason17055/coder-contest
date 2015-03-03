@@ -1,3 +1,7 @@
+--v1.0.1--
+* test result page: Another Test link doesn't work
+* problem test tab: Selecting example input file has no effect
+
 --v1.1--
 * problem deletion: delete any corresponding Result entities as well
 * system test deletion: delete any corresponding test results as well
