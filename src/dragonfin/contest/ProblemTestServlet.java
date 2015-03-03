@@ -31,12 +31,22 @@ public class ProblemTestServlet extends ProblemCoreServlet
 
 		HashMap<String,Object> form = new HashMap<String,Object>();
 		if (tv.req.getParameter("source") != null) {
-			File fileObj = tv.fetchFile(tv.req.getParameter("source"));
-			form.put("source", fileObj);
+			try {
+				File fileObj = tv.fetchFile(tv.req.getParameter("source"));
+				form.put("source", fileObj);
+			}
+			catch (EntityNotFoundException e) {
+				// safe to ignore
+			}
 		}
 		if (tv.req.getParameter("input") != null) {
-			File fileObj = tv.fetchFile(tv.req.getParameter("input"));
-			form.put("input", fileObj);
+			try {
+				File fileObj = tv.fetchFile(tv.req.getParameter("input"));
+				form.put("input", fileObj);
+			}
+			catch (EntityNotFoundException e) {
+				// safe to ignore
+			}
 		}
 		ctx.put("f", form);
 	}
