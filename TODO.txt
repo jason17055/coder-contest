@@ -1,7 +1,3 @@
---v1.0.1--
-* test result page: Another Test link doesn't work
-* problem test tab: Selecting example input file has no effect
-
 --v1.1--
 * problem deletion: delete any corresponding Result entities as well
 * system test deletion: delete any corresponding test results as well
@@ -19,6 +15,9 @@
 * _admin/contests: show when contest was created, last accessed,
   number of problems, etc.
 * contest logo: allow uploading a file
+* when already signed into one contest, loading a different contest
+  can show you signed into that other contest as well, even if it is a
+  user that doesn't exist in the second contest.
 
 --future--
 * system_test: after creating a new test, automatically create new test
@@ -27,6 +26,8 @@
 * define_problems:
    - allow judges access to this page
 * problems: let start_time be set
+* problem test page: if URL selects input file, and the input file matches
+  an example input, then auto-select that example input
 * let users see messages they've already dismissed
 * contest: set runtime limit at contest level
 * clarifications: allow "general" clarification questions and answers
