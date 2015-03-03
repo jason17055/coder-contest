@@ -21,12 +21,13 @@ displayed for you.
 <tr>
 <td valign="top">Source code:</td>
 <td valign="top">
-[% IF result.source %]
+[% f_source = f.source || result.source %]
+[% IF f_source %]
 	<div>
-	<input type="hidden" name="source_name" value="[% result.source.name |html %]">
-	<input type="hidden" name="source_file" value="[% result.source.id |html %]">
+	<input type="hidden" name="source_name" value="[% f_source.name |html %]">
+	<input type="hidden" name="source_file" value="[% f_source.id |html %]">
 	Use existing source code file:
-	<a href="[% result.source.url |html %]">[% result.source.name |html %]</a>
+	<a href="[% f_source.url |html %]">[% f_source.name |html %]</a>
 	</div>
 	<div>or upload a new file:
 [% ELSE %]
@@ -47,7 +48,9 @@ displayed for you.
 	<select id="example_input_file_select">
 	<option value="">--select--</option>
 	[% FOREACH samp IN problem.sample_inputs %]
-		<option value="[% samp.input.id |html %]">[% samp.sample_name |html %]</option>
+		<option value="[% samp.input.id |html %]"[%
+		IF f.input && f.input.id==samp.input.id ' selected="selected"' END
+		%]>[% samp.sample_name |html %]</option>
 	[% END %]
 	</select><br>
 	or upload a file:
@@ -56,7 +59,7 @@ displayed for you.
 [% END #if any sample inputs %]
 <input type="file" name="input_upload"><br>
 or enter text in this box:<br>
-<textarea name="input_content" rows="12" cols="60">[% IF f.input f.content |html END %]</textarea>
+<textarea name="input_content" rows="12" cols="60">[% IF f.input f.input.text_content |html END %]</textarea>
 </td>
 </tr>
 </table>

@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.sql.*;
 import com.google.appengine.api.datastore.*;
 
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;

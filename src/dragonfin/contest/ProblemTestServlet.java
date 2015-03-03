@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.Date;
+import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
@@ -21,6 +22,24 @@ public class ProblemTestServlet extends ProblemCoreServlet
 	}
 
 	FileUploadFormHelper uploadForm = new FileUploadFormHelper();
+
+	@Override
+	void moreVars(TemplateVariables tv, SimpleBindings ctx)
+		throws IOException, EntityNotFoundException
+	{
+		super.moreVars(tv, ctx);
+
+		HashMap<String,Object> form = new HashMap<String,Object>();
+		if (tv.req.getParameter("source") != null) {
+			File fileObj = tv.fetchFile(tv.req.getParameter("source"));
+			form.put("source", fileObj);
+		}
+		if (tv.req.getParameter("input") != null) {
+			File fileObj = tv.fetchFile(tv.req.getParameter("input"));
+			form.put("input", fileObj);
+		}
+		ctx.put("f", form);
+	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException

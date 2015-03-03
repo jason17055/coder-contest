@@ -1773,6 +1773,13 @@ public class TemplateVariables
 		return f;
 	}
 
+	File fetchFile(String fileId)
+		throws EntityNotFoundException
+	{
+		Key key = KeyFactory.createKey("File", fileId);
+		return fetchFile(key);
+	}
+
 	HashMap<Key,User> cachedUsers = new HashMap<Key,User>();
 	User fetchUser(Key userKey)
 		throws EntityNotFoundException
