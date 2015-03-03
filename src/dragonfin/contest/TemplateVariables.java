@@ -1903,6 +1903,7 @@ public class TemplateVariables
 		File f = new File(req);
 		f.id = key.getName();
 		f.name = (String) ent.getProperty("given_name");
+		f.hash = ((Key) ent.getProperty("head_chunk")).getName();
 		return f;
 	}
 

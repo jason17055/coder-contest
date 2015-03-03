@@ -17,6 +17,7 @@ public class File
 
 	public String id;
 	public String name;
+	public String hash;
 	private String text_content_cached;
 
 	private static Charset UTF8 = Charset.forName("UTF-8");
