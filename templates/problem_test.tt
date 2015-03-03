@@ -48,9 +48,7 @@ displayed for you.
 	<select id="example_input_file_select">
 	<option value="">--select--</option>
 	[% FOREACH samp IN problem.sample_inputs %]
-		<option value="[% samp.input.id |html %]"[%
-		IF f.input && f.input.id==samp.input.id ' selected="selected"' END
-		%]>[% samp.sample_name |html %]</option>
+		<option value="[% samp.input.id |html %]">[% samp.sample_name |html %]</option>
 	[% END %]
 	</select><br>
 	or upload a file:
