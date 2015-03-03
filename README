@@ -1,3 +1,20 @@
+=============
+Coder Contest
+=============
+
+Coder Contest is a web-based application (designed to run on Google App
+Engine) that is used to administer computer programming contests. It
+allows people to sign in, access one or more computer programming
+problems, type code to solve the problem, test their solution, and submit
+the solution for judging. There is a separate judging interface, where
+judges can login and review submissions and mark them correct or
+incorrect. Finally, there is an automatic scoreboard interface which will
+display the top-ranked contestants and how many points they have.
+
+--------
+Building
+--------
+
 Create an 'extlib' subdirectory, then acquire and place the following
 Jar files into that subdirectory-
 
