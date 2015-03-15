@@ -1,10 +1,7 @@
 --v1.1--
-* problem deletion: delete any corresponding Result entities as well
-* system test deletion: delete any corresponding test results as well
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
-* result page: implement "Add Submission"
 * test result page: implement "Another Test" link
 * broker startup: when initiating a broker startup, schedule a task
   that will run a minute later to check whether the broker heartbeat has
@@ -14,10 +11,17 @@
 * do not show contest clock on Login page
 * _admin/contests: show when contest was created, last accessed,
   number of problems, etc.
-* contest logo: allow uploading a file
 * when already signed into one contest, loading a different contest
   can show you signed into that other contest as well, even if it is a
   user that doesn't exist in the second contest.
+* test/submit page: immediately reject any source code having an
+  extension not supported by a current worker
+
+--v1.2--
+* problem deletion: delete any corresponding Result entities as well
+* system test deletion: delete any corresponding test results as well
+* result page: implement "Add Submission"
+* contest logo: allow uploading a file
 
 --future--
 * system_test: after creating a new test, automatically create new test
