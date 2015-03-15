@@ -1,11 +1,15 @@
 package dragonfin.contest;
 
+import dragonfin.contest.common.File;
+
 import java.io.*;
 import java.util.*;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
+
+import static dragonfin.contest.common.CommonFunctions.*;
 
 public abstract class ProblemCoreServlet extends CoreServlet
 {
@@ -92,4 +96,18 @@ public abstract class ProblemCoreServlet extends CoreServlet
 	}
 
 	public abstract String getTemplate();
+
+	boolean isAcceptedFileType(HttpServletRequest req, File sourceFile)
+	{
+		TemplateVariables tv = makeTemplateVariables(req);
+
+		try {
+			TemplateVariables.Contest c = tv.getContest();
+			ArrayList<String> acceptedLangs = c.getAccepted_languages();
+			return acceptedLangs.contains(fileExtensionOf(sourceFile.name));
+		}
+		catch (EntityNotFoundException e) {
+			return false;
+		}
+	}
 }

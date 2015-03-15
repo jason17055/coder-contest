@@ -84,6 +84,11 @@ public class ProblemTestServlet extends ProblemCoreServlet
 			return;
 		}
 
+		if (!isAcceptedFileType(req, sourceFile)) {
+			doFormError(req, resp, "Error: source file is not of an accepted type.");
+			return;
+		}
+
 		// TODO- check permission
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
