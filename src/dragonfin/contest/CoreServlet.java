@@ -427,14 +427,31 @@ public class CoreServlet extends HttpServlet
 		resp.sendRedirect(newUrl);
 	}
 
-	protected boolean notLoggedIn(HttpServletRequest req)
+	/**
+	 * Check that the user is logged into the requested contest.
+	 */
+	protected boolean isLoggedIn(HttpServletRequest req)
 	{
 		HttpSession s = req.getSession(false);
-		return !(
+		if (!(
 			s != null &&
 			s.getAttribute("contest") != null &&
 			s.getAttribute("username") != null
-			);
+			))
+		{
+			return false;
+		}
+
+		String contestId = req.getParameter("contest");
+		return (contestId != null && contestId.equals(s.getAttribute("contest")));
+	}
+
+	/**
+	 * Opposite of isLoggedIn.
+	 */
+	protected boolean notLoggedIn(HttpServletRequest req)
+	{
+		return !isLoggedIn(req);
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
