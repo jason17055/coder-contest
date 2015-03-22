@@ -2,19 +2,18 @@
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
-* test result page: implement "Another Test" link
 * broker startup: when initiating a broker startup, schedule a task
   that will run a minute later to check whether the broker heartbeat has
   occurred and if not, try to start it up again. (This may be necessary in
   the case that a broker startup occurs while the broker is still shutting
   down.)
-* do not show contest clock on Login page
+* login page:
+   - do not show contest clock
+   - do not show a bogus username if user is already logged in to a different
+     contest
 * _admin/contests: show when contest was created, last accessed,
   number of problems, etc.
-* when already signed into one contest, loading a different contest
-  can show you signed into that other contest as well, even if it is a
-  user that doesn't exist in the second contest.
-* test/submit page: immediately reject any source code having an
+* submit page: immediately reject any source code having an
   extension not supported by a current worker
 
 --v1.2--
@@ -24,6 +23,8 @@
 * contest logo: allow uploading a file
 
 --future--
+* test/submit page: detect after a source file has been submitted if it
+  is the wrong file type and synthesize a compile-error message
 * system_test: after creating a new test, automatically create new test
     results for all existing submissions of the problem
 * define_contest: give list of all valid timezone names
@@ -48,10 +49,10 @@
 * judges: specify which problems are seen by judges on the edit-judge screen,
     not on the edit-problem screen
 * cloud-based worker(s)
-* sort usernames having numbers numerically
 * let some problems have non-text input and/or output files
 * define_problem: make link to test the reference solution
 * list_problems: implement "Download as Zip"
+* controller: allow sorting by team name or score
 
 --OLD--
 * message acknowledgement:
