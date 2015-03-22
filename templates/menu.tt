@@ -53,7 +53,7 @@ Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user
 		[% status = m.status %]
 	[% END %]
 <tr>
-<td>[% m.created |html %]</td>
+<td>[% format_time(m.created) |html %]</td>
 <td>[% m.problem.name |html %]</td>
 <td>
 [% IF m.type == 'submission' %]
