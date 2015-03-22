@@ -23,7 +23,7 @@ Status:
 <th>Type</th>
 <th>Contestant</th>
 <th>Judge</th>
-<th>Status</th>
+<th>Response</th>
 </tr>
 [% FOREACH u IN contest.submissions %]
 <tr>
@@ -34,7 +34,7 @@ Status:
 <img src="[% images_url %]/[% u.type |html %].png" alt="">[% u.type |html %]</td>
 <td>[% u.submitter.name |html %]</td>
 <td>[% u.judge.name |html %]</td>
-<td>[% u.status |html %]</td>
+<td>[% u.response |html %]</td>
 </tr>
 [% END %]
 [% IF contest.submissions.size == 0 %]

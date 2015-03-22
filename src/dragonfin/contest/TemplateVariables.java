@@ -1170,6 +1170,27 @@ public class TemplateVariables
 			return makeUrl("submission?id="+escapeUrl(id));
 		}
 
+		public String getResponse()
+		{
+			if (isCodeSubmission()) {
+				return status;
+			}
+			else if (isQuestion()) {
+				if ("REPLY_ALL".equals(answer_type)) {
+					return "Clarification Issued";
+				}
+				else if ("REPLY_ONE".equals(answer_type)) {
+					return "Replied";
+				}
+				else {
+					return answer_type;
+				}
+			}
+			else {
+				return null;
+			}
+		}
+
 		public boolean getCan_judge()
 		{
 			Key userKey = getLoggedInUserKey(req);

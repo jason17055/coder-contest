@@ -75,6 +75,7 @@ submission    - the currently-selected submission
 .test_results - TestResult[]
 .correct      - Boolean- true iff status is a "correct" status
 .ready        - Boolean- true if ready for judge to see
+.response     - status || 'Replied' || 'Clarification Issued' || ''
 
 system_test
 .edit_url

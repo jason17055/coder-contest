@@ -2,21 +2,22 @@
 * listsubmissions:
    - auto-refresh on new submissions
    - after stealing a submission, we lose which status was being filtered
+* login page:
+   - do not show contest clock
+   - do not show a bogus username if user is already logged in to a different
+     contest
+* submit page: immediately reject any source code having an
+  extension not supported by a current worker
+* rename Submission.Status to Submission.Response (or Reply)
+
+--v1.2--
+* _admin/contests: show when contest was created, last accessed,
+  number of problems, etc.
 * broker startup: when initiating a broker startup, schedule a task
   that will run a minute later to check whether the broker heartbeat has
   occurred and if not, try to start it up again. (This may be necessary in
   the case that a broker startup occurs while the broker is still shutting
   down.)
-* login page:
-   - do not show contest clock
-   - do not show a bogus username if user is already logged in to a different
-     contest
-* _admin/contests: show when contest was created, last accessed,
-  number of problems, etc.
-* submit page: immediately reject any source code having an
-  extension not supported by a current worker
-
---v1.2--
 * problem deletion: delete any corresponding Result entities as well
 * system test deletion: delete any corresponding test results as well
 * result page: implement "Add Submission"
