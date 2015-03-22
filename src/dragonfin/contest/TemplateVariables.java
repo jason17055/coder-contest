@@ -177,6 +177,7 @@ public class TemplateVariables
 			User u = handleUser(ent.getKey(), ent);
 			list.add(u);
 		}
+		Collections.sort(list, ORDER_USER_BY_ID);
 		return list;
 	}
 
@@ -225,6 +226,19 @@ public class TemplateVariables
 			return NAME_COMPARATOR.compare(a.username, b.username);
 		}
 	};
+
+	List<User> sortForScoreboard(Collection<User> users)
+		throws EntityNotFoundException
+	{
+		Contest c = getContest();
+		ArrayList<User> list = new ArrayList<User>();
+		list.addAll(users);
+		Collections.sort(list,
+				c.scoreboard_order.equals("n") ? ORDER_USER_BY_NAME :
+				c.scoreboard_order.equals("s") ? ORDER_USER_BY_SCORE :
+				ORDER_USER_BY_ID);
+		return list;
+	}
 
 	public static final int MAX_PHASE_NUMBER = 4;
 	public class Contest
@@ -378,7 +392,6 @@ public class TemplateVariables
 					list.add(u);
 				}
 			}
-			Collections.sort(list, ORDER_USER_BY_ID);
 			return list;
 		}
 
@@ -390,10 +403,6 @@ public class TemplateVariables
 					list.add(u);
 				}
 			}
-			Collections.sort(list,
-				scoreboard_order.equals("n") ? ORDER_USER_BY_NAME :
-				scoreboard_order.equals("s") ? ORDER_USER_BY_SCORE :
-				ORDER_USER_BY_ID);
 			return list;
 		}
 

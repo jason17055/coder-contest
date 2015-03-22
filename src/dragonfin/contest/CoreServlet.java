@@ -196,6 +196,19 @@ public class CoreServlet extends HttpServlet
 				}
 			}});
 		ctx.put("format_time", new FormatTimeFunction(tv.getContest()));
+		ctx.put("sort_for_scoreboard", new Function() {
+			public Object invoke(Bindings args) throws Exception
+			{
+				Object arg1 = args.get("1");
+				if (arg1 instanceof Collection) {
+					@SuppressWarnings("unchecked")
+					Collection<TemplateVariables.User> userList = (Collection<TemplateVariables.User>)arg1;
+					return tv.sortForScoreboard(userList);
+				}
+				else {
+					return null;
+				}
+			}});
 
 		HttpSession s = req.getSession(false);
 		if (s != null)

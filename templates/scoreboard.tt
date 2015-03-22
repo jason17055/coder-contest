@@ -45,7 +45,7 @@
 [% END #each problem %]
 <th>TOTAL</th>
 </tr>
-[% FOREACH u IN contest.contestants %]
+[% FOREACH u IN sort_for_scoreboard(contest.contestants) %]
 <tr>
 <td class="column1"><div class="team_name">[% u.name |html %]</div></td>
 [% FOREACH p IN contest.problems %]
