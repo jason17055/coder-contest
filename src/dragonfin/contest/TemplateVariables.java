@@ -1084,7 +1084,7 @@ public class TemplateVariables
 		String f = req.getParameter("status");
 		if (f == null || f.equals("") || f.equals("all")) { return true; }
 
-		boolean isResponded = s.status != null && !s.status.equals("");
+		boolean isResponded = s.getResponse() != null && !s.getResponse().equals("");
 		boolean isTaken = s.judgeKey != null;
 
 		if (f.equals("new")) {
