@@ -4,11 +4,11 @@
 
 <table id="controller_teams_table" class="realtable">
 <tr>
-<th>Contestant [<a href="[% sort_by_team_url |html %]">^</a>]</th>
+<th>Contestant<!-- [<a href="[% sort_by_team_url |html %]">^</a>]--></th>
 [% FOREACH prob IN contest.problems %]
 <th><a href="[% prob.url |html %]">[% prob.name |html %]</a></th>
 [% END #problem loop %]
-<th>Totals [<a href="[% sort_by_score_url |html %]">^</a>]</th>
+<th>Totals<!-- [<a href="[% sort_by_score_url |html %]">^</a>]--></th>
 </tr>
 
 [% FOREACH team IN contest.all_contestants %]
