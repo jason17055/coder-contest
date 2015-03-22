@@ -180,9 +180,32 @@ public class TemplateVariables
 		return list;
 	}
 
+	static final Comparator<String> NAME_COMPARATOR = new Comparator<String>() {
+		public int compare(String a, String b) {
+			// separate names into a non-digits-part and a digit-part
+			int ax = a.length();
+			while (ax > 0 && Character.isDigit(a.charAt(ax-1))) {
+				ax--;
+			}
+			int bx = b.length();
+			while (bx > 0 && Character.isDigit(b.charAt(bx-1))) {
+				bx--;
+			}
+			// compare non-digits-parts to each other
+			int rv = a.substring(0, ax).compareTo(b.substring(0, bx));
+			if (rv != 0) {
+				return rv;
+			}
+			// compare suffixes as numbers
+			if (a.length() != b.length()) {
+				return a.length() > b.length() ? 1 : -1;
+			}
+			return a.compareTo(b);
+		}
+	};
 	static final Comparator<User> ORDER_USER_BY_NAME = new Comparator<User>() {
 		public int compare(User a, User b) {
-			return a.name.compareTo(b.name);
+			return NAME_COMPARATOR.compare(a.name, b.name);
 		}
 	};
 	static final Comparator<User> ORDER_USER_BY_SCORE = new Comparator<User>() {
@@ -199,7 +222,7 @@ public class TemplateVariables
 	};
 	static final Comparator<User> ORDER_USER_BY_ID = new Comparator<User>() {
 		public int compare(User a, User b) {
-			return a.username.compareTo(b.username);
+			return NAME_COMPARATOR.compare(a.username, b.username);
 		}
 	};
 
@@ -355,6 +378,7 @@ public class TemplateVariables
 					list.add(u);
 				}
 			}
+			Collections.sort(list, ORDER_USER_BY_ID);
 			return list;
 		}
 
