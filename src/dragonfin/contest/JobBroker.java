@@ -50,7 +50,7 @@ public class JobBroker
 	}
 
 	static final long ALIVE_THRESHOLD = 30000;     //30 seconds
-	static final long MIN_RETIREMENT = 60*60*1000; //60 minutes
+	static final long MIN_RETIREMENT = 3*60*60*1000; //3 hours
 
 	public static void startBrokerIfNeeded()
 	{
