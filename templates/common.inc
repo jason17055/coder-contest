@@ -25,7 +25,7 @@
 <div><a href="[% contest_links.login |html %]">Login</a></div>
 [% END %]
 </div>
-[% IF contest.current_phase_name %]
+[% IF contest.current_phase_name && session.username %]
 [% INCLUDE "countdown_clock.inc" %]
 [% END %]
 
