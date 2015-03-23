@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import com.google.appengine.api.datastore.*;
 import java.util.logging.Logger;
 
+import static dragonfin.contest.common.CommonFunctions.byteArray2Hex;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class FileUploadFormHelper
@@ -31,15 +32,6 @@ public class FileUploadFormHelper
 		}
 
 		return new String(bytes.toByteArray(), UTF8);
-	}
-
-	static String byteArray2Hex(byte[] bytes)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < bytes.length; i++) {
-			sb.append(String.format("%02x", bytes[i]));
-		}
-		return sb.toString();
 	}
 
 	static class UploadHelper

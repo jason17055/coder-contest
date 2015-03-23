@@ -4,6 +4,15 @@ import java.io.*;
 
 public class CommonFunctions
 {
+	public static String byteArray2Hex(byte[] bytes)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < bytes.length; i++) {
+			sb.append(String.format("%02x", bytes[i]));
+		}
+		return sb.toString();
+	}
+
 	public static String escapeUrl(String inStr)
 	{
 		try
