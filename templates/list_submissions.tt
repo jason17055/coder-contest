@@ -26,7 +26,7 @@ Status:
 <th>Response</th>
 </tr>
 [% FOREACH u IN contest.submissions %]
-<tr>
+<tr data-submission-id="[% u.id |html %]" data-hash="[% u.hash |html %]">
 <td><a href="[% call_url(u.take_url) |html %]">
 [% format_time(u.created) |html %]</a></td>
 <td>[% u.problem.name |html %]</td>

@@ -4,9 +4,13 @@ import dragonfin.contest.common.*;
 import static dragonfin.contest.CoreServlet.getBaseUrl;
 import static dragonfin.contest.CoreServlet.getMyUrl;
 import static dragonfin.contest.CoreServlet.getLoggedInUserKey;
+import static dragonfin.contest.common.CommonFunctions.byteArray2Hex;
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 import static dragonfin.contest.HBase64.html64;
 
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.http.*;
@@ -26,6 +30,16 @@ public class TemplateVariables
 		this.memcache = MemcacheServiceFactory.getMemcacheService();
 		this.req = req;
 		this.curTime = new Date();
+	}
+
+	static MessageDigest createSecureHashDigest()
+	{
+		try {
+			return MessageDigest.getInstance("SHA-1");
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw new Error("Unexpected "+e.getMessage(), e);
+		}
 	}
 
 	String makeCallUrl(String u)
@@ -1105,6 +1119,7 @@ public class TemplateVariables
 		}
 	}
 
+	static final Charset UTF8 = Charset.forName("UTF-8");
 	public class Submission
 	{
 		public final Key dsKey;
@@ -1122,6 +1137,23 @@ public class TemplateVariables
 		{
 			this.dsKey = dsKey;
 			this.id = makeSubmissionId(dsKey);
+		}
+
+		public String getHash()
+		{
+			String s = String.format(
+				"%s|%s|%s|%s|%d|%s|%s",
+				id, type,
+				created.toString(),
+				status,
+				minutes,
+				answer,
+				answer_type
+				);
+			MessageDigest md = createSecureHashDigest();
+			md.update(s.getBytes(UTF8));
+			byte [] digestBytes = md.digest();
+			return byteArray2Hex(digestBytes);
 		}
 
 		public String getHtml_id()
