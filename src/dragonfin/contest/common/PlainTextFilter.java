@@ -115,7 +115,7 @@ public class PlainTextFilter extends FilterInputStream
 				state = 0;
 			}
 			break;
-		case 2:
+		case 2: //<CR>
 			if (c == -1) {
 				state = ST_EOF;
 			}
@@ -136,7 +136,7 @@ public class PlainTextFilter extends FilterInputStream
 			}
 			break;
 
-		case 3:
+		case 3: //<NL>
 			if (c == -1) {
 				state = ST_EOF;
 			}
