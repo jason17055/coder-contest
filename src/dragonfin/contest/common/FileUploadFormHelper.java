@@ -36,8 +36,10 @@ public class FileUploadFormHelper
 
 	static class UploadHelper
 	{
-		static final int MAX_CHUNK_SIZE = 16*1024;
-		static final int MAX_BRANCHES = 4;
+		//maximum entity size is 1MB, this should keep us well under that
+		// limit
+		static final int MAX_CHUNK_SIZE = 128*1024;
+		static final int MAX_BRANCHES = 64;
 
 		DatastoreService ds;
 		InputStream stream;
