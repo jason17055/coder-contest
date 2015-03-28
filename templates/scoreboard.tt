@@ -47,7 +47,9 @@
 </tr>
 [% FOREACH u IN sort_for_scoreboard(contest.contestants) %]
 <tr>
-<td class="column1"><div class="team_name">[% u.name |html %]</div></td>
+<td class="column1"><div class="team_name">[% u.name |html %]</div>
+[% IF u.description %]<div class="team_description">[% u.description |html %]</div>[% END %]
+</td>
 [% FOREACH p IN contest.problems %]
 [% r = u.result_by_problem(p) %]
 [% INCLUDE 'scoreboard_result.inc' result = r problem = p %]
