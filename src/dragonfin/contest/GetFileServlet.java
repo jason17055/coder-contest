@@ -92,6 +92,8 @@ public class GetFileServlet extends CoreServlet
 		out.println(".o.auth div { border-left: 3px solid white; }");
 		out.println(".o div.xxx { border-left: 3px solid #f00; color: #c00;}");
 		out.println(".o div.missing { border-left: 3px solid #fff; color: #f00; font-style: italic; font-family: serif; }");
+		out.println(".o.auth div.missing { display: none; }");
+		out.println(".o.auth div.missing.hilited { display: block; width: 100%; border: 2px solid #4f4; }");
 		out.println(".o div.hilited { background-color: #dfd; }");
 		out.println(".o div.xxx.hilited { background-color: #fdd; }");
 		out.println(".o div.xxx.hilited span { background-color: #fbb; }");
@@ -169,8 +171,10 @@ public class GetFileServlet extends CoreServlet
 		String [] lines = splitLines(content);
 		for (int lineCount = 0; lineCount < lines.length; lineCount++) {
 
+			out.print("<div class='missing' id='line"+lineCount+"m'\n></div>");
 			out.print("<div id='line"+lineCount+"'\n><span>" + escapeHtml(lines[lineCount])+"</span>&nbsp;</div>");
 		}
+		out.println("<div class='missing' id='line"+lines.length+"m'></div>");
 	}
 
 	ArrayList<Differencer.DiffSegment> doDiffHelper(PrintWriter out, String content1, String content2)

@@ -51,7 +51,7 @@ function hiliteLines(begin,end)
 	{
 		addHilite('line'+i);
 	}
-	if (end < begin)
+	if (end <= begin)
 	{
 		addHilite('line'+begin+'m');
 	}
