@@ -141,10 +141,26 @@ public class GetFileServlet extends CoreServlet
 		out.close();
 	}
 
+	static String [] splitLines(String rawText)
+	{
+		ArrayList<String> rv = new ArrayList<String>();
+		int start = 0;
+		for (int i = 0; i < rawText.length(); i++) {
+			if (rawText.charAt(i) == '\n') {
+				rv.add(rawText.substring(start, i));
+				start = i + 1;
+			}
+		}
+		if (start < rawText.length()) {
+			rv.add(rawText.substring(start));
+		}
+		return rv.toArray(new String[0]);
+	}
+
 	ArrayList<Differencer.DiffSegment> doDiffHelper(PrintWriter out, String content1, String content2)
 	{
-		String [] lines1 = content1.split("\r?\n");
-		String [] lines2 = content2.split("\r?\n");
+		String [] lines1 = splitLines(content1);
+		String [] lines2 = splitLines(content2);
 
 		Differencer diff = new Differencer(lines1, lines2);
 		Differencer.DiffSegment seg;
