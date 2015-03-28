@@ -4,6 +4,9 @@
 <title>Programming Contest: [% page_title |html %]</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+[% IF refresh %]
+<meta http-equiv="refresh" content="[% refresh |html %]">
+[% END %]
 <link rel="stylesheet" type="text/css" href="[%resources_prefix|html%]/scoreboard.css">
 <link rel="stylesheet" type="text/css" href="[%resources_prefix|html%]/CodeMirror-2.33/lib/codemirror.css">
 <script type="text/javascript" src="[%resources_prefix|html%]/jquery-latest.min.js"></script>
