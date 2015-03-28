@@ -47,7 +47,7 @@ function hiliteLines(begin,end)
 	};
 
 	hilited = new Array();
-	for (var i = begin; i <= end; i++)
+	for (var i = begin; i < end; i++)
 	{
 		addHilite('line'+i);
 	}

@@ -37,7 +37,9 @@ public class FileUploadFormHelper
 	static class UploadHelper
 	{
 		//maximum entity size is 1MB, this should keep us well under that
-		// limit
+		// limit.
+		// Watch out- changing these numbers will change hashing for files
+		// of more than one chunk, which will break file equality checks.
 		static final int MAX_CHUNK_SIZE = 128*1024;
 		static final int MAX_BRANCHES = 64;
 
