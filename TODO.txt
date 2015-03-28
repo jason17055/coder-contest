@@ -1,16 +1,16 @@
 --v1.1--
 * listsubmissions:
-   - auto-refresh on new submissions
-   - after stealing a submission, we lose which status was being filtered
-* login page:
-   - do not show contest clock
-   - do not show a bogus username if user is already logged in to a different
-     contest
-* submit page: immediately reject any source code having an
-  extension not supported by a current worker
-* rename Submission.Status to Submission.Response (or Reply)
+   - refresh as soon as drop-down changes
+* large file uploads:
+   - often unable to complete in 60 seconds, leading to Cancellation
+* allow contest url to not have trailing slash
+* date/time fields: separate date from time, use configured time zone
 
 --v1.2--
+* listsubmissions:
+   - after stealing a submission, we lose which status was being filtered
+* create system test:
+   - offer an option to immediately create a new one
 * _admin/contests: show when contest was created, last accessed,
   number of problems, etc.
 * broker startup: when initiating a broker startup, schedule a task
@@ -22,6 +22,17 @@
 * system test deletion: delete any corresponding test results as well
 * result page: implement "Add Submission"
 * contest logo: allow uploading a file
+* login page:
+   - do not show a bogus username if user is already logged in to a different
+     contest
+   - do not show contest clock when user logged into different contest
+* create garbage collector
+   - delete files and file chunks that are no longer referenced
+   - delete old jobs
+   - etc.
+* if non-contestant opens a problem without a description, and the code
+  editor has been disabled, the user sees the Submit page which should not be
+  allowed
 
 --future--
 * test/submit page: detect after a source file has been submitted if it
