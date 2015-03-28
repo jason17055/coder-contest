@@ -48,6 +48,8 @@ problem      - properties of the currently-selected problem
 .new_clarification_url
 .scoreboard_image
 .scoreboard_image_url
+.input_is_text
+.output_is_text
 
 contest_links
 .controller

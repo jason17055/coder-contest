@@ -10,13 +10,14 @@
 <table>
 <tr>
 <td><label>Problem:</label></td>
-<td>[% f.problem.name |html %]</td>
+<td>[% problem.name |html %]</td>
 </tr>
 <tr>
 <td valign="top"><label>Input File:</label></td>
 <td valign="top">[% INCLUDE 'select_file_widget.inc'
 	name = 'input'
-	value = f.input %]</td>
+	value = f.input
+	binary = !problem.input_is_text %]</td>
 </tr>
 <tr>
 <td valign="top"><label>Expected Output:</label></td>
