@@ -160,7 +160,7 @@ public class GetFileServlet extends CoreServlet
 			else {
 				for (int i = 0; i < segLen; i++) {
 					if (seg.type == '=') {
-						out.print("<div id='line"+lineCount+"'\n>" + escapeHtml(seg.getLine(i)) + "</div>");
+						out.print("<div id='line"+lineCount+"'\n><span>" + escapeHtml(seg.getLine(i)) + "</span>&nbsp;</div>");
 					}
 					else {
 						out.print("<div id='line"+lineCount+"' class='xxx'\n><span>" + escapeHtml(seg.getLine(i)) + "</span>&nbsp;</div>");
