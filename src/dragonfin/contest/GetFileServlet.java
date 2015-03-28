@@ -89,6 +89,7 @@ public class GetFileServlet extends CoreServlet
 		out.println("<head>");
 		out.println("<style type=\"text/css\">");
 		out.println(".o div { border-left: 3px solid #4f4; padding-left: 6px; white-space: pre; font-family: monospace; }");
+		out.println(".o.auth div { border-left: 3px solid white; }");
 		out.println(".o div.xxx { border-left: 3px solid #f00; color: #c00;}");
 		out.println(".o div.missing { border-left: 3px solid #fff; color: #f00; font-style: italic; font-family: serif; }");
 		out.println(".o div.hilited { background-color: #dfd; }");
@@ -96,16 +97,15 @@ public class GetFileServlet extends CoreServlet
 		out.println(".o div.xxx.hilited span { background-color: #fbb; }");
 		out.println(".o div.missing.hilited { background-color: #fdd; }");
 		out.println("</style>");
+		out.println("<script type=\"text/javascript\" src=\""+req.getContextPath()+"/diff.js\"></script>");
 		out.println("</head>");
 		out.println("<body>");
-		out.print("<div class='o'>");
-
-		ArrayList<Differencer.DiffSegment> diffs = doDiffHelper(out, content1, content2);
-		out.println("</div>");
-
-		out.println("<script type=\"text/javascript\" src=\""+req.getContextPath()+"/diff.js\"></script>");
 
 		if (file1 != null && file2 != null) {
+
+		out.print("<div class='o'>");
+		ArrayList<Differencer.DiffSegment> diffs = doDiffHelper(out, content1, content2);
+		out.println("</div>");
 
 		out.println("<script type=\"text/javascript\"><!--");
 		out.print("var tmpDiffInfo = ");
@@ -135,6 +135,13 @@ public class GetFileServlet extends CoreServlet
 		out.println("setDiffInfo(tmpDiffInfo);");
 		out.println("//--></script>");
 		} //end if two files specified
+		else {
+
+		out.print("<div class='o auth'>");
+		doDiffExpected(out, content2);
+		out.println("</div>");
+
+		}
 
 		out.println("</body>");
 		out.println("</html>");
@@ -155,6 +162,15 @@ public class GetFileServlet extends CoreServlet
 			rv.add(rawText.substring(start));
 		}
 		return rv.toArray(new String[0]);
+	}
+
+	void doDiffExpected(PrintWriter out, String content)
+	{
+		String [] lines = splitLines(content);
+		for (int lineCount = 0; lineCount < lines.length; lineCount++) {
+
+			out.print("<div id='line"+lineCount+"'\n><span>" + escapeHtml(lines[lineCount])+"</span>&nbsp;</div>");
+		}
 	}
 
 	ArrayList<Differencer.DiffSegment> doDiffHelper(PrintWriter out, String content1, String content2)
