@@ -17,6 +17,33 @@ import static dragonfin.contest.TemplateVariables.parseTestResultId;
 
 public class ShowTestResultServlet extends CoreServlet
 {
+	boolean checkAccess(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		String contestId = req.getParameter("contest");
+		String testResultId = req.getParameter("id");
+		Key key = parseTestResultId(contestId, testResultId);
+
+		try {
+			TemplateVariables tv = makeTemplateVariables(req);
+			TemplateVariables.TestResult tr = tv.fetchTestResult(key);
+			TemplateVariables.Submission s = tr.getSubmission();
+			if (s.getCan_judge()) {
+				// access ok
+				return false;
+			}
+		}
+		catch (EntityNotFoundException e) {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return true;
+		}
+
+		resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+			"You do not have access to this submission."
+			);
+		return true;
+	}
+
 	String getTemplate()
 	{
 		return "show_test_result.tt";
@@ -25,7 +52,8 @@ public class ShowTestResultServlet extends CoreServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
-		if (requireDirector(req, resp)) { return; }
+		if (requireContest(req, resp)) { return; }
+		if (checkAccess(req, resp)) { return; }
 
 		renderTemplate(req, resp, getTemplate());
 	}
