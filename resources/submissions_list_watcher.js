@@ -1,3 +1,14 @@
+function triggerReload(playSound)
+{
+	//TODO- decide whether I really want a sound played
+	//localStorage.setItem('ringaling', 'yes');
+
+	// wait a second then reload
+	setTimeout(function() {
+		location.reload();
+		}, 1000);
+}
+
 function submissionsListChecker(andThen)
 {
 	var u = location.href;
@@ -34,13 +45,11 @@ function submissionsListChecker(andThen)
 
 		if (anyNew) {
 			// there's a new submission to show
-			//TODO- decide whether I really want a sound played
-			//localStorage.setItem('ringaling', 'yes');
-			location.reload();
+			triggerReload(true);
 		}
 		else if (anyChange) {
 			// there's been a change
-			location.reload();
+			triggerReload(false);
 		}
 
 		andThen();
