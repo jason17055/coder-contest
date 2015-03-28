@@ -85,9 +85,11 @@ public class File
 		Entity fileEnt = ds.get(getKey());
 
 		String contentType = (String)fileEnt.getProperty("content_type");
-		if (!contentType.startsWith("text/")) {
-			return null;
-		}
+		//FIXME- had to comment this out because for some reason
+		//some files are not being uploaded as text/plain!
+		//if (!contentType.startsWith("text/")) {
+		//	return null;
+		//}
 
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		outputChunk(bytes, ds, (Key) fileEnt.getProperty("head_chunk"));
