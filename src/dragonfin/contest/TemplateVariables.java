@@ -1142,13 +1142,14 @@ public class TemplateVariables
 		public String getHash()
 		{
 			String s = String.format(
-				"%s|%s|%s|%s|%d|%s|%s",
+				"%s|%s|%s|%s|%d|%s|%s|%s",
 				id, type,
 				created.toString(),
 				status,
 				minutes,
 				answer,
-				answer_type
+				answer_type,
+				getJudge_username()
 				);
 			MessageDigest md = createSecureHashDigest();
 			md.update(s.getBytes(UTF8));
@@ -1281,6 +1282,16 @@ public class TemplateVariables
 			throws EntityNotFoundException
 		{
 			return judgeKey != null ? fetchUser(judgeKey) : null;
+		}
+
+		public String getJudge_username()
+		{
+			if (judgeKey != null) {
+				return getUsernameFromUserKey(judgeKey);
+			}
+			else {
+				return null;
+			}
 		}
 
 		Key sourceKey;
