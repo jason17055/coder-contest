@@ -1,6 +1,9 @@
 [% WRAPPER "common.inc"
 	page_title = 'List Submissions'
-	refresh = '60'
+	refresh = '180'
+	javascript_files = [
+		'submissions_list_watcher.js'
+		]
 %]
 
 <form method="get" action="[% r.uri |html %]">

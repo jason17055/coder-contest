@@ -7,6 +7,9 @@ var current_announcement = null;
 var orig_title = null;
 var blinking = false;
 var pageLoadTime = new Date().getTime();
+window.pageChecker = {
+	'pageSpecific': null
+	};
 
 function blinkTitle()
 {
@@ -109,6 +112,16 @@ function displayAnnouncement(data)
 			"Message");
 	$("#announcementPopup").fadeIn(1000, delayThenHide);
 }
+function checkPageSpecificActivity(andThen)
+{
+	if (window.pageChecker.pageSpecific) {
+		var fn = window.pageChecker.pageSpecific;
+		fn(andThen);
+	}
+	else {
+		andThen();
+	}
+}
 function checkForAnnouncement()
 {
 	var d = new Date();
@@ -151,7 +164,10 @@ function checkForAnnouncement()
 			var delay = targetTime - curTime;
 			if (delay < 1) { delay = 1; }
 
-			setTimeout("checkForAnnouncement()", delay);
+			var andThen = function() {
+				setTimeout("checkForAnnouncement()", delay);
+			};
+			checkPageSpecificActivity(andThen);
 		}
 	};
 	var onError = function(jqxhr, status, err)
