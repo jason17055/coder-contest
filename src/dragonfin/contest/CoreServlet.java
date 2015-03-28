@@ -255,9 +255,9 @@ public class CoreServlet extends HttpServlet
 
 		FormatTimeFunction(TemplateVariables.Contest contest)
 		{
-			df_sameDay = new SimpleDateFormat("h:ma");
-			df_sameWeek = new SimpleDateFormat("h:ma E");
-			df_other = new SimpleDateFormat("h:ma E d MMM");
+			df_sameDay = new SimpleDateFormat("h:mma");
+			df_sameWeek = new SimpleDateFormat("h:mma E");
+			df_other = new SimpleDateFormat("h:mma E d MMM");
 
 			if (contest != null && contest.time_zone != null) {
 				this.tz = TimeZone.getTimeZone(contest.time_zone);
