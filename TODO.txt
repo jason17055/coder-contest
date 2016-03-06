@@ -25,8 +25,7 @@
 * listsubmissions:
    - after stealing a submission, we lose which status was being filtered
    - after drilling down into test results, we lose status filter
-* _admin/contests: show when contest was created, last accessed,
-  number of problems, etc.
+* _admin/contests: show when contest was last accessed, number of problems, etc.
 * broker startup: when initiating a broker startup, schedule a task
   that will run a minute later to check whether the broker heartbeat has
   occurred and if not, try to start it up again. (This may be necessary in
