@@ -52,6 +52,7 @@ public abstract class ProblemCoreServlet extends CoreServlet
 		return false;
 	}
 
+	// candidate for superclass
 	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
 		throws IOException, ServletException
 	{

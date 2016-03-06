@@ -13,6 +13,17 @@ import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 
 public class DefineSystemTestServlet extends CoreServlet
 {
+	// candidate for superclass
+	protected void doFormError(HttpServletRequest req, HttpServletResponse resp, String errorMessage)
+		throws IOException, ServletException
+	{
+		ArrayList<String> messages = new ArrayList<String>();
+		messages.add(errorMessage);
+		Map<String,Object> args = new HashMap<String,Object>();
+		args.put("messages", messages);
+		renderTemplate(req, resp, getTemplate(), args);
+	}
+
 	public String getTemplate()
 	{
 		return "define_system_test.tt";
@@ -139,10 +150,14 @@ public class DefineSystemTestServlet extends CoreServlet
 		String problemId = req.getParameter("problem");
 		if (requireDirector(req, resp)) { return; }
 
-		@SuppressWarnings("unchecked")
-		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
 
 		// TODO- check parameters
+		if (POST.handleFileContent("input") == null) {
+			doFormError(req, resp, "Error: Input File is required");
+			return;
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
@@ -206,10 +221,14 @@ public class DefineSystemTestServlet extends CoreServlet
 		String testNumber = req.getParameter("number");
 		if (requireDirector(req, resp)) { return; }
 
-		@SuppressWarnings("unchecked")
-		Map<String,String> POST = (Map<String,String>) req.getAttribute("POST");
+		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
+			req.getAttribute("POST");
 
 		// TODO- check parameters
+		if (POST.handleFileContent("input") == null) {
+			doFormError(req, resp, "Error: Input File is required");
+			return;
+		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
