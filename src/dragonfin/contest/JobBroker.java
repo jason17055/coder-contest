@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.modules.*;
 
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
+import static dragonfin.contest.common.JobBrokerName.getJobBrokerName;
 
 /**
  * Methods allowing front-end to interface with Job Broker backend.
@@ -57,12 +58,7 @@ public class JobBroker
 		Date curTime = new Date();
 
 		// determine broker name
-		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-		String brokerName = modulesApi.getInstanceHostname(
-				"job-broker",
-				modulesApi.getCurrentVersion(),
-				"0"
-				);
+		String brokerName = getJobBrokerName();
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -129,6 +125,7 @@ public class JobBroker
 		if (shouldStart) {
 
 			log.info("attempting to start broker");
+			ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 			modulesApi.startVersion(
 				"job-broker",
 				modulesApi.getCurrentVersion()

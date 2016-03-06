@@ -6,6 +6,8 @@ import javax.servlet.*;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.modules.*;
 
+import static dragonfin.contest.common.JobBrokerName.getJobBrokerName;
+
 class BackgroundRunner implements Runnable
 {
 	final ServletContext ctx;
@@ -57,11 +59,7 @@ class BackgroundRunner implements Runnable
 	{
 		log.info("invoking module shutdown");
 
-		String brokerName = modulesApi.getInstanceHostname(
-				modulesApi.getCurrentModule(),
-				modulesApi.getCurrentVersion(),
-				modulesApi.getCurrentInstanceId()
-			);
+		String brokerName = getJobBrokerName();
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		Transaction txn = ds.beginTransaction();
@@ -103,11 +101,7 @@ class BackgroundRunner implements Runnable
 	 */
 	boolean postStatus()
 	{
-		String brokerName = modulesApi.getInstanceHostname(
-				modulesApi.getCurrentModule(),
-				modulesApi.getCurrentVersion(),
-				modulesApi.getCurrentInstanceId()
-			);
+		String brokerName = getJobBrokerName();
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		Transaction txn = ds.beginTransaction();
