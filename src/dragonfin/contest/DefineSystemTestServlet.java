@@ -70,7 +70,8 @@ public class DefineSystemTestServlet extends CoreServlet
 		if (POST.containsKey("action:cancel")) {
 			doCancel(req, resp);
 		}
-		else if (POST.containsKey("action:create_system_test")) {
+		else if (POST.containsKey("action:create_system_test") ||
+			POST.containsKey("action:create_system_test_and_repeat")) {
 			doCreateSystemTest(req, resp);
 		}
 		else if (POST.containsKey("action:delete_system_test")) {
@@ -175,6 +176,11 @@ public class DefineSystemTestServlet extends CoreServlet
 			if (txn.isActive()) {
 				txn.rollback();
 			}
+		}
+
+		if (POST.containsKey("action:create_system_test_and_repeat")) {
+			resp.sendRedirect(getMyUrl(req));
+			return;
 		}
 
 		doCancel(req, resp);

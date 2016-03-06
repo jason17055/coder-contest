@@ -4,8 +4,6 @@
 * date/time fields (contest start time, phase end times)
    - separate date from time
    - use configured time zone
-* create system test:
-   - offer an option to immediately create a new one
 * scoreboard:
    - show time remaining in current round
    - prior to start of round, show an overlay with "Contest is starting in ##:##"

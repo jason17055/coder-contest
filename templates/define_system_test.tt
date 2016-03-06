@@ -40,6 +40,7 @@
 <button type="submit" name="action:delete_system_test" onclick="return confirm('Really delete this system test?')">Delete</button>
 [% ELSE %]
 <button type="submit" name="action:create_system_test">Create</button>
+<button type="submit" name="action:create_system_test_and_repeat">Create &amp; Start Another</button>
 [% END %]
 <button type="submit" name="action:cancel">Cancel</button>
 </div>
