@@ -34,7 +34,7 @@ Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user
 <p>No problems are available at this time.</p>
 [% END #if problems.size==0 %]
 
-<h3 page-reload-safe="page-reload-safe">Submissions/Responses</h3>
+<h3 page-reload-safe="page-reload-safe">Your Submissions</h3>
 
 [% IF session.user.submissions.size %]
 
