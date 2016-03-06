@@ -1,16 +1,38 @@
---v1.1--
-* listsubmissions:
-   - refresh as soon as drop-down changes
-* large file uploads:
-   - often unable to complete in 60 seconds, leading to Cancellation
-* allow contest url to not have trailing slash
-* date/time fields: separate date from time, use configured time zone
-
 --v1.2--
 * listsubmissions:
-   - after stealing a submission, we lose which status was being filtered
+   - refresh as soon as drop-down changes
+* allow contest url to omit trailing slash
+* date/time fields (contest start time, phase end times)
+   - separate date from time
+   - use configured time zone
 * create system test:
    - offer an option to immediately create a new one
+* scoreboard:
+   - show time remaining in current round
+   - prior to start of round, show an overlay with "Contest is starting in ##:##"
+     which counts down and automatically disappears at 0:00
+   - change "(current scores)" to "(end of contest)" when contest clock runs out
+* issue clarification:
+   - title of page should be "Issue Clarification" not "Edit Clarification"
+   - omit the response type/response message input fields
+   - add a caption saying this clarification will be broadcasted to all teams,
+     and it will appear on the Clarifications tab of this problem
+* differencer:
+   - hilight differences within the line
+   - allow comparison of files in hex/binary-mode
+* output validator:
+   - summarize differences found if any, e.g. instead of "Wrong Answer"
+     say "Wrong Answer (whitespace differences)" or
+     "Wrong Answer (extra lines)" or
+     "Wrong Answer (1 of 4 lines differ)" or
+     "Wrong Answer (multiple differences)"
+
+--v1.3--
+* large file uploads:
+   - often unable to complete in 60 seconds, leading to Cancellation
+* listsubmissions:
+   - after stealing a submission, we lose which status was being filtered
+   - after drilling down into test results, we lose status filter
 * _admin/contests: show when contest was created, last accessed,
   number of problems, etc.
 * broker startup: when initiating a broker startup, schedule a task
@@ -26,13 +48,14 @@
    - do not show a bogus username if user is already logged in to a different
      contest
    - do not show contest clock when user logged into different contest
-* create garbage collector
+* implement a garbage collector
    - delete files and file chunks that are no longer referenced
    - delete old jobs
    - etc.
 * if non-contestant opens a problem without a description, and the code
   editor has been disabled, the user sees the Submit page which should not be
   allowed
+* controller: show correct numbers for judges' submission counts
 
 --future--
 * test/submit page: detect after a source file has been submitted if it
@@ -48,7 +71,6 @@
 * let users see messages they've already dismissed
 * contest: set runtime limit at contest level
 * clarifications: allow "general" clarification questions and answers
-* scoreboard: show time remaining in current round
 * programming language support
    - let director specify exactly which programming languages are
      supported.
