@@ -47,9 +47,9 @@ public class ProblemClarificationsServlet extends ProblemCoreServlet
 		//
 		// check form parameters
 		//
-		String message = POST.get("message");
+		String message = POST.get("question");
 		if (message == null || message.equals("")) {
-			doFormError(req, resp, "Error: type a message before clicking Submit");
+			doFormError(req, resp, "Error: type a question before clicking Submit");
 			return;
 		}
 
