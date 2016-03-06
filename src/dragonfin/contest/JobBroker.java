@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.modules.*;
 
+import dragonfin.contest.common.JobBrokerName;
+
 import static dragonfin.contest.common.CommonFunctions.escapeUrl;
 import static dragonfin.contest.common.JobBrokerName.getJobBrokerName;
 
@@ -23,7 +25,8 @@ public class JobBroker
 	{
 		ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 		String v = modulesApi.getCurrentVersion();
-		return "http://" + modulesApi.getVersionHostname("job-broker", v);
+		return "http://" + modulesApi.getInstanceHostname("job-broker", v,
+			JobBrokerName.DEFAULT);
 	}
 
 	public static String getFeedUrl(String contestId, String workerId)
@@ -58,7 +61,7 @@ public class JobBroker
 		Date curTime = new Date();
 
 		// determine broker name
-		String brokerName = getJobBrokerName();
+		String brokerName = getJobBrokerName(JobBrokerName.DEFAULT);
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();

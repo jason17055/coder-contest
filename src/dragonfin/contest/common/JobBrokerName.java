@@ -4,8 +4,11 @@ public class JobBrokerName
 {
 	private JobBrokerName() {} // prevent construction
 
-	public static String getJobBrokerName()
+	/// Default module instance id.
+	public static final String DEFAULT = "0";
+
+	public static String getJobBrokerName(String moduleInstanceId)
 	{
-		return "0";
+		return moduleInstanceId;
 	}
 }

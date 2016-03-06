@@ -15,15 +15,25 @@ class BackgroundRunner implements Runnable
 	private static final Logger log = Logger.getLogger(BackgroundRunner.class.getName());
 	DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 	ModulesService modulesApi = ModulesServiceFactory.getModulesService();
-	Date retireAfter = null; //earliest time we can shut down
+	Date expires = null; //earliest time we can shut down
 
 	BackgroundRunner(ServletContext ctx)
 	{
 		this.ctx = ctx;
 	}
 
+	String getAddress()
+	{
+		return modulesApi.getInstanceHostname(
+			modulesApi.getCurrentModule(),
+			modulesApi.getCurrentVersion(),
+			modulesApi.getCurrentInstanceId());
+	}
+
 	public void run()
 	{
+		this.expires = new Date(new Date().getTime() + INITIAL_AWAKE_INTERVAL);
+
 		try {
 
 		for (;;) {
@@ -33,7 +43,8 @@ class BackgroundRunner implements Runnable
 			log.info("background thread updating datastore");
 			boolean keepRunning = postStatus();
 
-			if (!keepRunning && (retireAfter == null || new Date().getTime() >= retireAfter.getTime())) {
+			Date curDate = new Date();
+			if (!keepRunning && curDate.after(this.expires)) {
 				maybeInvokeShutdown();
 			}
 
@@ -54,12 +65,13 @@ class BackgroundRunner implements Runnable
 	}
 
 	static final long SLEEP_INTERVAL = 5*60*1000; //5 minutes
+	static final long INITIAL_AWAKE_INTERVAL = 1*60*1000; //1 minute
 
 	void maybeInvokeShutdown()
 	{
-		log.info("invoking module shutdown");
+		log.info("checking for module shutdown");
 
-		String brokerName = getJobBrokerName();
+		String brokerName = getJobBrokerName(modulesApi.getCurrentInstanceId());
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		Transaction txn = ds.beginTransaction();
@@ -72,10 +84,10 @@ class BackgroundRunner implements Runnable
 				ent = new Entity(brokerKey);
 			}
 
-			this.retireAfter = (Date) ent.getProperty("retire_after");
-			if (retireAfter != null && new Date().getTime() < retireAfter.getTime()) {
-
+			Date retireAfter = (Date) ent.getProperty("retire_after");
+			if (retireAfter != null && retireAfter.after(this.expires)) {
 				// not ok to retire yet
+				this.expires = retireAfter;
 				return;
 			}
 
@@ -90,10 +102,16 @@ class BackgroundRunner implements Runnable
 			}
 		}
 
-		modulesApi.stopVersion(
-			modulesApi.getCurrentModule(),
-			modulesApi.getCurrentVersion()
-			);
+		try {
+			log.info("shutting down broker");
+			modulesApi.stopVersion(
+				modulesApi.getCurrentModule(),
+				modulesApi.getCurrentVersion()
+				);
+		}
+		catch (ModulesException e) {
+			log.warning("error while stopping broker: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -101,7 +119,7 @@ class BackgroundRunner implements Runnable
 	 */
 	boolean postStatus()
 	{
-		String brokerName = getJobBrokerName();
+		String brokerName = getJobBrokerName(modulesApi.getCurrentInstanceId());
 		Key brokerKey = KeyFactory.createKey("JobBroker", brokerName);
 
 		Transaction txn = ds.beginTransaction();
@@ -115,6 +133,7 @@ class BackgroundRunner implements Runnable
 			}
 
 			ent.setProperty("last_heartbeat", new Date());
+			ent.setProperty("address", getAddress());
 
 			ds.put(ent);
 			txn.commit();
