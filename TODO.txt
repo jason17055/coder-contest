@@ -1,7 +1,6 @@
 --v1.2--
 * listsubmissions:
    - refresh as soon as drop-down changes
-* allow contest url to omit trailing slash
 * date/time fields (contest start time, phase end times)
    - separate date from time
    - use configured time zone

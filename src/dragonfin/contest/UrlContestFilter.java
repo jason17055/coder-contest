@@ -14,7 +14,7 @@ public class UrlContestFilter implements Filter
 	}
 
 	static Pattern CONTEST_PROBLEM_URL = Pattern.compile("^/([a-z0-9]{2,})/problem\\.([a-z0-9]{1,})/(.*)");
-	static Pattern CONTEST_URL = Pattern.compile("^/([a-z0-9]{2,})/(.*)");
+	static Pattern CONTEST_URL = Pattern.compile("^/([a-z0-9]{2,})(/.*)?$");
 
 	@Override
 	public void doFilter(ServletRequest sreq, ServletResponse resp, FilterChain chain)
@@ -44,8 +44,16 @@ public class UrlContestFilter implements Filter
 
 		m = CONTEST_URL.matcher(localPath);
 		if (m.matches()) {
+			if (m.group(2) == null) {
+				// Request is missing trailing slash; send a redirect.
+				((HttpServletResponse) resp).sendRedirect(requestURI + "/");
+				return;
+			}
+
+			assert m.group(2).charAt(0) == '/';
+			String relPart = m.group(2).substring(1);
 			boolean hasQueryString = req.getQueryString() != null;
-			String newURI = "/_p/"+m.group(2)
+			String newURI = "/_p" + m.group(2)
 				+ "?" + (hasQueryString ? (req.getQueryString()+"&") : "")
 				+ "contest=" + m.group(1);
 			req.getRequestDispatcher(newURI).forward(sreq, resp);
