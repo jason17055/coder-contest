@@ -9,12 +9,14 @@
 <table border="1">
 <tr>
 <th>Contest</th>
+<th>Created</th>
 <th>Created By</th>
 </tr>
 
 [% FOREACH c IN all_contests %]
 <tr>
 <td><a href="[% c.config_url |html %]">[% c.id |html %]</a></td>
+<td>[% format_time(c.created) |html %]</td>
 <td>[% c.created_by |html %]</td>
 </tr>
 [% END %]

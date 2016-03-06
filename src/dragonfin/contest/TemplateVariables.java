@@ -280,6 +280,7 @@ public class TemplateVariables
 		public String phase2_name;
 		public String phase3_name;
 		public String phase4_name;
+		public Date created;
 		public Date phase1_ends;
 		public Date phase2_ends;
 		public Date phase3_ends;
@@ -1579,6 +1580,7 @@ public class TemplateVariables
 		c.phase3_ends = (Date) ent.getProperty("phase3_ends");
 		c.phase4_ends = (Date) ent.getProperty("phase4_ends");
 
+		c.created = (Date) ent.getProperty("created");
 		c.started = (Date) ent.getProperty("started");
 
 		c.current_phase_id = handleIntProperty(ent, "current_phase", 1);
