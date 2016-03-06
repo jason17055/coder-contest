@@ -1127,6 +1127,7 @@ public class TemplateVariables
 		public String id;
 		public String status;
 		public Date created;
+		public Date answered;
 		public String type;
 		public int minutes;
 		public String question;
@@ -1983,6 +1984,7 @@ public class TemplateVariables
 		Submission s = new Submission(key);
 		s.problemKey = (Key) ent.getProperty("problem");
 		s.created = (Date) ent.getProperty("created");
+		s.answered = (Date) ent.getProperty("answered");
 		s.status = (String) ent.getProperty("status");
 		s.judgeKey = (Key) ent.getProperty("judge");
 		s.minutes = ent.hasProperty("minutes") ?

@@ -100,6 +100,10 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 		//
 		FileUploadFormHelper.FormData POST = (FileUploadFormHelper.FormData)
 			req.getAttribute("POST");
+		if (!"REPLY_ALL".equals(POST.get("answer_type"))) {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 
 		// check permission to create a clarification
 		try {
@@ -124,7 +128,8 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 
 			Entity ent = new Entity("Submission", userKey);
 
-			ent.setProperty("created", new Date());
+			Date createDate = new Date();
+			ent.setProperty("created", createDate);
 			ent.setProperty("type", "question");
 			ent.setProperty("problem", problemKey);
 			ent.setProperty("contest", contestId);
@@ -132,6 +137,7 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 			ent.setProperty("question", POST.get("question"));
 			ent.setProperty("answer", POST.get("answer"));
 			ent.setProperty("answer_type", POST.get("answer_type"));
+			ent.setProperty("answered", createDate);
 
 			submissionKey = ds.put(ent);
 			txn.commit();
@@ -213,6 +219,9 @@ public class EditClarificationServlet extends BaseSubmissionServlet
 			ent.setProperty("question", POST.get("question"));
 			ent.setProperty("answer", newAnswer);
 			ent.setProperty("answer_type", newAnswerType);
+			if (firstAnswer) {
+				ent.setProperty("answered", new Date());
+			}
 
 			ds.put(ent);
 			txn.commit();

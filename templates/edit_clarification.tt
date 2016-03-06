@@ -1,6 +1,13 @@
 [% WRAPPER "common.inc"
-	page_title = 'Edit Clarification'
+	page_title = r.id ? 'Edit Clarification' : 'Issue Clarification'
 %]
+
+[% IF !r.id %]
+<p>
+Clicking Submit will broadcast this clarification to all logged-in contestants,
+and it will be added to the Clarifications tab for this problem.
+</p>
+[% END %]
 
 [% INCLUDE 'check_submission_ownership.inc' %]
 
@@ -27,20 +34,26 @@ function checkAnswerClarificationForm()
 <td><label>Problem:</label></td>
 <td><a href="[% call_url(f.problem.edit_url) |html %]">[% f.problem.name |html %]</a></td>
 </tr>
+[% IF r.id AND f.question %]
 <tr>
-<td valign="top"><label>Message:</label></td>
-<td valign="top"><textarea name="question" rows="10" cols="72">[% f.question|html %]</textarea></td>
+<td valign="top"><label>Question:</label></td>
+<td valign="top"><textarea name="question" rows="10" cols="72" readonly>[% f.question|html %]</textarea></td>
 </tr>
+[% END %]
 <tr>
-<td valign="top"><label>Response Type:</label></td>
+<td valign="top"><label>Clarification Type:</label></td>
+[% IF r.id %]
 <td valign="top"><select name="answer_type">
 <option value=""[% !f.answer_type ? ' selected="selected"' : '' %]>--choose--</option>
 <option value="REPLY_ONE"[% f.answer_type=='REPLY_ONE' ? ' selected="selected"' : '' %]>Reply Only to This Contestant</option>
 <option value="REPLY_ALL"[% f.answer_type=='REPLY_ALL' ? ' selected="selected"' : '' %]>Reply to All Contestants</option>
 </select></td>
+[% ELSE %]
+<td valign="top"><input type="hidden" name="answer_type" value="REPLY_ALL">Send to All Contestants</td>
+[% END %]
 </tr>
 <tr>
-<td valign="top"><label>Response Message:</label></td>
+<td valign="top"><label>Message:</label></td>
 <td valign="top"><textarea name="answer" rows="10" cols="72">[% f.answer |html %]</textarea></td>
 </tr>
 </table>

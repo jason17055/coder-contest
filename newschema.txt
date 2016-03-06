@@ -120,6 +120,7 @@ Submission [ User / id* ]
         question          String
 	answer            String
 	answer_type       String 'REPLY_ONE', 'REPLY_ALL'
+	answered          Date
 
 TestJob [ id* ]
 	type              String S=system test of submission, E=generate expected output, U=user test,

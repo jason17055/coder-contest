@@ -11,11 +11,14 @@
 
 [% FOREACH c IN problem.clarifications %]
 <div class="clarification" id="[% c.html_id |html %]">
-[% cl = 'own-question' %]
-<div class="clarification-question [% cl %]">
-<div class="clarification-author"><span class="author">[% c.submitter.name |html %]</span> asked:</div>
-<p>[% c.question |html %]</p>
-</div>
+[% IF c.question %]
+  [% cl = 'own-question' %]
+  <div class="clarification-question [% cl %]">
+    <div class="clarification-author"><span class="author">[% c.submitter.name |html %]</span>
+      asked (at [% format_time(c.created) |html %]):</div>
+    <p>[% c.question |html %]</p>
+  </div>
+[% END %]
 
 [% IF c.answer %]
 
@@ -27,7 +30,8 @@
 <div class="clarification-answer [%cl%]">
 <div class="clarification-author"><span class="author">[%
 	IF !c.question || c.answer_type == 'REPLY_ALL' %]A clarification has been issued[%
-	ELSE %]Judge's Reply:[% END %]</span></div>
+	ELSE %]Judge's Reply[% END %]</span>
+        (at [% format_time(c.answered) |html %]):</div>
 <p>[% c.answer |html %]</p>
 </div>
 [% ELSE # clarification has no response %]
@@ -51,7 +55,7 @@ Confused by a problem specification? Request a clarification here.
 <form method="post" enctype="multipart/form-data" action="[% r.url |html %]">
 <table>
 <tr>
-<td valign="top"><label>Message:</label></td>
+<td valign="top"><label>Question:</label></td>
 <td valign="top"><textarea name="message" rows="10" cols="72">[% f.message |html %]</textarea>
 </td>
 </tr>
