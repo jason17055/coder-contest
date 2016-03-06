@@ -9,11 +9,6 @@
    - prior to start of round, show an overlay with "Contest is starting in ##:##"
      which counts down and automatically disappears at 0:00
    - change "(current scores)" to "(end of contest)" when contest clock runs out
-* issue clarification:
-   - title of page should be "Issue Clarification" not "Edit Clarification"
-   - omit the response type/response message input fields
-   - add a caption saying this clarification will be broadcasted to all teams,
-     and it will appear on the Clarifications tab of this problem
 * differencer:
    - hilight differences within the line
    - allow comparison of files in hex/binary-mode
