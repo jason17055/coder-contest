@@ -2,6 +2,10 @@
 	page_title = r.contest ? 'Edit Contest' : 'New Contest'
 %]
 
+[% IF r.contest %]
+<p><a href="/[% r.contest |html %]/">Login to this contest</a></p>
+[% END %]
+
 [% IF message %]
 <p class="error">[% message |html %]</p>
 [% END %]
