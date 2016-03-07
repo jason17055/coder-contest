@@ -6,6 +6,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -13,6 +14,8 @@ import com.google.appengine.api.datastore.*;
 
 public class ContestRulesServlet extends CoreServlet
 {
+	private static final Logger log = Logger.getLogger(ContestRulesServlet.class.getName());
+
 	String getTemplate() {
 		return "rules.tt";
 	}
@@ -102,13 +105,13 @@ public class ContestRulesServlet extends CoreServlet
 	void doUpdateRules(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
+		String contestId = req.getParameter("contest");
 		if (requireDirector(req, resp)) { return; }
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = ds.beginTransaction();
 
 		boolean phaseChanged = false;
-		String contestId = req.getParameter("contest");
 
 		try {
 
@@ -191,6 +194,7 @@ public class ContestRulesServlet extends CoreServlet
 			return DATE_FMT.parse(s);
 		}
 		catch (ParseException e) {
+			log.info("Date parsing exception: " + e.getMessage());
 			return null;
 		}
 	}
