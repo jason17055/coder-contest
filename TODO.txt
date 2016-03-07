@@ -18,6 +18,8 @@
      "Wrong Answer (extra lines)" or
      "Wrong Answer (1 of 4 lines differ)" or
      "Wrong Answer (multiple differences)"
+* submission review page:
+   - clicking Custom Test, then Submit, does not actually do a test
 
 --v1.3--
 * large file uploads:

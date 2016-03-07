@@ -83,9 +83,18 @@ public class EditSubmissionServlet extends BaseSubmissionServlet
 		else if (POST.containsKey("action:redo_tests")) {
 			doRedoTests(req, resp);
 		}
+		else if (POST.containsKey("action:custom_test")) {
+			doCustomTest(req, resp);
+		}
 		else {
 			doUpdateSubmission(req, resp);
 		}
+	}
+
+	void doCustomTest(HttpServletRequest req, HttpServletResponse resp)
+		throws IOException
+	{
+		resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
 	}
 
 	void doRedoTests(HttpServletRequest req, HttpServletResponse resp)
