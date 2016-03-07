@@ -3,19 +3,16 @@ package dragonfin.contest;
 import dragonfin.contest.common.File;
 
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Logger;
 import javax.script.SimpleBindings;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.google.appengine.api.datastore.*;
 
+import static dragonfin.contest.common.HtmlDateFormat.*;
+
 public class ContestRulesServlet extends CoreServlet
 {
-	private static final Logger log = Logger.getLogger(ContestRulesServlet.class.getName());
-
 	String getTemplate() {
 		return "rules.tt";
 	}
@@ -55,11 +52,11 @@ public class ContestRulesServlet extends CoreServlet
 		form.put("phase2_name", c.phase2_name);
 		form.put("phase3_name", c.phase3_name);
 		form.put("phase4_name", c.phase4_name);
-		form.put("phase1_ends", fromDate(c.phase1_ends));
-		form.put("phase2_ends", fromDate(c.phase2_ends));
-		form.put("phase3_ends", fromDate(c.phase3_ends));
-		form.put("phase4_ends", fromDate(c.phase4_ends));
-		form.put("started", fromDate(c.started));
+		form.put("phase1_ends", formatDateTime(c.phase1_ends, c.time_zone));
+		form.put("phase2_ends", formatDateTime(c.phase2_ends, c.time_zone));
+		form.put("phase3_ends", formatDateTime(c.phase3_ends, c.time_zone));
+		form.put("phase4_ends", formatDateTime(c.phase4_ends, c.time_zone));
+		form.put("started", formatDateTime(c.started, c.time_zone));
 		form.put("time_zone", c.time_zone);
 
 		{
@@ -118,13 +115,18 @@ public class ContestRulesServlet extends CoreServlet
 			Key contestKey = KeyFactory.createKey("Contest", contestId);
 
 			Entity ent = ds.get(contestKey);
+			String tz = (String) ent.getProperty("time_zone");
+			if (tz == null || tz.equals("")) {
+				tz = "UTC";
+			}
+
 			ent.setProperty("title", req.getParameter("title"));
 			ent.setProperty("subtitle", req.getParameter("subtitle"));
 			ent.setProperty("logo", req.getParameter("logo"));
 			ent.setProperty("scoreboard", req.getParameter("scoreboard"));
 			ent.setProperty("scoreboard_order", req.getParameter("scoreboard_order"));
 
-			ent.setProperty("started", asDate(req.getParameter("started")));
+			ent.setProperty("started", asDate(req, "started", tz));
 			if (req.getParameter("started_set_to_now") != null) {
 				ent.setProperty("started", new Date());
 			}
@@ -134,10 +136,10 @@ public class ContestRulesServlet extends CoreServlet
 			ent.setProperty("phase3_name", req.getParameter("phase3_name"));
 			ent.setProperty("phase4_name", req.getParameter("phase4_name"));
 
-			ent.setProperty("phase1_ends", asDate(req.getParameter("phase1_ends")));
-			ent.setProperty("phase2_ends", asDate(req.getParameter("phase2_ends")));
-			ent.setProperty("phase3_ends", asDate(req.getParameter("phase3_ends")));
-			ent.setProperty("phase4_ends", asDate(req.getParameter("phase4_ends")));
+			ent.setProperty("phase1_ends", asDate(req, "phase1_ends", tz));
+			ent.setProperty("phase2_ends", asDate(req, "phase2_ends", tz));
+			ent.setProperty("phase3_ends", asDate(req, "phase3_ends", tz));
+			ent.setProperty("phase4_ends", asDate(req, "phase4_ends", tz));
 
 			ent.setProperty("no_responses", asStringList(req.getParameter("no_responses")));
 
@@ -183,20 +185,9 @@ public class ContestRulesServlet extends CoreServlet
 		ent.setProperty(propName, Boolean.valueOf(req.getParameter(propName) != null));
 	}
 
-	static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-	static Date asDate(String s)
+	static Date asDate(HttpServletRequest req, String key, String timeZone)
 	{
-		if (s == null || s.equals("")) {
-			return null;
-		}
-
-		try {
-			return DATE_FMT.parse(s);
-		}
-		catch (ParseException e) {
-			log.info("Date parsing exception: " + e.getMessage());
-			return null;
-		}
+		return parseDateTime(req.getParameter(key), timeZone);
 	}
 
 	static List<String> asStringList(String s)
@@ -218,14 +209,5 @@ public class ContestRulesServlet extends CoreServlet
 			throw new Error("Unexpected: "+e, e);
 		}
 		return list;
-	}
-
-	static String fromDate(Date d)
-	{
-		if (d == null) {
-			return null;
-		}
-
-		return DATE_FMT.format(d);
 	}
 }

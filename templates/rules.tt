@@ -108,7 +108,7 @@ Change password</label>
 <tr>
 <td valign="top"><label for="started_entry">Started:</label></td>
 <td valign="top">
-<div><input type="datetime" name="started" id="started_entry" value="[% f.started |html %]">
+<div><input type="datetime-local" name="started" id="started_entry" value="[% f.started |html %]">
 <small>Used to calculate penalty points for team submissions.</small></div>
 <div><label><input type="checkbox" name="started_set_to_now">Set to current time</label></div>
 </td>
@@ -131,7 +131,7 @@ Change password</label>
 	<td>[% ph.id |html %]</td>
 	<td><input type="radio" name="current_phase" value="[% ph.id |html %]"[% ph.current ? ' checked="checked"' : '' %]></td>
 	<td><input type="text" name="[% key1 |html %]" value="[% f.get(key1) |html %]"></td>
-	<td><input type="datetime" name="[% key2 |html %]" value="[% f.get(key2) |html %]"></td>
+	<td><input type="datetime-local" name="[% key2 |html %]" value="[% f.get(key2) |html %]"></td>
 	</tr>
 	[% END #foreach phase %]
 	</table>
