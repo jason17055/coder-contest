@@ -8,6 +8,10 @@
 		<include name="*.jar" />
 	</fileset>
 </path>
+<path id="test-classpath">
+	<path refid="build-classpath" />
+	<pathelement location="build/classes" />
+</path>
 <path id="catalina-ant-classpath">
 <fileset dir="tomcat_libs">
 	<include name="*.jar" />
@@ -57,6 +61,15 @@
 		dragonfin/contest/broker/*" />
 	<lib dir="extlib" excludes="tomcat-servlet-api.jar" />
 </war>
+</target>
+
+<target name="test" depends="build">
+	<mkdir dir="build/tests" />
+	<junit printsummary="yes" haltonfailure="yes">
+		<classpath refid="test-classpath" />
+		<formatter type="plain" />
+		<test name="tests.DifferencerTest" todir="build/tests" />
+	</junit>
 </target>
 
 <target name="install" depends="build">
