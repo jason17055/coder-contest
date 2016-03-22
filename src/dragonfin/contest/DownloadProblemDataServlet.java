@@ -2,6 +2,7 @@ package dragonfin.contest;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.zip.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -15,6 +16,8 @@ import static dragonfin.contest.common.File.outputChunk;
 
 public class DownloadProblemDataServlet extends CoreServlet
 {
+	private static final Logger log = Logger.getLogger(DownloadProblemDataServlet.class.getName());
+
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException, ServletException
 	{
@@ -28,6 +31,8 @@ public class DownloadProblemDataServlet extends CoreServlet
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
+
+		log.info("building a zip file for " + tv.getContestId());
 
 		resp.setHeader("Content-Type", "application/zip");
 		ZipOutputStream out = new ZipOutputStream(resp.getOutputStream());
@@ -48,6 +53,7 @@ public class DownloadProblemDataServlet extends CoreServlet
 		}
 
 		out.close();
+		log.info("finished zip file for " + tv.getContestId());
 	}
 
 	void writeFileContents(ZipOutputStream out, File f)
@@ -66,10 +72,10 @@ public class DownloadProblemDataServlet extends CoreServlet
 			ZipEntry zipEntry = new ZipEntry(String.format("%s/%s", p.name, f.name));
 			out.putNextEntry(zipEntry);
 			writeFileContents(out, f);
-			out.closeEntry();
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
+			log.warning(String.format("error zipping %s/spec: %s", p.name, e.getMessage()));
 		}
 	}
 
@@ -81,10 +87,10 @@ public class DownloadProblemDataServlet extends CoreServlet
 			ZipEntry zipEntry = new ZipEntry(String.format("%s/%s", p.name, f.name));
 			out.putNextEntry(zipEntry);
 			writeFileContents(out, f);
-			out.closeEntry();
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
+			log.warning(String.format("error zipping %s/solution: %s", p.name, e.getMessage()));
 		}
 	}
 
@@ -102,30 +108,32 @@ public class DownloadProblemDataServlet extends CoreServlet
 	void writeSystemTestInputFile(ZipOutputStream out, Problem p, SystemTest st)
 		throws IOException
 	{
+		String fileName = String.format("%s/in_%d.txt", p.name, st.getTest_number());
 		try {
 			File f = st.getInput();
-			ZipEntry zipEntry = new ZipEntry(String.format("%s/in_%d.txt", p.name, st.getTest_number()));
+			ZipEntry zipEntry = new ZipEntry(fileName);
 			out.putNextEntry(zipEntry);
 			writeFileContents(out, f);
-			out.closeEntry();
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
+			log.warning(String.format("error zipping %s: %s", fileName, e.getMessage()));
 		}
 	}
 
 	void writeSystemTestExpectedFile(ZipOutputStream out, Problem p, SystemTest st)
 		throws IOException
 	{
+		String fileName = String.format("%s/out_%d.txt", p.name, st.getTest_number());
 		try {
 			File f = st.getExpected();
-			ZipEntry zipEntry = new ZipEntry(String.format("%s/out_%d.txt", p.name, st.getTest_number()));
+			ZipEntry zipEntry = new ZipEntry(fileName);
 			out.putNextEntry(zipEntry);
 			writeFileContents(out, f);
-			out.closeEntry();
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
+			log.warning(String.format("error zipping %s: %s", fileName, e.getMessage()));
 		}
 	}
 }

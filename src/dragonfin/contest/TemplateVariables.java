@@ -56,6 +56,11 @@ public class TemplateVariables
 			);
 	}
 
+	String getContestId()
+	{
+		return req.getParameter("contest");
+	}
+
 	Contest getContest()
 		throws EntityNotFoundException
 	{
