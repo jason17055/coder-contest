@@ -580,6 +580,11 @@ public class TemplateVariables
 			return specFileKey != null;
 		}
 
+		boolean hasSolutionFile()
+		{
+			return solutionFileKey != null;
+		}
+
 		public String getEdit_url()
 		{
 			return makeUrl("problem?id="+id);
@@ -1402,6 +1407,16 @@ public class TemplateVariables
 		SystemTest(Key key)
 		{
 			this.dsKey = key;
+		}
+
+		public boolean hasInputFile()
+		{
+			return inputKey != null;
+		}
+
+		public boolean hasExpectedFile()
+		{
+			return expectedKey != null;
 		}
 
 		public File getInput()

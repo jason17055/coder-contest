@@ -49,6 +49,10 @@
 </servlet>
 
 <servlet>
+ <servlet-name>DownloadProblemData</servlet-name>
+ <servlet-class>dragonfin.contest.DownloadProblemDataServlet</servlet-class>
+</servlet>
+<servlet>
  <servlet-name>list_problems</servlet-name>
  <servlet-class>dragonfin.contest.ListProblemsServlet</servlet-class>
 </servlet>
@@ -250,6 +254,10 @@
  <url-pattern>/_p/test_result</url-pattern>
 </servlet-mapping>
 
+<servlet-mapping>
+ <servlet-name>DownloadProblemData</servlet-name>
+ <url-pattern>/_p/download_all_problems</url-pattern>
+</servlet-mapping>
 <servlet-mapping>
  <servlet-name>DefineProblem</servlet-name>
  <url-pattern>/_p/problem</url-pattern>

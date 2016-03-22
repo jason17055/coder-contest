@@ -78,7 +78,6 @@
 * cloud-based worker(s)
 * let some problems have non-text input and/or output files
 * define_problem: make link to test the reference solution
-* list_problems: implement "Download as Zip"
 * controller: allow sorting by team name or score
 
 --OLD--
