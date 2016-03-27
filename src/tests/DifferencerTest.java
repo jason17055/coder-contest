@@ -57,4 +57,36 @@ public class DifferencerTest
 		assertEquals(ss[0].offset2, 0);
 		assertEquals(ss[0].length2, 0);
 	}
+
+	@Test
+	public void relaxedCanonicalization()
+	{
+		assertEquals(Differencer.canonicalizeRelaxed("  foo  "), "foo");
+		assertEquals(Differencer.canonicalizeRelaxed(" , FOO ' "), ",foo'");
+		assertEquals(Differencer.canonicalizeRelaxed("re bar"), "re bar");
+		assertEquals(Differencer.canonicalizeRelaxed("a 'b"), "a'b");
+	}
+
+	@Test
+	public void similarLines()
+	{
+		String [] a = new String[] {
+			"Mary had a little lamb.\r",
+			"Whose 'fleece' was white as snow."
+			};
+		String [] b = new String[] {
+			"mary had  a  little lamb .  ",
+			"\t  whose'FLEECE'was   white as  snow."
+			};
+		assertTrue(Differencer.similarLines(a[0], b[0]));
+		assertTrue(Differencer.similarLines(a[1], b[1]));
+
+		DiffSegment [] ss = allSegments(a, b);
+		assertEquals(ss.length, 1);
+		assertEquals(ss[0].type, '~');
+		assertEquals(ss[0].offset1, 0);
+		assertEquals(ss[0].length1, 2);
+		assertEquals(ss[0].offset2, 0);
+		assertEquals(ss[0].length2, 2);
+	}
 }

@@ -50,6 +50,7 @@ public class Differencer
 	public DiffSegment nextSegment()
 	{
 		if (off1 >= lines1.length) {
+			// Reached end of lhs file.
 			if (off2 >= lines2.length) {
 				return null;
 			}
@@ -58,6 +59,7 @@ public class Differencer
 			return seg;
 		}
 		if (off2 >= lines2.length) {
+			// Reached end of rhs file.
 			DiffSegment seg = new DiffSegment('-', off1, lines1.length-off1, off2, 0);
 			off1 = lines1.length;
 			return seg;
@@ -70,6 +72,17 @@ public class Differencer
 				len++;
 			}
 			DiffSegment seg = new DiffSegment('=', off1, len, off2, len);
+			off1 += len;
+			off2 += len;
+			return seg;
+		}
+
+		if (similarLines(lines1[off1], lines2[off2])) {
+			int len = 1;
+			while (off1+len < lines1.length && off2+len < lines2.length && similarLines(lines1[off1+len], lines2[off2+len])) {
+				len++;
+			}
+			DiffSegment seg = new DiffSegment('~', off1, len, off2, len);
 			off1 += len;
 			off2 += len;
 			return seg;
@@ -120,6 +133,43 @@ public class Differencer
 					);
 			}
 		}
+	}
+
+	public static boolean similarLines(String lhs, String rhs)
+	{
+		lhs = canonicalizeRelaxed(lhs);
+		rhs = canonicalizeRelaxed(rhs);
+		return lhs.equals(rhs);
+	}
+
+	public static String canonicalizeRelaxed(String s)
+	{
+		StringBuilder sb = new StringBuilder();
+		boolean inWord = false;
+		boolean spacePending = false;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (Character.isWhitespace(c)) {
+				if (inWord) {
+					spacePending = true;
+					inWord = false;
+				}
+			}
+			else if (Character.isLetterOrDigit(c)) {
+				if (spacePending) {
+					sb.append(' ');
+					spacePending = false;
+				}
+				inWord = true;
+				sb.append(Character.toLowerCase(c));
+			}
+			else {
+				sb.append(c);
+				inWord = false;
+				spacePending = false;
+			}
+		}
+		return sb.toString();
 	}
 
 	static String [] readFile(String fileName)
