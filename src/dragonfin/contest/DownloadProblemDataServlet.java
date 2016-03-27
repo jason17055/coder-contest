@@ -1,11 +1,15 @@
 package dragonfin.contest;
 
 import java.io.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 import java.util.zip.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import com.google.appengine.api.ThreadManager;
 import com.google.appengine.api.datastore.*;
 
 import dragonfin.contest.TemplateVariables.Problem;
@@ -35,43 +39,95 @@ public class DownloadProblemDataServlet extends CoreServlet
 		log.info("building a zip file for " + tv.getContestId());
 
 		resp.setHeader("Content-Type", "application/zip");
+		resp.setHeader("Content-Disposition",
+			String.format("attachment; filename=%s.zip",
+				tv.getContestId()));
+
 		ZipOutputStream out = new ZipOutputStream(resp.getOutputStream());
 
+		ArrayDeque<FetchFileTask> files = new ArrayDeque<FetchFileTask>();
 		for (Problem p : problems) {
 			ZipEntry zipEntry = new ZipEntry(p.name + "/");
 			out.putNextEntry(zipEntry);
 			out.closeEntry();
 			if (p.hasSpecFile()) {
-				writeSpecFile(out, p);
+				writeSpecFile(files, p);
 			}
 			if (p.hasSolutionFile()) {
-				writeSolutionFile(out, p);
+				writeSolutionFile(files, p);
 			}
 			for (SystemTest st : p.getSystem_tests()) {
-				writeSystemTest(out, p, st);
+				writeSystemTest(files, p, st);
 			}
 		}
 
+		log.info(String.format("queued up %d file fetches for %s.zip",
+			files.size(), tv.getContestId()));
+		ExecutorService executor = Executors.newFixedThreadPool(
+			2, ThreadManager.currentRequestThreadFactory());
+
+		try {
+			FetchFileTask nextTask = null;
+			while (!files.isEmpty() || nextTask != null) {
+				FetchFileTask curTask = nextTask;
+				if (!files.isEmpty()) {
+					nextTask = files.remove();
+					executor.execute(nextTask);
+				} else {
+					nextTask = null;
+				}
+				if (curTask != null) {
+					out.putNextEntry(curTask.zipEntry);
+					out.write(curTask.get());
+				}
+			}
+		}
+		catch (Exception e) {
+			log.warning("error while making zip file: " + e.getMessage());
+		}
+
 		out.close();
-		log.info("finished zip file for " + tv.getContestId());
+		log.info("finished zip file for " + tv.getContestId() + ".zip");
 	}
 
-	void writeFileContents(ZipOutputStream out, File f)
-		throws EntityNotFoundException, IOException
+	static class FetchFileCallable implements Callable<byte[]>
 	{
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		Entity fileEnt = ds.get(f.getKey());
-		outputChunk(out, ds, (Key) fileEnt.getProperty("head_chunk"));
+		File file;
+
+		FetchFileCallable(File f)
+		{
+			this.file = f;
+		}
+
+		public byte[] call()
+			throws EntityNotFoundException, IOException
+		{
+			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+			Entity fileEnt = ds.get(this.file.getKey());
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			outputChunk(bytes, ds, (Key) fileEnt.getProperty("head_chunk"));
+			return bytes.toByteArray();
+		}
 	}
 
-	void writeSpecFile(ZipOutputStream out, Problem p)
+	static class FetchFileTask extends FutureTask<byte[]>
+	{
+		ZipEntry zipEntry;
+
+		FetchFileTask(ZipEntry zipEntry, File file)
+		{
+			super(new FetchFileCallable(file));
+			this.zipEntry = zipEntry;
+		}
+	}
+
+	void writeSpecFile(Queue<FetchFileTask> files, Problem p)
 		throws IOException
 	{
 		try {
 			File f = p.getSpec();
 			ZipEntry zipEntry = new ZipEntry(String.format("%s/%s", p.name, f.name));
-			out.putNextEntry(zipEntry);
-			writeFileContents(out, f);
+			files.add(new FetchFileTask(zipEntry, f));
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
@@ -79,14 +135,13 @@ public class DownloadProblemDataServlet extends CoreServlet
 		}
 	}
 
-	void writeSolutionFile(ZipOutputStream out, Problem p)
+	void writeSolutionFile(Queue<FetchFileTask> files, Problem p)
 		throws IOException
 	{
 		try {
 			File f = p.getSolution();
 			ZipEntry zipEntry = new ZipEntry(String.format("%s/%s", p.name, f.name));
-			out.putNextEntry(zipEntry);
-			writeFileContents(out, f);
+			files.add(new FetchFileTask(zipEntry, f));
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
@@ -94,26 +149,25 @@ public class DownloadProblemDataServlet extends CoreServlet
 		}
 	}
 
-	void writeSystemTest(ZipOutputStream out, Problem p, SystemTest st)
+	void writeSystemTest(Queue<FetchFileTask> files, Problem p, SystemTest st)
 		throws IOException
 	{
 		if (st.hasInputFile()) {
-			writeSystemTestInputFile(out, p, st);
+			writeSystemTestInputFile(files, p, st);
 		}
 		if (st.hasExpectedFile()) {
-			writeSystemTestExpectedFile(out, p, st);
+			writeSystemTestExpectedFile(files, p, st);
 		}
 	}
 
-	void writeSystemTestInputFile(ZipOutputStream out, Problem p, SystemTest st)
+	void writeSystemTestInputFile(Queue<FetchFileTask> files, Problem p, SystemTest st)
 		throws IOException
 	{
 		String fileName = String.format("%s/in_%d.txt", p.name, st.getTest_number());
 		try {
 			File f = st.getInput();
 			ZipEntry zipEntry = new ZipEntry(fileName);
-			out.putNextEntry(zipEntry);
-			writeFileContents(out, f);
+			files.add(new FetchFileTask(zipEntry, f));
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
@@ -121,15 +175,14 @@ public class DownloadProblemDataServlet extends CoreServlet
 		}
 	}
 
-	void writeSystemTestExpectedFile(ZipOutputStream out, Problem p, SystemTest st)
+	void writeSystemTestExpectedFile(Queue<FetchFileTask> files, Problem p, SystemTest st)
 		throws IOException
 	{
 		String fileName = String.format("%s/out_%d.txt", p.name, st.getTest_number());
 		try {
 			File f = st.getExpected();
 			ZipEntry zipEntry = new ZipEntry(fileName);
-			out.putNextEntry(zipEntry);
-			writeFileContents(out, f);
+			files.add(new FetchFileTask(zipEntry, f));
 		}
 		catch (EntityNotFoundException e) {
 			// ignore!?
