@@ -137,6 +137,9 @@ public class Differencer
 
 	public static boolean similarLines(String lhs, String rhs)
 	{
+		if (lhs.equals(rhs)) {
+			return false;
+		}
 		lhs = canonicalizeRelaxed(lhs);
 		rhs = canonicalizeRelaxed(rhs);
 		return lhs.equals(rhs);
