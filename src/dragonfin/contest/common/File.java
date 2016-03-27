@@ -101,28 +101,12 @@ public class File
 	public static void outputChunk(OutputStream out, DatastoreService ds, Key chunkKey)
 		throws IOException
 	{
-		Entity ent;
 		try {
-			ent = ds.get(chunkKey);
+			new FileRetriever(ds).output(out, chunkKey);
 		}
 		catch (EntityNotFoundException e) {
-			log.warning("Chunk "+chunkKey+" not found");
+			log.warning("Chunk "+e.getKey()+" not found");
 			return;
-		}
-
-		@SuppressWarnings("unchecked")
-		List<Key> partsList = (List<Key>) ent.getProperty("parts");
-		if (partsList != null && !partsList.isEmpty()) {
-
-			for (Key k : partsList) {
-				outputChunk(out, ds, k);
-			}
-		}
-
-		Blob b = (Blob) ent.getProperty("data");
-		if (b != null) {
-
-			out.write(b.getBytes());
 		}
 	}
 }
