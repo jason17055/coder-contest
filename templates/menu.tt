@@ -13,12 +13,12 @@ Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user
 <table class="realtable">
 <tr><th>Problem</th><th>Status</th></tr>
 [% FOREACH p IN problems %]
-	[% SET r = session.user.result_by_problem(p) %]
-	[% IF r.correct%]
+	[% SET res = session.user.result_by_problem(p) %]
+	[% IF res.correct%]
 		[% status = 'Solved' %]
-	[% ELSIF r.incorrect_submissions %]
+	[% ELSIF res.incorrect_submissions %]
 		[% status = 'Attempted' %]
-	[% ELSIF r.opened %]
+	[% ELSIF res.opened %]
 		[% status = "Opened at ${format_time(r.opened)}" %]
 	[% ELSE %]
 		[% status = 'Unopened' %]

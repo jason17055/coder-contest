@@ -1,4 +1,4 @@
-<table class="realtable auto_reloading" data-auto-reload-type="submissions_table">
+<table class="realtable auto_reloading" data-auto-reload-type="submissions_table" data-table-id="[% r.contest %]" data-filter="[% r.status %]">
 <tr>
 <th>Submitted</th>
 <th>Problem</th>

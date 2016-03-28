@@ -12,6 +12,9 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.memcache.*;
 import com.fasterxml.jackson.core.*;
 
+import dragonfin.contest.TemplateVariables.Contest;
+import dragonfin.contest.TemplateVariables.Submission;
+
 import static dragonfin.contest.TemplateVariables.makeContestKey;
 import static dragonfin.contest.TemplateVariables.makeUserKey;
 import static dragonfin.contest.TemplateVariables.makeTestResultId;
@@ -174,6 +177,9 @@ public class CheckMessageServlet extends HttpServlet
 				String username = data.substring(0, sep);
 				String status = data.substring(sep+1);
 				addUserStatusCheck(username, status);
+			}
+			else if (assertionType.equals("submissionslist")) {
+				checks.add(new SubmissionsListCheck(tv, data));
 			}
 			else {
 				log.warning("Unrecognized assertion type: " + assertionType);
@@ -367,6 +373,61 @@ public class CheckMessageServlet extends HttpServlet
 		public abstract boolean doCheck();
 		public abstract void emitMessage(JsonGenerator out)
 			throws IOException;
+	}
+
+	static class SubmissionsListCheck extends Check
+	{
+		final TemplateVariables tv;
+		String contestId;
+		String filter;
+		String [] items;
+
+		SubmissionsListCheck(TemplateVariables tv, String data)
+		{
+			this.tv = tv;
+			int comma = data.indexOf(',');
+			if (comma != -1) {
+				contestId = data.substring(0, comma);
+				data = data.substring(comma + 1);
+			}
+			comma = data.indexOf(',');
+			if (comma != -1) {
+				filter = data.substring(0, comma);
+				data = data.substring(comma + 1);
+			}
+			items = data.split(",");
+		}
+
+		@Override
+		public boolean doCheck()
+		{
+			try {
+
+			Contest c = tv.fetchContest(contestId);
+			ArrayList<Submission> submissions = c.getSubmissionsFiltered(filter);
+			if (submissions.size() != items.length) {
+				return true;
+			}
+			for (int i = 0; i < items.length; i++) {
+				if (!submissions.get(i).getHash().equals(items[i])) {
+					return true;
+				}
+			}
+			return false;
+
+			} catch (EntityNotFoundException e) {
+				log.warning(e.getMessage());
+				return false;
+			}
+		}
+
+		@Override
+		public void emitMessage(JsonGenerator out) throws IOException
+		{
+			out.writeStartObject();
+			out.writeStringField("class", "submissions_list_changed");
+			out.writeEndObject();
+		}
 	}
 
 	static class JobCompletionCheck extends Check

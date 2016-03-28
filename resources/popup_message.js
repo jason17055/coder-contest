@@ -144,7 +144,8 @@ function checkForAnnouncement()
 		}
 		else if (data['class'] == 'job_completed' ||
 			data['class'] == 'test_result_completed' ||
-			data['class'] == 'online_status_change')
+			data['class'] == 'online_status_change' ||
+			data['class'] == 'submissions_list_changed')
 		{
 			location.reload();
 		}
@@ -212,14 +213,15 @@ function checkForAnnouncement()
 		});
 
 	var process_submissions_table = function(el) {
-		var items = [];
+		var tableId = $(el).attr('data-table-id') || '';
+		var tableFilter = $(el).attr('data-filter') || '';
+		var items = [tableId, tableFilter];
 		$('[data-submission-id]', $(el)).each(function(i,el2)
 			{
-				var it = $(el2).attr('data-submission-id');
+				var it = $(el2).attr('data-hash');
 				items.push(it);
 			});
-		assertion_tags.push("newsubmissionafter="+items.join(','));
-		console.log('found submissions ' + items.join(','));
+		assertion_tags.push("submissionslist="+items.join(','));
 	};
 
 	$('.auto_reloading').each(function(xx)

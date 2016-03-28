@@ -365,6 +365,12 @@ public class TemplateVariables
 
 		public ArrayList<Submission> getSubmissions()
 		{
+			String f = req.getParameter("status");
+			return getSubmissionsFiltered(f);
+		}
+
+		public ArrayList<Submission> getSubmissionsFiltered(String statusFilter)
+		{
 			Key userKey = getLoggedInUserKey(req);
 			User me;
 			try {
@@ -384,7 +390,7 @@ public class TemplateVariables
 
 				try {
 					Problem p = s.getProblem();
-					if (p.canJudge(me) && checkSubmissionFilter(s)) {
+					if (p.canJudge(me) && checkSubmissionFilter(s, statusFilter)) {
 						list.add(s);
 					}
 				}
@@ -1104,9 +1110,8 @@ public class TemplateVariables
 			);
 	}
 
-	boolean checkSubmissionFilter(Submission s)
+	boolean checkSubmissionFilter(Submission s, String f)
 	{
-		String f = req.getParameter("status");
 		if (f == null || f.equals("")) {
 			f = "ready";
 		}
