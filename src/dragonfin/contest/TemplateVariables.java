@@ -1107,7 +1107,11 @@ public class TemplateVariables
 	boolean checkSubmissionFilter(Submission s)
 	{
 		String f = req.getParameter("status");
-		if (f == null || f.equals("") || f.equals("all")) { return true; }
+		if (f == null || f.equals("")) {
+			f = "ready";
+		}
+
+		if (f.equals("all")) { return true; }
 
 		boolean isResponded = s.getResponse() != null && !s.getResponse().equals("");
 		boolean isTaken = s.judgeKey != null;

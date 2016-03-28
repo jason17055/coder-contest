@@ -6,7 +6,7 @@
 Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user.name |html %]</a>
 </p>
 
-<h3>Problems</h3>
+<h3 page-reload-safe="page-reload-safe">Problems</h3>
 [% SET problems = contest.problems %]
 [% IF problems.size %]
 
@@ -34,7 +34,8 @@ Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user
 <p>No problems are available at this time.</p>
 [% END #if problems.size==0 %]
 
-<h3 page-reload-safe="page-reload-safe">Your Submissions</h3>
+[% IF session.is_candidate %]
+<h3>Your Submissions</h3>
 
 [% IF session.user.submissions.size %]
 
@@ -68,6 +69,12 @@ Clarification: [% m.question.substr(0,60) |html %]
 </table>
 [% ELSE %]
 <div>None at this time.</div>
+[% END %]
+[% END %]
+
+[% IF session.is_judge || session.is_director %]
+<h3>Submissions Needing a Response</h3>
+[% INCLUDE 'list_submissions.inc' %]
 [% END %]
 
 <h3>Actions</h3>
