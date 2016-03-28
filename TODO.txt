@@ -12,6 +12,10 @@
 * differencer:
    - hilight differences within the line
    - allow comparison of files in hex/binary-mode
+* submit tab:
+   - should show ALL prior submissions, not just most recent
+   - when clicking a submission on Team Menu page, should go here, not Edit Submission page
+   - Edit Submission page should only be accessible for judges/directors
 * submission review page:
    - clicking Custom Test, then Submit, does not actually do a test
 
