@@ -194,7 +194,8 @@ public class GetFileServlet extends CoreServlet
 			rv.add(seg);
 			int segLen = seg.getLength();
 			if (seg.type == '-') {
-				out.print("<div class='missing' id='line"+lineCount+"m'\n>*** "+segLen+(segLen==1 ? " line" : " lines") + " missing here ***</div>");
+				int lhsLen = seg.length1;
+				out.print("<div class='missing' id='line"+lineCount+"m'\n>*** "+lhsLen+(lhsLen==1 ? " line" : " lines") + " missing here ***</div>");
 			}
 			else {
 				for (int i = 0; i < segLen; i++) {
