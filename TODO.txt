@@ -12,12 +12,6 @@
 * differencer:
    - hilight differences within the line
    - allow comparison of files in hex/binary-mode
-* output validator:
-   - summarize differences found if any, e.g. instead of "Wrong Answer"
-     say "Wrong Answer (whitespace differences)" or
-     "Wrong Answer (extra lines)" or
-     "Wrong Answer (1 of 4 lines differ)" or
-     "Wrong Answer (multiple differences)"
 * submission review page:
    - clicking Custom Test, then Submit, does not actually do a test
 

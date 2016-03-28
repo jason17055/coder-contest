@@ -10,6 +10,9 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 
+import dragonfin.Differencer;
+import dragonfin.contest.common.File;
+import static dragonfin.contest.GetFileServlet.splitLines;
 import static dragonfin.contest.TemplateVariables.defaultResultEntity;
 import static dragonfin.contest.TemplateVariables.getContestFromUserKey;
 
@@ -42,6 +45,7 @@ public class JobCompletedTask extends HttpServlet
 
 		Key problemKey;
 		Key testResultKey;
+		Entity problemEnt;
 		Entity systemTestEnt;
 
 		MyHandler(HttpServletRequest req, HttpServletResponse resp) {
@@ -60,8 +64,11 @@ public class JobCompletedTask extends HttpServlet
 			this.ent = ds.get(jobKey);
 
 			this.problemKey = (Key)ent.getProperty("problem");
-			this.testResultKey = (Key)ent.getProperty("test_result");
+			if (problemKey != null) {
+				this.problemEnt = ds.get(problemKey);
+			}
 
+			this.testResultKey = (Key)ent.getProperty("test_result");
 			if (testResultKey != null) {
 				long systemTestNumber = testResultKey.getId();
 				Key systemTestKey = KeyFactory.createKey(problemKey, "SystemTest", systemTestNumber);
@@ -87,6 +94,13 @@ public class JobCompletedTask extends HttpServlet
 			}
 		}		
 
+		boolean treatOutputAsText()
+		{
+			return problemEnt != null &&
+				problemEnt.hasProperty("output_is_text") &&
+				((Boolean) problemEnt.getProperty("output_is_text")).booleanValue();
+		}
+
 		void systemTest_step1()
 			throws IOException
 		{
@@ -104,34 +118,120 @@ public class JobCompletedTask extends HttpServlet
 			// compare output with expected output
 			Key outputFileKey = (Key)ent.getProperty("output");
 			Key expectedFileKey = (Key)systemTestEnt.getProperty("expected");
-			if (filesEqual(outputFileKey, expectedFileKey)) {
-				resolveSystemTest(testResultKey, "Correct");
+
+			String status;
+			try {
+				File outputFile = fetchFile(outputFileKey);
+				File expectedFile = fetchFile(expectedFileKey);
+
+				if (treatOutputAsText()) {
+ 					status = compareTextFiles(expectedFile, outputFile);
+				} else {
+ 					status = compareBinaryFiles(expectedFile, outputFile);
+				}
 			}
-			else {
-				resolveSystemTest(testResultKey, "Wrong Answer");
+			catch (EntityNotFoundException e) {
+				status = UNKNOWN;
+			}
+			resolveSystemTest(testResultKey, status);
+		}
+
+		String compareBinaryFiles(File file1, File file2)
+		{
+			if (file1 == null || file2 == null) {
+				if (file1 == file2) {
+					return EXACT_MATCH;
+				} else {
+					return DIFFERENT;
+				}
+			}
+
+			if (file1.hash.equals(file2.hash)) {
+				return EXACT_MATCH;
+			} else {
+				return DIFFERENT;
 			}
 		}
 
-		boolean filesEqual(Key file1, Key file2)
+		String compareTextFiles(File file1, File file2)
+			throws EntityNotFoundException, IOException
 		{
-			if (file1 == null || file2 == null) {
-				return file1 == file2;
+			String content1 = file1 != null ? file1.getText_content() : "";
+			String content2 = file2 != null ? file2.getText_content() : "";
+
+			String [] lines1 = splitLines(content1);
+			String [] lines2 = splitLines(content2);
+			Differencer diff = new Differencer(lines1, lines2);
+			Differencer.DiffSegment seg;
+
+			boolean foundWhitespaceDifferences = false;
+			int linesExtra = 0;
+			int linesMissing = 0;
+			int linesDifferent = 0;
+			int lineCount = 0;
+			while ( (seg = diff.nextSegment()) != null ) {
+
+				lineCount += seg.length1;
+				if (seg.type == '-') {
+					linesMissing += seg.length1;
+				}
+				else if (seg.type == '+') {
+					linesExtra += seg.length2;
+				}
+				else if (seg.type == '~') {
+					foundWhitespaceDifferences = true;
+				}
+				else if (seg.type == '!') {
+					linesDifferent += seg.length1;
+				}
 			}
 
-			try {
-
-				Entity ent1 = ds.get(file1);
-				Entity ent2 = ds.get(file2);
-
-				Key chunk1 = (Key) ent1.getProperty("head_chunk");
-				Key chunk2 = (Key) ent2.getProperty("head_chunk");
-
-				return chunk1 != null && chunk1.equals(chunk2);
+			int typeCount = (linesExtra > 0 ? 1 : 0) +
+					(linesMissing > 0 ? 1 : 0) +
+					(linesDifferent > 0 ? 1 : 0);
+			if (typeCount > 1) {
+				// More than one kind of difference found, not
+				// easy to summarize... just say "Different".
+				return DIFFERENT;
 			}
-			catch (EntityNotFoundException e) {
-
-				return false;
+			else if (linesDifferent > 0) {
+				return String.format("%d of %d %s differ",
+					linesDifferent, lineCount,
+					lineCount == 1 ? "line" : "lines");
 			}
+			else if (linesExtra > 0) {
+				return String.format("%d extra %s", linesExtra,
+					linesExtra == 1 ? "line" : "lines");
+			}
+			else if (linesMissing > 0) {
+				return String.format("Missing %d of %d %s",
+					linesMissing, lineCount,
+					lineCount == 1 ? "line" : "lines");
+			}
+
+			// On reaching here, either the file is exact match or
+			// the only differences are in whitespace.
+			if (foundWhitespaceDifferences) {
+				return "Whitespace Differences";
+			}
+			else {
+				return EXACT_MATCH;
+			}
+		}
+
+		File fetchFile(Key key)
+			throws EntityNotFoundException
+		{
+			if (key == null) {
+				return null;
+			}
+
+			Entity ent = ds.get(key);
+			File f = new File(req);
+			f.id = key.getName();
+			f.name = (String) ent.getProperty("given_name");
+			f.hash = ((Key) ent.getProperty("head_chunk")).getName();
+			return f;
 		}
 
 		void resolveSystemTest(Key testResultKey, String status)
@@ -168,4 +268,8 @@ public class JobCompletedTask extends HttpServlet
 			}
 		}
 	}
+
+	static final String EXACT_MATCH = "Exact Match";
+	static final String DIFFERENT = "Different";
+	static final String UNKNOWN = "Unknown";
 }
