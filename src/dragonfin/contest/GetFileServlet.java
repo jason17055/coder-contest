@@ -117,6 +117,9 @@ public class GetFileServlet extends CoreServlet
 		JsonGenerator j_out = new JsonFactory().createJsonGenerator(resp.getWriter());
 		j_out.writeStartArray();
 		for (Differencer.DiffSegment seg : diffs) {
+			if (seg.isEqual()) {
+				continue;
+			}
 			j_out.writeStartObject();
 			j_out.writeFieldName("type");
 			j_out.writeString(String.format("%c", seg.type));

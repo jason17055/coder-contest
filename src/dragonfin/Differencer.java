@@ -39,6 +39,10 @@ public class Differencer
 				return lines2[offset2+i];
 			}
 		}
+
+		public boolean isEqual() {
+			return type == '=';
+		}
 	}
 
 	public Differencer(String [] lines1, String [] lines2)
