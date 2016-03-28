@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
+import java.util.logging.Logger;
 import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -18,6 +19,9 @@ import static dragonfin.contest.TemplateVariables.parseTestResultId;
 
 public class CheckMessageServlet extends HttpServlet
 {
+	private static final Logger log = Logger.getLogger(
+			CheckMessageServlet.class.getName());
+
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
@@ -170,6 +174,9 @@ public class CheckMessageServlet extends HttpServlet
 				String username = data.substring(0, sep);
 				String status = data.substring(sep+1);
 				addUserStatusCheck(username, status);
+			}
+			else {
+				log.warning("Unrecognized assertion type: " + assertionType);
 			}
 		}
 

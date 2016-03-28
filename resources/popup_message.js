@@ -219,9 +219,10 @@ function checkForAnnouncement()
 				items.push(it);
 			});
 		assertion_tags.push("newsubmissionafter="+items.join(','));
+		console.log('found submissions ' + items.join(','));
 	};
 
-	$('.auto_reload_trigger').each(function(xx)
+	$('.auto_reloading').each(function(xx)
 	{
 		var typ = $(this).attr('data-auto-reload-type');
 		if (typ == 'submissions_table') {

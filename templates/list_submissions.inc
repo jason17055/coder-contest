@@ -1,4 +1,4 @@
-<table class="realtable">
+<table class="realtable auto_reloading" data-auto-reload-type="submissions_table">
 <tr>
 <th>Submitted</th>
 <th>Problem</th>
