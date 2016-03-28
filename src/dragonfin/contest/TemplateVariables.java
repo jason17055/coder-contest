@@ -390,7 +390,7 @@ public class TemplateVariables
 
 				try {
 					Problem p = s.getProblem();
-					if (p.canJudge(me) && checkSubmissionFilter(s, statusFilter)) {
+					if (p.canJudge(me) && checkSubmissionFilter(s, me, statusFilter)) {
 						list.add(s);
 					}
 				}
@@ -1110,7 +1110,7 @@ public class TemplateVariables
 			);
 	}
 
-	boolean checkSubmissionFilter(Submission s, String f)
+	boolean checkSubmissionFilter(Submission s, User me, String f)
 	{
 		if (f == null || f.equals("")) {
 			f = "ready";
@@ -1125,7 +1125,8 @@ public class TemplateVariables
 			return !s.ready;
 		}
 		else if (f.equals("ready")) {
-			return s.ready && !isTaken && !isResponded;
+			return s.ready && !isResponded && (
+				!isTaken || me.dsKey.equals(s.judgeKey));
 		}
 		else if (f.equals("taken")) {
 			return isTaken && !isResponded;
