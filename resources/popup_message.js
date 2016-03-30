@@ -144,9 +144,12 @@ function checkForAnnouncement()
 		}
 		else if (data['class'] == 'job_completed' ||
 			data['class'] == 'test_result_completed' ||
-			data['class'] == 'online_status_change' ||
-			data['class'] == 'submissions_list_changed')
+			data['class'] == 'online_status_change')
 		{
+			location.reload();
+		}
+		else if (data['class'] == 'list_changed') {
+			console.log('list_changed: ' + data['detail']);
 			location.reload();
 		}
 		else if (data['class'] == 'new_submission')

@@ -381,6 +381,7 @@ public class CheckMessageServlet extends HttpServlet
 		String contestId;
 		String filter;
 		String [] items;
+		String detailMessage;
 
 		SubmissionsListCheck(TemplateVariables tv, String data)
 		{
@@ -395,7 +396,11 @@ public class CheckMessageServlet extends HttpServlet
 				filter = data.substring(0, comma);
 				data = data.substring(comma + 1);
 			}
-			items = data.split(",");
+			if (data.length() != 0) {
+				items = data.split(",");
+			} else {
+				items = new String[0];
+			}
 		}
 
 		@Override
@@ -406,10 +411,12 @@ public class CheckMessageServlet extends HttpServlet
 			Contest c = tv.fetchContest(contestId);
 			ArrayList<Submission> submissions = c.getSubmissionsFiltered(filter);
 			if (submissions.size() != items.length) {
+				detailMessage = "add/remove";
 				return true;
 			}
 			for (int i = 0; i < items.length; i++) {
 				if (!submissions.get(i).getHash().equals(items[i])) {
+					detailMessage = "change";
 					return true;
 				}
 			}
@@ -425,7 +432,8 @@ public class CheckMessageServlet extends HttpServlet
 		public void emitMessage(JsonGenerator out) throws IOException
 		{
 			out.writeStartObject();
-			out.writeStringField("class", "submissions_list_changed");
+			out.writeStringField("class", "list_changed");
+			out.writeStringField("detail", detailMessage);
 			out.writeEndObject();
 		}
 	}
