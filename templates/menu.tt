@@ -19,7 +19,7 @@ Your name: <a href="[% call_url(session.user.edit_url) |html %]">[% session.user
 	[% ELSIF res.incorrect_submissions %]
 		[% status = 'Attempted' %]
 	[% ELSIF res.opened %]
-		[% status = "Opened at ${format_time(r.opened)}" %]
+		[% status = "Opened at ${format_time(res.opened)}" %]
 	[% ELSE %]
 		[% status = 'Unopened' %]
 	[% END %]
