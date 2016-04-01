@@ -18,6 +18,11 @@
    - Edit Submission page should only be accessible for judges/directors
 * submission review page:
    - clicking Custom Test, then Submit, does not actually do a test
+* file upload:
+   - when clicking Cancel, the upload still occurs
+* PlainTextFilter:
+   - write regression tests
+   - strip trailing blank lines in submission
 
 --v1.3--
 * large file uploads:
