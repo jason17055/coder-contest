@@ -131,8 +131,8 @@ public class TestFeedServlet extends HttpServlet
 			txn.commit();
 		}
 		catch (ConcurrentModificationException e) {
-			log.info("postWorkerStatus failed, " + e.getMessage());
 			// ignore
+			log.warning("postWorkerStatus failed, " + e.getMessage());
 		}
 		finally {
 			if (txn.isActive()) {
