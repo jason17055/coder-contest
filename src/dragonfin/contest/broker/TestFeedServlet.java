@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.Date;
+import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import com.fasterxml.jackson.core.*;
@@ -20,6 +21,8 @@ public class TestFeedServlet extends HttpServlet
 	ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 
 	static final long DEFAULT_TIME_LIMIT = 10000;
+
+	private static final Logger log = Logger.getLogger(TestFeedServlet.class.getName());
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -126,6 +129,10 @@ public class TestFeedServlet extends HttpServlet
 			ds.put(ent);
 
 			txn.commit();
+		}
+		catch (ConcurrentModificationException e) {
+			log.info("postWorkerStatus failed, " + e.getMessage());
+			// ignore
 		}
 		finally {
 			if (txn.isActive()) {
