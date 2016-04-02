@@ -78,7 +78,7 @@
 [% IF submission && submission.can_judge %]
 <td id="rhs_column" width="40%" valign="top">
 <h3 class="submission_h3">Test Results:</h3>
-<table border="1" width="100%">
+<table border="1" width="100%" id="test_results_table">
 [% FOREACH tr IN submission.test_results %]
 [% name = 'Test ' _ tr.test_number %]
 <tr>

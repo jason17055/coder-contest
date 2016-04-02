@@ -146,7 +146,11 @@ function checkForAnnouncement()
 			data['class'] == 'test_result_completed' ||
 			data['class'] == 'online_status_change')
 		{
-			location.reload();
+			if ($('#test_results_table').length) {
+				$('#test_results_table').load(location.href + ' #test_results_table', null, checkForAnnouncement);
+			} else {
+				location.reload();
+			}
 		}
 		else if (data['class'] == 'list_changed') {
 			console.log('list_changed: ' + data['detail']);
