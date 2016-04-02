@@ -386,19 +386,16 @@ public class CheckMessageServlet extends HttpServlet
 		SubmissionsListCheck(TemplateVariables tv, String data)
 		{
 			this.tv = tv;
-			int comma = data.indexOf(',');
-			if (comma != -1) {
-				contestId = data.substring(0, comma);
-				data = data.substring(comma + 1);
+
+			String [] parts = data.split(",");
+			if (parts.length >= 2) {
+				contestId = parts[0];
+				filter = parts[1];
+				items = Arrays.copyOfRange(parts, 2, parts.length);
 			}
-			comma = data.indexOf(',');
-			if (comma != -1) {
-				filter = data.substring(0, comma);
-				data = data.substring(comma + 1);
-			}
-			if (data.length() != 0) {
-				items = data.split(",");
-			} else {
+			else {
+				contestId = data;
+				filter = null;
 				items = new String[0];
 			}
 		}
