@@ -152,6 +152,15 @@
  <servlet-class>dragonfin.contest.AdminModulesServlet</servlet-class>
 </servlet>
 
+<servlet>
+ <servlet-name>ChunkCleanup</servlet-name>
+ <servlet-class>dragonfin.contest.gc.ChunkCleanupServlet</servlet-class>
+</servlet>
+<servlet>
+ <servlet-name>FileCleanup</servlet-name>
+ <servlet-class>dragonfin.contest.gc.FileCleanupServlet</servlet-class>
+</servlet>
+
 <!-- Used by AJAX
   -->
 <servlet>
@@ -322,6 +331,15 @@
 <servlet-mapping>
  <servlet-name>AdminModules</servlet-name>
  <url-pattern>/_admin/modules</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+ <servlet-name>ChunkCleanup</servlet-name>
+ <url-pattern>/_gc/chunks</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+ <servlet-name>FileCleanup</servlet-name>
+ <url-pattern>/_gc/files</url-pattern>
 </servlet-mapping>
 
 <servlet>

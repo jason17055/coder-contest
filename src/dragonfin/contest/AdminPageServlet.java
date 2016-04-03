@@ -18,7 +18,7 @@ public abstract class AdminPageServlet extends CoreServlet
 		resp.sendRedirect(loginUrl);
 	}
 
-	boolean requireAdmin(HttpServletRequest req, HttpServletResponse resp)
+	protected boolean requireAdmin(HttpServletRequest req, HttpServletResponse resp)
 		throws IOException
 	{
 		if (req.getUserPrincipal() == null) {
